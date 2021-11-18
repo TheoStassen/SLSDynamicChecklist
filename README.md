@@ -12,11 +12,15 @@ A deployed version of this project is accessible at the adress : https://theosta
 
 You need to have a recent version of node.js, 16.13.0 LTS works fine (https://nodejs.org/fr/)
 
+You simply need to install the dependencies:
+
+* `yarn install`
+
 If there is an error when running the application : <br />
 
 * You can install and activate node using nvm (node version manager) : https://github.com/nvm-sh/nvm <br />
-* If react-bootstrap-select-dropdown is missing : npm i -S react-signature-canvas <br />
-* If react-signature-canvas is missing : npm i react-bootstrap-select-dropdown --save
+* If react-bootstrap-select-dropdown is missing : `npm i -S react-signature-canvas` <br />
+* If react-signature-canvas is missing : `npm i react-bootstrap-select-dropdown --save`
 
 
 # Available Scripts
