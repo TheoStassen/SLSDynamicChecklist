@@ -3,18 +3,25 @@
 
 /*We consider a constant list of all possible answers to a question*/
 const list_possible_answer = ["yes","no","idk","ok","not_ok"]
-const list_possible_answer_trad = ["Oui","Non","?","OK","Non OK"]
+const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","not_ok":"Non OK"}
+
+const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender"]
+const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre"}
+
+const list_possible_op = ["<",">","="]
+
 
 /*Function to translate an answer into mountable french version*/
 const trad_answer = (answer) => {
-  return list_possible_answer_trad[list_possible_answer.indexOf(answer)]
+  return list_possible_answer_trad[answer]
+}
+
+const trad_num_var = (num_var) => {
+    return list_possible_num_var_trad[num_var]
 }
 
 /*List of possible options (answers), used in the multiselect component to choose the question answers*/
-const possible_options = []
-list_possible_answer.forEach(function(answer){
-  possible_options.push({"labelKey": answer, "value": trad_answer(answer), "isSelected":false})
-})
+
 
 /*Function that make the operation of type "is val1 op val2 ?' with op the operator in string input*/
 const simple_operation = (val1, string_op, val2) => {
@@ -104,4 +111,4 @@ function CsvGenerator(dataArray, fileName, separator, addQuotes) {
 
 
 
-export {list_possible_answer_trad, list_possible_answer, trad_answer, possible_options, CsvGenerator, simple_operation, checklist_to_json}
+export {list_possible_answer_trad, list_possible_answer, list_possible_num_var_trad, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, CsvGenerator, simple_operation, checklist_to_json}

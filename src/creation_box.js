@@ -1,6 +1,7 @@
 import BootstrapSelect from "react-bootstrap-select-dropdown";
 import * as utils from "./utils";
 import React, {useState} from "react";
+import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var} from "./utils";
 
 /* Component for the creation mode box
 * -checklist: current checklist (state variable)
@@ -20,10 +21,19 @@ function CreateBox ({props}) {
   * -currentQuestion : the question currently into creation/modification
   * -currentParentQuestion : the question that is parent of the current question
   * -currentName : the current name
+  * -tempNums : the numerical condition values (var, op and val) of the current condition the user is going to add
+  * -tempPreChech : the precheck condition values (var, op, val) and then value of the current precheck the user is going to add
   */
   let [currentQuestion, setCurrentQuestion] = useState(checklist.values[0])
   let [currentParentQuestion, setCurrentParentQuestion] = useState(checklist)
   let [currentName, setCurrentName] = useState(checklist.values[0].name)
+  let [currentComment, setCurrentComment] = useState(checklist.comment ? checklist.comment : null)
+
+  let [tempNums, setTempNums] = useState({})
+  let [tempPreCheck, setTempPreCheck] = useState({})
+
+
+  console.log("main", currentQuestion)
 
   /* Make the complete list of questions of the current checklist*/
   let questionList = [];
@@ -35,6 +45,47 @@ function CreateBox ({props}) {
     }
   }
   enumquestions(checklist)
+
+  /*Create a list, usable by the select component, of the possible answer*/
+  let possible_answers = []
+  function construct_possible_answers (){
+    possible_answers = []
+    list_possible_answer.forEach(function(answer){
+      possible_answers.push({"labelKey": answer, "value": trad_answer(answer), "isSelected":currentQuestion.check.includes(answer)})
+    })
+  }
+  construct_possible_answers()
+
+  /*Create a list, usable by the select component, of the possible variables of conditions*/
+  let possible_vars = []
+  function construct_possible_vars (){
+    possible_vars = []
+    list_possible_num_var.forEach(function(num_var){
+      possible_vars.push({"labelKey": num_var, "value": trad_num_var(num_var)})
+    })
+  }
+  construct_possible_vars()
+
+  /*Create a list, usable by the select component, of the possible operators of conditions*/
+  let possible_op = []
+  function construct_possible_op (){
+    possible_op = []
+    list_possible_op.forEach(function(op){
+      possible_op.push({"labelKey": op, "value": op})
+    })
+  }
+  construct_possible_op()
+
+  /*Create a list, usable by the select component, of the possible answers of this question*/
+  let possible_pre_check = []
+  function construct_possible_pre_check (){
+    possible_pre_check = []
+    currentQuestion.check.forEach(function(pre_check){
+      possible_pre_check.push({"labelKey": pre_check, "value": trad_answer(pre_check)})
+    })
+  }
+  construct_possible_pre_check()
+
 
   /*Set state variables*/
   function set_elements () {
@@ -61,6 +112,7 @@ function CreateBox ({props}) {
       setCurrentQuestion(currentQuestion)
       setCurrentParentQuestion(currentParentQuestion)
       setCurrentName(currentQuestion.name)
+      setTempNums({})
     }
     for (const value of item.values){
       searchquestion(value,item,id);
@@ -85,7 +137,7 @@ function CreateBox ({props}) {
       {
         id: last_id+1,
         name : "Nom vide",
-        cond: {"yes":[0], "no":[], num:[]},
+        cond: {"yes":[], "no":[], num:[]},
         check : ["yes", "no"],
         values: [],
       }
@@ -103,6 +155,7 @@ function CreateBox ({props}) {
     currentQuestion.values.push(currentQuestionCopy)
     set_elements()
     searchquestion(checklist, null, currentQuestionCopy.id)
+    forceUpdate()
   }
 
   /*Change the position of the current question, between it siblings*/
@@ -113,6 +166,7 @@ function CreateBox ({props}) {
     currentQuestion.values.splice(new_position,0,currentQuestionCopy)
     set_elements()
     searchquestion(checklist, null, currentQuestionCopy.id)
+    forceUpdate()
   }
 
   /*Modify the current name*/
@@ -124,6 +178,21 @@ function CreateBox ({props}) {
   /*Update the current question name*/
   const updatename = () => {
     currentQuestion.name = currentName
+    set_elements()
+  }
+
+    /*Modify the current name*/
+  const modifycomment = (event) => {
+    currentComment = event.target.value
+    setCurrentComment(currentComment)
+  }
+
+  /*Update the current question name*/
+  const updatecomment = () => {
+    if (currentComment)
+      currentQuestion.comment = currentComment
+    else
+      delete currentQuestion.comment
     set_elements()
   }
 
@@ -148,7 +217,7 @@ function CreateBox ({props}) {
             id: 1,
             name : "Vide",
             check : ["yes","no"],
-            cond: {"yes":[0], "no":[0], num:[]},
+            cond: {"yes":[], "no":[], num:[]},
             values: []
           }
         ],
@@ -171,13 +240,130 @@ function CreateBox ({props}) {
 
   /*Function that swap the current checklist and reinitialize the current question*/
   const swapchecklist_creation_mode = (checklist_id) =>  {
-    swapchecklist(checklist_id)
+    checklist = swapchecklist(checklist_id)
     reinit_current_question(checklist)
+    forceUpdate()
   }
+
+  /*Function that add a  question condition (with it answer and id) to current question*/
+  const addcond = (answer, id) => {
+    currentQuestion.cond[answer].push(id)
+    setCurrentQuestion(currentQuestion)
+    set_elements()
+    forceUpdate()
+  }
+
+  /*Function that delete a  question condition (with it answer and id) to current question*/
+  const deletecond = (answer, id) => {
+    currentQuestion.cond[answer] = currentQuestion.cond[answer].filter(elm => elm !== id)
+    console.log(currentQuestion)
+    setCurrentQuestion(currentQuestion)
+    set_elements()
+    forceUpdate()
+  }
+
+  /*Function that update the tempNum.var variable with input*/
+  const addtempnumvar = (selectedOptions) => {
+    if (!tempNums){ tempNums = {}}
+    tempNums.var = selectedOptions.selectedKey[0]
+    setTempNums(tempNums)
+    forceUpdate()
+  }
+  /*Function that update the tempNum.op variable with input*/
+  const addtempnumop = (selectedOptions) => {
+    if (!tempNums){ tempNums = {}}
+    tempNums.op = selectedOptions.selectedKey[0]
+    setTempNums(tempNums)
+    forceUpdate()
+  }
+    /*Function that update the tempNum.val variable with input*/
+  const addtempnumval = (event) => {
+    if (!tempNums){ tempNums = {}}
+    tempNums.val = event.target.value
+    setTempNums(tempNums)
+    forceUpdate()
+  }
+
+  /*Function that add a numerical condition (with values contains in tempNum) to currentQuestion*/
+  const addnum = () => {
+    if (tempNums.var && tempNums.op && tempNums.val) {
+      currentQuestion.cond.num.push({var: tempNums.var, op: tempNums.op, val: tempNums.val})
+      setCurrentQuestion(currentQuestion)
+      set_elements()
+      forceUpdate()
+    }
+  }
+
+  /*Function that remove a numerical condition of the currentQuestion*/
+  const removenum = (index) => {
+    console.log("supprimer", index)
+    currentQuestion.cond.num.splice(index,1)
+    console.log(currentQuestion.cond.num)
+    setCurrentQuestion(currentQuestion)
+    set_elements()
+    forceUpdate()
+  }
+
+  /*Function that update the tempPrecheck.var variable with input*/
+  const addtempprecheckvar = (selectedOptions) => {
+    if (!tempPreCheck){ tempPreCheck = {}}
+    tempPreCheck.var = selectedOptions.selectedKey[0]
+    setTempPreCheck(tempPreCheck)
+    forceUpdate()
+  }
+  /*Function that update the tempPrecheck.op variable with input*/
+  const addtempprecheckop = (selectedOptions) => {
+    if (!tempPreCheck){ tempPreCheck = {}}
+    tempPreCheck.op = selectedOptions.selectedKey[0]
+    setTempPreCheck(tempPreCheck)
+    forceUpdate()
+  }
+  /*Function that update the tempPrecheck.val variable with input*/
+  const addtempprecheckval = (event) => {
+    if (!tempPreCheck){ tempPreCheck = {}}
+    tempPreCheck.val = event.target.value
+    setTempPreCheck(tempPreCheck)
+    forceUpdate()
+  }
+
+    /*Function that update the tempPrecheck.then variable with input*/
+  const addtempprecheckthen = (selectedOptions) => {
+    if (!tempPreCheck){ tempPreCheck = {}}
+    tempPreCheck.then = selectedOptions.selectedKey[0]
+    setTempPreCheck(tempPreCheck)
+    forceUpdate()
+  }
+
+  /*Function that add a precheck condition (with values contains in tempPreCheck) and precheck then to currentQuestion*/
+  const addprecheck = () => {
+    if (tempPreCheck.var && tempPreCheck.op && tempPreCheck.val && tempPreCheck.then) {
+      if (!currentQuestion.pre_check)
+        currentQuestion.pre_check = {if:[],then:null}
+      currentQuestion.pre_check.then = tempPreCheck.then
+      currentQuestion.pre_check.if.push({var: tempPreCheck.var, op: tempPreCheck.op, val: tempPreCheck.val})
+      setCurrentQuestion(currentQuestion)
+      set_elements()
+      forceUpdate()
+    }
+  }
+
+  /*Function that remove a precheck condition of the currentQuestion*/
+  const removeprecheck = (index) => {
+    console.log("supprimer", index)
+    currentQuestion.pre_check.if.splice(index,1)
+    if (!currentQuestion.pre_check.if.length)
+      currentQuestion.pre_check = null
+    console.log(currentQuestion.cond.num)
+    setCurrentQuestion(currentQuestion)
+    set_elements()
+    forceUpdate()
+  }
+
 
   /*Return the create box, with all it elements*/
   return (
     <div className="container p-2 container-custom border border-2 shadow-sm">
+
       {/*Title text*/}
       <div className="card card-grey text-center mb-2 ">
         <div className="card-body">
@@ -232,7 +418,7 @@ function CreateBox ({props}) {
               <li><a className="dropdown-item" href="#" onClick={function(event){ addnewquestion(); forceUpdate()}}><text className="text-custom">Nouvelle question</text></a></li>
               {/*Select an existing checklist*/}
               {questionList.map(i => (
-                <li><a className="dropdown-item" href="#" onClick={() => searchquestion(checklist, null, i)}>
+                <li><a className="dropdown-item" href="#" onClick={function(){searchquestion(checklist, null, i)}}>
                   <text className="text-custom">Question n°{i}</text></a>
                 </li>
               ))}
@@ -255,6 +441,24 @@ function CreateBox ({props}) {
         <div className="col-sm-4 align-items-center p-0 text-center">
           <button className="btn btn-change" >
             <text className="text-custom" onClick={function(event){ updatename(); forceUpdate()}}>Valider le nom</text>
+          </button>
+        </div>
+      </div>
+
+      {/*Question Comment selection*/}
+      <div className="row align-items-center p-2 m-0 border-bottom">
+        {/*Information text*/}
+        <div className="col-sm-4 align-items-center ">
+          <text className="text-custom"> Commentaire (optionnel) de la question : </text>
+        </div>
+        {/*Question comment text input */}
+        <div className="col-sm-4 align-items-center">
+          <textarea className="form-control" id="exampleFormControlTextarea1" rows="2" value={currentComment} onChange={modifycomment}/>
+        </div>
+        {/*Question comment validation button*/}
+        <div className="col-sm-4 align-items-center p-0 text-center">
+          <button className="btn btn-change" onClick={function(event){ updatecomment(); forceUpdate()}}>
+            <text className="text-custom" >Valider le commentaire</text>
           </button>
         </div>
       </div>
@@ -325,11 +529,209 @@ function CreateBox ({props}) {
         </div>
         <div className="col-sm-4 align-items-center">
         </div>
-        {/*(Multi)Selection dropdown*/}
+        {/*(Multi)Selection dropdown
+        -> For now, the only solution i found to have the dropdown reset correctly when question switch is have one separate dropdown for each question, but only one shown
+        -> clearly not optimal (but big problem when doing the simple way : the current selection of answers is not reset when question switch and component update -> very annoying*/}
         <div className="col-sm-4 align-items-center p-0 text-center">
-          <BootstrapSelect options={utils.possible_options} isMultiSelect={true} placeholder="Aucune" onChange={changecheck} onClose={forceUpdate}/>
+          {questionList.map(elm => (
+            elm === currentQuestion.id ? <BootstrapSelect options={possible_answers} isMultiSelect={true} placeholder="Aucune" onChange={changecheck} onClose={forceUpdate}/>: null
+          ))}
+          {/*Simple way*/}
+          {/*<BootstrapSelect options={possible_options} isMultiSelect={true} placeholder="Aucune" onChange={changecheck} onClose={forceUpdate}/>*/}
         </div>
       </div>
+
+      {/*Question conditions of the current question (optional part, so it needs to be collapsable)*/}
+      <div className="border-bottom m-0 p-0 text-center">
+        <button className="btn btn-change m-auto p-2 my-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestionConditions"
+                aria-expanded="false" aria-controls="collapseExample">
+          <text className="text-custom"> <i className="fas fa-caret-down"/>Ajouter/Supprimer des conditions sur les autres questions <i className="fas fa-caret-down"/> </text>
+        </button>
+        <div className="collapse m-0 p-0" id="collapseQuestionConditions">
+          <div className="row align-items-center p-2 m-0">
+            <div className="col-sm-3 align-items-center">
+              <text className="text-custom">Quelles conditions sur les réponses ? : </text>
+            </div>
+            <div className="col-sm-9 align-items-center">
+              {utils.list_possible_answer.map(answer => (
+                <div className="row">
+                  <div className="col align-items-center p-2 my-auto">
+                    <div className="card card-grey text-center shadow-sm m-0 ">
+                      <text className="text-custom">{trad_answer(answer)}</text>
+                    </div>
+                  </div>
+                  <div className="col align-items-center p-2">
+                    <div className="input-group m-0">
+                      {/*For each possible answer, if in item.check, we put a checkbox*/}
+                      {currentQuestion.cond[answer] ? currentQuestion.cond[answer].map( id => (
+                        <div className="input-group-prepend">
+                          <button className="btn btn-outline-secondary" type="button" onClick={() => deletecond(answer, id)} ><text className="text-custom">{id}</text> </button>
+                        </div>
+                      )): null}
+                    </div>
+
+                  </div>
+                  <div className="col align-items-center p-2">
+                    <div className="dropdown text-center">
+                      <button className="btn btn-change dropdown-toggle" type="button" id="dropdownMenuButton1"
+                              data-bs-toggle="dropdown" aria-expanded="false">
+                        <text className="text-custom"> Quelle question ?</text>
+                      </button>
+                      <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {questionList.map((id, index) => (
+                          <li><a className="dropdown-item" href="#" onClick={() => addcond(answer, id)}>
+                            <text className="text-custom">Question n°{id}</text></a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/*Numerical conditions of the current question*/}
+      <div className="border-bottom m-0 p-0 text-center">
+        <button className="btn btn-change m-auto p-2 my-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNumConditions"
+                aria-expanded="false" aria-controls="collapseExample">
+          <text className="text-custom"><i className="fas fa-caret-down"/> Ajouter/Supprimer des conditions numériques <i className="fas fa-caret-down"/> </text>
+        </button>
+        <div className="collapse m-0 p-0" id="collapseNumConditions">
+          <div className="col align-items-center p-2 m-0 border-bottom">
+            {/*Current Numerical condition list display*/}
+            {currentQuestion.cond.num ? currentQuestion.cond.num.map( (num, index) => (
+              <div className="row justify-content-md-center py-2">
+                <div className="col-sm-2 align-items-center my-auto">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{trad_num_var(num.var)}</text>
+                  </div>
+                </div>
+                <div className="col-sm-2 align-items-center my-auto ">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{num.op}</text>
+                  </div>
+                </div>
+                <div className="col-sm-2 align-items-center my-auto ">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{num.val}</text>
+                  </div>
+                </div>
+                <div className="col-sm-2 align-items-center my-auto text-center">
+                  <button className="btn btn-delete" onClick={() => removenum(index)} >
+                    <div className="text-custom" ><i className="fas fa-trash"/></div>
+                  </button>
+                </div>
+              </div>
+            )): null}
+            {/*Add numerical condition section */}
+            <div>
+              {/*Same problem than with other (multi) bootstrap select, must see if another solution. If we switch between checklist 0 question 1 and checklist 1 question 1, problem stay*/}
+              {questionList.map(elm => (
+                elm === currentQuestion.id ? (
+                  <div className="row justify-content-md-center py-2">
+                    <div className="col-sm-2 align-items-center ">
+                      <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quelle variable ?" options={possible_vars} onChange={addtempnumvar}/>
+                    </div>
+                    <div className="col-sm-2 align-items-center ">
+                      <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quel opérateur ?" options={possible_op} onChange={addtempnumop}/>
+                    </div>
+                    <div className="col-sm-2 align-items-center ">
+                      <input type="number" className="form-control text-custom" placeholder="Quelle valeur ?" onChange={addtempnumval}/>
+                    </div>
+                    <div className="col-sm-2 align-items-center text-center">
+                      <button className="btn btn-change w-100 " onClick={() => addnum()} >
+                        <div className="text-custom" >Valider</div>
+                      </button>
+                    </div>
+                  </div>)
+                  : null ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/*Precheck conditions of the current question*/}
+      <div className="border-bottom m-0 p-0 text-center">
+        <button className="btn btn-change m-auto p-2 my-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePreCheck"
+                aria-expanded="false" aria-controls="collapseExample">
+          <text className="text-custom"><i className="fas fa-caret-down"/> Ajouter/Supprimer des conditions pour que la question soit pré-checkée<i className="fas fa-caret-down"/> </text>
+        </button>
+        <div className="collapse m-0 p-0" id="collapsePreCheck">
+          <div className="col align-items-center p-2 m-0 border-bottom">
+            {/*Current PreCheck condition list (and then value) display*/}
+            {currentQuestion.pre_check ? currentQuestion.pre_check.if.map( (pre_check, index) => (
+              <div className="row justify-content-md-center py-2">
+                <div className="col-sm-2 align-items-center my-auto">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{trad_num_var(pre_check.var)}</text>
+                  </div>
+                </div>
+                <div className="col-sm-2 align-items-center my-auto ">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{pre_check.op}</text>
+                  </div>
+                </div>
+                <div className="col-sm-2 align-items-center my-auto ">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{pre_check.val}</text>
+                  </div>
+                </div>
+                <div className="col-sm-2 align-items-center my-auto text-center">
+                  <button className="btn btn-delete" onClick={() => removeprecheck(index)} >
+                    <div className="text-custom" ><i className="fas fa-trash"/></div>
+                  </button>
+                </div>
+              </div>
+            )): null}
+            {currentQuestion.pre_check ? (
+              <div className="row justify-content-md-center py-2">
+                <div className="col-sm-2 align-items-center my-auto ">
+                  <div className="card card-grey shadow-sm text-center">
+                    <text className="text-custom">{trad_answer(currentQuestion.pre_check.then)}</text>
+                  </div>
+                </div>
+              </div>
+            ): null}
+
+
+            {/*Add PreCheck condition and then value section*/}
+            <div>
+              {/*Same problem than with other (multi) bootstrap select, must see if another solution. If we switch between checklist 0 question 1 and checklist 1 question 1, problem stay*/}
+              {questionList.map(elm => (
+                elm === currentQuestion.id ? (
+                  <div>
+                    <div className="row justify-content-md-center py-2">
+                      <div className="col-sm-2 align-items-center ">
+                        <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quelle variable ?" options={possible_vars} onChange={addtempprecheckvar}/>
+                      </div>
+                      <div className="col-sm-2 align-items-center ">
+                        <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quel opérateur ?" options={possible_op} onChange={addtempprecheckop}/>
+                      </div>
+                      <div className="col-sm-2 align-items-center ">
+                        <input type="number" className="form-control text-custom" placeholder="Quelle valeur ?" onChange={addtempprecheckval}/>
+                      </div>
+                      <div className="col-sm-2 align-items-center text-center">
+                        <button className="btn btn-change w-100 " onClick={() => addprecheck()} >
+                          <div className="text-custom" >Valider</div>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="row justify-content-md-center py-2">
+                      <div className="col-sm-2 align-items-center ">
+                        <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quel pre-check ?" options={possible_pre_check} onChange={addtempprecheckthen}/>
+                      </div>
+                    </div>
+                  </div>
+                  )
+                  : null ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       {/*End section of the create box, with remove and import button*/}
       <div className="row align-items-center p-2 m-0">

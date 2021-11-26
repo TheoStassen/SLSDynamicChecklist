@@ -16,7 +16,7 @@ import {ChecklistItem} from "./item.js"
 export default function App() {
 
   /*Function needed (for the moment), to force the components to update because they don't*/
-  const [_, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   /*Main state variables :
   * -checklistId : Id of the current checklist
@@ -65,7 +65,7 @@ export default function App() {
   /* Filter (check of the cond's) of the checklist  initial values (i.e. the questions at the first level of the tree)*/
   let values = null
   if (checklist.values)
-    values = values_filter_cond(checklist.values, isDict, numDict)
+    values = values_filter_cond(checklist.values, isDict, numDict, creationMode)
 
   /* Function that changes the current checklist to the checklist with checklist_id and resets dicts*/
   const swapchecklist = (checklist_id) => {
@@ -75,6 +75,7 @@ export default function App() {
     setResult({})
     setIsDict(init_dict)
     setIsPreCheckDone([])
+    return checklist
   }
 
   /* Return the different components, depending of the mode.
@@ -92,7 +93,7 @@ export default function App() {
               <PatientBox props={{patientList, currentPatient, setCurrentPatient}} />
             }
             {values ? values.map(i => (
-              <ChecklistItem init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} />))
+              <ChecklistItem init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} />))
               :
               null
             }
@@ -117,7 +118,7 @@ export default function App() {
 * (for ex, if item.cond contains {"yes": [1,4]}, we check if isDict["yes"] contains 1 and 4 )
 * + all num conditions
 */
-function values_filter_cond(values, isDict, numDict) {
+function values_filter_cond(values, isDict, numDict, creationMode) {
   return values.filter( item=>
       Object.keys(item.cond).every(
         function(answer){
@@ -126,10 +127,10 @@ function values_filter_cond(values, isDict, numDict) {
           ))
         }
       )
-      && item.cond.num.every(
+      && (creationMode || item.cond.num.every(
         function(elm) {
-          return utils.simple_operation(numDict[elm.var],elm.op, elm.val) }
-      )
+          return !numDict[elm.var] || utils.simple_operation(numDict[elm.var],elm.op, elm.val) }
+      ))
     )
 }
 

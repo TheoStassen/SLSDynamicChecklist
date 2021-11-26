@@ -7,62 +7,62 @@ const checklist_list = [
     checklist_id: 0,
     id: -1,
     num_values:[
-      {var:"Intubation_difficile", val:1},
-      {var:"Diabétique", val:1},
+      {var:"difficult_intubation", val:1},
+      {var:"diabetic", val:1},
     ],
     values:[
       {
         id: 1,
         name: "Intubation Difficile ? ",
-        cond: {"yes":[0], "no":[0], num:[]},
+        cond: {"yes":[], "no":[], num:[]},
         check : ["yes","no","idk"],
-        pre_check : {if:[{var:"Intubation_difficile",op:"=",val:1}],then:"yes"},
+        pre_check : {if:[{var:"difficult_intubation",op:"=",val:1}],then:"yes"},
         values: [
           {
             id: 2,
             name: "A confirmer l'incubation difficile",
-            cond: {"yes":[0], "no": [0], "idk" : [1], num:[]},
+            cond: {"yes":[], "no": [], "idk" : [1], num:[]},
             check : ["yes","no"],
             values: []
           },
           {
             id: 3,
             name: "2ème Anesthésiste",
-            cond: {"yes":[1], "no":[0], num:[]},
+            cond: {"yes":[1], "no":[], num:[]},
             check : ["yes","no"],
             values: []
           },
           {
             id: 4,
             name: "2ème Infirmière",
-            cond: {"yes":[1], "no":[0], num:[]},
+            cond: {"yes":[1], "no":[], num:[]},
             check : ["yes","no"],
             values: []
           },
           {
             id: 5,
             name: "Matériel",
-            cond: {"yes":[1], "no":[0], num:[]},
+            cond: {"yes":[1], "no":[], num:[]},
             check : [],
             values: [
               {
                 id: 6,
                 name: "Glidescope",
-                cond: {"yes":[1], "no":[0], num:[]},
+                cond: {"yes":[1], "no":[], num:[]},
                 check : ["yes","no"],
                 values: []
               },
               {
                 id: 7,
                 name: "Laryngoscope",
-                cond: {"yes":[1], "no":[0], num:[]},
+                cond: {"yes":[1], "no":[], num:[]},
                 check : ["yes","no"],
                 values: []
               },
               {
                 id: 8,
                 name: "Set Trachéo",
-                cond: {"yes":[1], "no":[0], num:[]},
+                cond: {"yes":[1], "no":[], num:[]},
                 check : ["yes","no"],
                 values: []
               },
@@ -71,7 +71,7 @@ const checklist_list = [
           {
             id: 9,
             name: "Protocole",
-            cond: {"yes":[1], "no":[0], num:[]},
+            cond: {"yes":[1], "no":[], num:[]},
             check : ["yes","no"],
             values: []
           },
@@ -81,40 +81,40 @@ const checklist_list = [
         id: 10,
         name: "Est-elle susceptible d'être enceinte ?",
         comment: "(Les données patient nous indiquent que la patiente est âgée entre 15 et 60 ans)",
-        cond: {"yes":[0], "no":[0], num:[{var:"yearofbirth",op:">",val:1960}, {var:"gender",op:"=",val:"F"}]},
+        cond: {"yes":[], "no":[], num:[{var:"yearofbirth",op:">",val:1960}, {var:"gender",op:"=",val:"F"}]},
         check : ["yes","no"],
         values: [
           {
             id: 11,
             name: "Arrêt des rêgles depuis ?",
-            cond: {"yes":[10], "no":[0], num:[]},
+            cond: {"yes":[10], "no":[], num:[]},
             check : ["text"],
             values: []
           },
           {
             id: 12,
             name: "Test disponible ?",
-            cond: {"yes":[10], "no":[0], num:[]},
+            cond: {"yes":[10], "no":[], num:[]},
             check : ["yes","no"],
             values: [
               {
                 id: 13,
                 name: "Négatif ?",
-                cond: {"yes":[12], "no":[0], num:[]},
+                cond: {"yes":[12], "no":[], num:[]},
                 check : ["yes", "no"],
                 values: []
               },
               {
                 id: 14,
                 name: "Faire test maintenant ?",
-                cond: {"yes":[0], "no":[12], num:[]},
+                cond: {"yes":[], "no":[12], num:[]},
                 check : ["yes", "no"],
                 values: []
               },
               {
                 id: 15,
                 name: "Postposer l'intervention ?",
-                cond: {"yes":[0], "no":[12], num:[]},
+                cond: {"yes":[], "no":[12], num:[]},
                 check : ["yes", "no"],
                 values: []
               },
@@ -125,20 +125,20 @@ const checklist_list = [
       {
         id: 16,
         name: "Le patient est-il diabétique ?",
-        cond: {"yes":[0], "no":[0], num:[]},
+        cond: {"yes":[], "no":[], num:[]},
         check : ["yes","no"],
-        pre_check : {if:[{var:"Diabétique",op:"=",val:1}],then:"yes"},
+        pre_check : {if:[{var:"diabetic",op:"=",val:1}],then:"yes"},
         values: [
           {
             id: 17,
             name: "Traitement Oral ?",
-            cond: {"yes":[16], "no":[0], num:[]},
-            check : ["ok", "not_ok"],
+            cond: {"yes":[16], "no":[], num:[]},
+            check : ["yes", "no"],
             values: [
               {
                 id: 18,
                 name: "Arrêt des médicaments ?",
-                cond: {"ok":[17], "no":[0], num:[]},
+                cond: {"yes":[17], "no":[], num:[]},
                 check : ["yes", "no"],
                 values: []
               }
@@ -153,7 +153,7 @@ const checklist_list = [
               {
                 id: 20,
                 name: "Dernière piqure le ? ",
-                cond : {"yes":[19], "no":[0], num:[]},
+                cond : {"yes":[19], "no":[], num:[]},
                 check: ["text"],
                 values: []
               }
@@ -173,10 +173,17 @@ const checklist_list = [
     values:[
       {
         id: 1,
-        name: "Intubation Difficile ? ",
-        cond: {"yes": [0], "no": [0], num: []},
+        name: "Intubation ? ",
+        cond: {"yes": [], "no": [], num: []},
         check: ["yes", "no", "?"],
         pre_check: {if: [{var: "Intubation_difficile", op: "=", val: 1}], then: "yes"},
+        values: []
+      },
+      {
+        id: 2,
+        name: "Test ? ",
+        cond: {"yes": [], "no": [], num: []},
+        check: ["yes", "no", "?"],
         values: []
       }
     ]

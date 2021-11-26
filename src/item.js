@@ -8,7 +8,7 @@ import React from "react";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond }) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode}) {
 
   let [isDict, setIsDict, numDict, result, setResult, isPreCheckDone, setIsPreCheckDone] = dicts
 
@@ -57,7 +57,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   let children = null;
   let values = null;
   if (item.values)
-    values = values_filter_cond(item.values, isDict, numDict)
+    values = values_filter_cond(item.values, isDict, numDict, creationMode)
 
   /*We create the children components of the current item*/
   if (values && values.length) {

@@ -64,8 +64,8 @@ function AppNavbar ({props}) {
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav">
             <a className="nav-link active" aria-current="page" href="#"><text className="text-custom" onClick={deactivatecreditmode}>Page d'accueil</text></a>
-            <a className="nav-link" href="#"><text className="text-custom" onClick={import_csv_result}>Importer la checklist</text></a>
-            <a className="nav-link" href="#"><text className="text-custom" onClick={image_download}>Importer la signature</text></a>
+            <a className="nav-link" href="#" onClick={import_csv_result}><text className="text-custom">Importer la checklist</text></a>
+            <a className="nav-link" href="#" onClick={image_download}><text className="text-custom">Importer la signature</text></a>
             {/*Navbar checklist selection dropdown link*/}
             <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -78,9 +78,9 @@ function AppNavbar ({props}) {
                 ))}
               </ul>
             </li>
-            <a className="nav-link" href="#"><text className="text-custom" onClick={activatecreatemode}>Activer le mode Création</text></a>
-            <a className="nav-link" href="#"><text className="text-custom" onClick={deactivatecreatemode}>Désactiver le mode Création</text></a>
-            <a className="nav-link" href="#"><text className="text-custom" onClick={activatecreditmode}>A propos</text></a>
+            <a className="nav-link" href="#" onClick={activatecreatemode}><text className="text-custom">Activer le mode Création</text></a>
+            <a className="nav-link" href="#" onClick={deactivatecreatemode}><text className="text-custom">Désactiver le mode Création</text></a>
+            <a className="nav-link" href="#" onClick={activatecreditmode}><text className="text-custom">A propos</text></a>
           </div>
         </div>
       </div>

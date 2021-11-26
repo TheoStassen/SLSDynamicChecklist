@@ -90,6 +90,28 @@ background: linear-gradient(90deg, rgba(177,177,177,1) 0%, rgba(204,204,204,0.87
     border-color: #c1c1c1;
 }
 
+.btn-grey{
+    background-color: #e2e2e2;
+    border-color: #c1c1c1
+}
+.btn-light{
+    background-color: white;
+}
+
+.btn-delete{
+    background-color: #ee8e68;
+    border-color: #c1c1c1
+}
+
+.dropdown-item.active{
+    background-color: #e2e2e2;
+    color : black;
+}
+
+.btn-outline-secondary{
+    background-color: #e2e2e2;
+}
+
 
 .card-grey{
     background-color: #e2e2e2;
@@ -129,6 +151,12 @@ background: linear-gradient(90deg, rgba(177,177,177,1) 0%, rgba(204,204,204,0.87
 background-color: #f5f5f5;
 }
 
-.col-custom{
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+
+  border-top: 5px solid black;
 }
 
