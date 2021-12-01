@@ -29,7 +29,7 @@ function AppSignature ({props}) {
         <div className="col-sm-3 m-0 p-0 text-center">
           <div className="card card-grey shadow-sm mx-4" >
             <div className="card-body">
-              <text className="text-custom">Veuillez rentrer votre signature : </text>
+              <div className="text-custom">Veuillez rentrer votre signature : </div>
             </div>
           </div>
         </div>
@@ -44,14 +44,14 @@ function AppSignature ({props}) {
         <div className="col-md-auto mx-2 p-0">
           {/*Button to validate the current signature and put info into data*/}
           <div className="row align-items-center p-0 m-0 w-100 mb-2">
-            <button type="button" className="btn btn-val shadow-sm">
-              <text className="text-custom" onClick={trim_canvas}>Valider la signature</text>
+            <button type="button" className="btn btn-val shadow-sm text-custom" onClick={trim_canvas}>
+              Valider la signature
             </button>
           </div>
           {/*Button to clean the current signature canvas and remove info in data*/}
           <div className=" row align-items-center p-0 m-0 h-100">
-            <button type="button" className="btn btn-change shadow-sm">
-            <text className="text-custom" onClick={reinit_canvas}>Réinitialiser</text>
+            <button type="button" className="btn btn-change shadow-sm text-custom"onClick={reinit_canvas}>
+              Réinitialiser
             </button>
           </div>
         </div>

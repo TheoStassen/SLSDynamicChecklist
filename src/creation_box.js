@@ -1,7 +1,7 @@
 import BootstrapSelect from "react-bootstrap-select-dropdown";
 import * as utils from "./utils";
 import React, {useState} from "react";
-import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var} from "./utils";
+import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, checklist_to_json} from "./utils";
 
 /* Component for the creation mode box
 * -checklist: current checklist (state variable)
@@ -33,7 +33,7 @@ function CreateBox ({props}) {
   let [tempPreCheck, setTempPreCheck] = useState({})
 
 
-  console.log("main", currentQuestion)
+  // console.log("main", currentQuestion)
 
   /* Make the complete list of questions of the current checklist*/
   let questionList = [];
@@ -87,13 +87,13 @@ function CreateBox ({props}) {
   construct_possible_pre_check()
 
 
-  /*Set state variables*/
-  function set_elements () {
-    setCurrentQuestion(currentQuestion)
-    setCurrentParentQuestion(currentParentQuestion)
-    setChecklist(checklist)
-    setChecklistList(checklistList)
-  }
+  // /*Set state variables*/
+  // function set_elements () {
+  //   setCurrentQuestion(currentQuestion)
+  //   setCurrentParentQuestion(currentParentQuestion)
+  //   setChecklist(checklist)
+  //   setChecklistList(checklistList)
+  // }
 
   /*Reinitialize the current question, which means taking the first question of the current checklist as current question*/
   function reinit_current_question (checklist) {
@@ -124,7 +124,7 @@ function CreateBox ({props}) {
   */
   function removequestion (){
     currentParentQuestion.values = currentParentQuestion.values.filter(e => e.id !== currentQuestion.id)
-    set_elements()
+    //set_elements()
     reinit_current_question(checklist)
   }
 
@@ -142,31 +142,40 @@ function CreateBox ({props}) {
         values: [],
       }
     checklist.values.push(new_empty_question)
-    set_elements()
+    //set_elements()
     searchquestion(checklist, null, last_id+1)
   }
 
-  /*Move the current question to another position (the last child of the question with id), we reset the cond for now */
-  function movecurrentquestion (id){
-    let currentQuestionCopy = {...currentQuestion}
-    currentQuestionCopy.cond = {"yes":[id], "no":[], num:[]}
-    removequestion()
-    searchquestion(checklist, null, id)
-    currentQuestion.values.push(currentQuestionCopy)
-    set_elements()
-    searchquestion(checklist, null, currentQuestionCopy.id)
-    forceUpdate()
+  function check_id(item, id){
+    return item.id === id || (item.values.length && item.values.every(value => check_id(value)))
   }
 
-  /*Change the position of the current question, between it siblings*/
-  function changepositionquestion (new_position){
-     let currentQuestionCopy = {...currentQuestion}
-     removequestion()
-    searchquestion(checklist, null, currentParentQuestion.id)
-    currentQuestion.values.splice(new_position,0,currentQuestionCopy)
-    set_elements()
-    searchquestion(checklist, null, currentQuestionCopy.id)
-    forceUpdate()
+  /*Move the current question to another position (the last child of the question with id), we reset the cond for now */
+  function movecurrentquestion_sibling (id){
+    if (!check_id(currentQuestion, id)) {
+      let currentQuestionCopy = {...currentQuestion}
+      removequestion()
+      searchquestion(checklist, null, id)
+      let chosen_question_position = currentParentQuestion.values.findIndex(elm => elm.id === id)
+      currentQuestionCopy.cond = {"yes": [], "no": [], num: []}
+      currentParentQuestion.values.splice(chosen_question_position + 1, 0, currentQuestionCopy)
+      //set_elements()
+      searchquestion(checklist, null, currentQuestionCopy.id)
+      forceUpdate()
+    }
+  }
+
+  function movecurrentquestion_child (id){
+    if (!check_id(currentQuestion, id)) {
+      let currentQuestionCopy = {...currentQuestion}
+      currentQuestionCopy.cond = {"yes":[], "no":[], num:[]}
+      removequestion()
+      searchquestion(checklist, null, id)
+      currentQuestion.values.splice(0,0,currentQuestionCopy)
+      //set_elements()
+      searchquestion(checklist, null, currentQuestionCopy.id)
+      forceUpdate()
+    }
   }
 
   /*Modify the current name*/
@@ -178,7 +187,8 @@ function CreateBox ({props}) {
   /*Update the current question name*/
   const updatename = () => {
     currentQuestion.name = currentName
-    set_elements()
+    setCurrentQuestion(currentQuestion)
+    forceUpdate()
   }
 
     /*Modify the current name*/
@@ -193,7 +203,7 @@ function CreateBox ({props}) {
       currentQuestion.comment = currentComment
     else
       delete currentQuestion.comment
-    set_elements()
+    forceUpdate()
   }
 
   /*Change the check array of the current question, containing the possible answers*/
@@ -234,7 +244,8 @@ function CreateBox ({props}) {
     console.log(checklistList)
     setChecklistId(checklistList[0].checklist_id)
     checklist = checklistList[0]
-    set_elements()
+    setChecklist(checklist)
+    setChecklistList(checklistList)
     reinit_current_question(checklist)
   }
 
@@ -249,7 +260,7 @@ function CreateBox ({props}) {
   const addcond = (answer, id) => {
     currentQuestion.cond[answer].push(id)
     setCurrentQuestion(currentQuestion)
-    set_elements()
+    // //set_elements()
     forceUpdate()
   }
 
@@ -258,7 +269,7 @@ function CreateBox ({props}) {
     currentQuestion.cond[answer] = currentQuestion.cond[answer].filter(elm => elm !== id)
     console.log(currentQuestion)
     setCurrentQuestion(currentQuestion)
-    set_elements()
+    //set_elements()
     forceUpdate()
   }
 
@@ -289,7 +300,7 @@ function CreateBox ({props}) {
     if (tempNums.var && tempNums.op && tempNums.val) {
       currentQuestion.cond.num.push({var: tempNums.var, op: tempNums.op, val: tempNums.val})
       setCurrentQuestion(currentQuestion)
-      set_elements()
+      //set_elements()
       forceUpdate()
     }
   }
@@ -300,7 +311,7 @@ function CreateBox ({props}) {
     currentQuestion.cond.num.splice(index,1)
     console.log(currentQuestion.cond.num)
     setCurrentQuestion(currentQuestion)
-    set_elements()
+    //set_elements()
     forceUpdate()
   }
 
@@ -342,7 +353,7 @@ function CreateBox ({props}) {
       currentQuestion.pre_check.then = tempPreCheck.then
       currentQuestion.pre_check.if.push({var: tempPreCheck.var, op: tempPreCheck.op, val: tempPreCheck.val})
       setCurrentQuestion(currentQuestion)
-      set_elements()
+      //set_elements()
       forceUpdate()
     }
   }
@@ -355,7 +366,7 @@ function CreateBox ({props}) {
       currentQuestion.pre_check = null
     console.log(currentQuestion.cond.num)
     setCurrentQuestion(currentQuestion)
-    set_elements()
+    //set_elements()
     forceUpdate()
   }
 
@@ -367,7 +378,7 @@ function CreateBox ({props}) {
       {/*Title text*/}
       <div className="card card-grey text-center mb-2 ">
         <div className="card-body">
-          <h5 className="card-title"><text className="text-custom">Mode Création </text></h5>
+          <h5 className="card-title"><div className="text-custom">Mode Création </div></h5>
           <p className="card-text text-custom m-0">Vous pouvez ajouter, supprimer, modifier des checklists et des questions ici.</p>
           <p className="card-text text-custom">La checklist modifiée s'affiche en dessous.</p>
         </div>
@@ -378,17 +389,17 @@ function CreateBox ({props}) {
         {/*Checklist selection dropdown*/}
         <div className="col align-items-center ">
           <div className="dropdown text-center">
-            <button className="btn btn-val dropdown-toggle" type="button" id="dropdownMenuButton1"
+            <button className="btn btn-val dropdown-toggle text-custom" type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
-              <text className="text-custom"> Sélectionnez la checklist</text>
+              Sélectionnez la checklist
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               {/*Add a checklist (and select it)*/}
-              <li><a className="dropdown-item" href="#" onClick={function(event){ addchecklist(); forceUpdate()}}><text className="text-custom">Nouvelle checklist</text></a></li>
+              <li><label className="dropdown-item text-custom" onClick={function(event){ addchecklist(); forceUpdate()}}>Nouvelle checklist</label></li>
               {/*Select an existing checklist*/}
-              {checklistList.map(i => (
-                <li><a className="dropdown-item" href="#" onClick={() => swapchecklist_creation_mode(i.checklist_id)}>
-                  <text className="text-custom">Checklist n°{i.checklist_id}</text></a>
+              {checklistList.map((i, index) => (
+                <li key={index}><label className="dropdown-item text-custom" onClick={() => swapchecklist_creation_mode(i.checklist_id)}>
+                  Checklist n°{i.checklist_id}</label>
                 </li>
               ))}
             </ul>
@@ -396,30 +407,30 @@ function CreateBox ({props}) {
         </div>
         {/*Checklist show*/}
         <div className="col align-items-center p-2">
-          <div className="card card-grey text-center shadow-sm">
-            <text className="text-custom">Checklist n°{checklistId} </text>
+          <div className="card card-grey text-center shadow-sm text-custom">
+            Checklist n°{checklistId}
           </div>
         </div>
         {/*Question show*/}
         <div className="col align-items-center p-2">
-          <div className="card card-grey text-center shadow-sm">
-            <text className="text-custom">Question n°{currentQuestion.id}</text>
+          <div className="card card-grey text-center shadow-sm text-custom">
+            Question n°{currentQuestion.id}
           </div>
         </div>
         {/*Checklist selection dropdown*/}
         <div className="col align-items-center ">
           <div className="dropdown text-center">
-            <button className="btn btn-val dropdown-toggle " type="button" id="dropdownMenuButton1"
+            <button className="btn btn-val dropdown-toggle text-custom " type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
-              <text className="text-custom "> Sélectionnez la question</text>
+              Sélectionnez la question
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               {/*Add a question (and select it)*/}
-              <li><a className="dropdown-item" href="#" onClick={function(event){ addnewquestion(); forceUpdate()}}><text className="text-custom">Nouvelle question</text></a></li>
+              <li><label className="dropdown-item text-custom" onClick={function(event){ addnewquestion(); forceUpdate()}}>Nouvelle question</label></li>
               {/*Select an existing checklist*/}
-              {questionList.map(i => (
-                <li><a className="dropdown-item" href="#" onClick={function(){searchquestion(checklist, null, i)}}>
-                  <text className="text-custom">Question n°{i}</text></a>
+              {questionList.map((i, index) => (
+                <li key={index}><label className="dropdown-item text-custom" onClick={function(){searchquestion(checklist, null, i)}}>
+                  Question n°{i}</label>
                 </li>
               ))}
             </ul>
@@ -430,17 +441,17 @@ function CreateBox ({props}) {
       {/*Question Name selection*/}
       <div className="row align-items-center p-2 m-0 border-bottom">
         {/*Information text*/}
-        <div className="col-sm-4 align-items-center ">
-          <text className="text-custom"> Nom de la question : </text>
+        <div className="col-sm-4 align-items-center text-custom">
+          Nom de la question :
         </div>
         {/*Question name text input */}
         <div className="col-sm-4 align-items-center">
           <input className="card w-100 text-custom" type = "text " aria-label="text input" value={currentName} onChange={modifyname}/>
         </div>
         {/*Question name validation button*/}
-        <div className="col-sm-4 align-items-center p-0 text-center">
-          <button className="btn btn-change" >
-            <text className="text-custom" onClick={function(event){ updatename(); forceUpdate()}}>Valider le nom</text>
+        <div className="col-sm-4 align-items-center p-0 text-center ">
+          <button className="btn btn-change text-custom" onClick={ () => updatename()}>
+            Valider le nom
           </button>
         </div>
       </div>
@@ -448,45 +459,45 @@ function CreateBox ({props}) {
       {/*Question Comment selection*/}
       <div className="row align-items-center p-2 m-0 border-bottom">
         {/*Information text*/}
-        <div className="col-sm-4 align-items-center ">
-          <text className="text-custom"> Commentaire (optionnel) de la question : </text>
+        <div className="col-sm-4 align-items-center text-custom ">
+          Commentaire (optionnel) de la question :
         </div>
         {/*Question comment text input */}
-        <div className="col-sm-4 align-items-center">
-          <textarea className="form-control" id="exampleFormControlTextarea1" rows="2" value={currentComment} onChange={modifycomment}/>
+        <div className="col-sm-4 align-items-center text-custom">
+          <textarea className="form-control" id="exampleFormControlTextarea1" rows="2" value={currentComment ? currentComment:""} onChange={modifycomment}/>
         </div>
         {/*Question comment validation button*/}
         <div className="col-sm-4 align-items-center p-0 text-center">
-          <button className="btn btn-change" onClick={function(event){ updatecomment(); forceUpdate()}}>
-            <text className="text-custom" >Valider le commentaire</text>
+          <button className="btn btn-change text-custom" onClick={function(event){ updatecomment(); forceUpdate()}}>
+            Valider le commentaire
           </button>
         </div>
       </div>
 
-      {/*Question Position (at which question the current question must be put as last child ?)*/}
+      {/*Question Position (below which question the current question must be put)*/}
       <div className="row align-items-center p-2 m-0 border-bottom">
         {/*Information text*/}
-        <div className="col-sm-4 align-items-center">
-          <text className="text-custom">Souhaitez vous placer la question à la suite d'une autre ? : </text>
+        <div className="col-sm-4 align-items-center text-custom">
+          Placer la question à la suite d'une autre :
         </div>
         <div className="col-sm-4 align-items-center">
         </div>
         {/*Other question as parent selection dropdown*/}
         <div className="col-sm-4 align-items-center p-0 text-center">
           <div className="dropdown text-center">
-            <button className="btn btn-change dropdown-toggle" type="button" id="dropdownMenuButton1"
+            <button className="btn btn-change dropdown-toggle text-custom" type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
-              <text className="text-custom"> A la suite de quelle question ?</text>
+              Quelle question ?
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               {/*Put the question at top level*/}
-              <li><a className="dropdown-item" href="#" onClick={() => movecurrentquestion(-1)}>
-                  <text className="text-custom">Aucune</text></a>
+              <li><label className="dropdown-item text-custom" onClick={() => movecurrentquestion_sibling(-1)}>
+                Aucune</label>
                 </li>
               {/*Put the question at child of another question*/}
-              {questionList.map(i => (
-                <li><a className="dropdown-item" href="#" onClick={() => movecurrentquestion(i)}>
-                  <text className="text-custom">Question n°{i}</text></a>
+              {questionList.map((i, index) => (
+                <li key={index}><label className="dropdown-item text-custom" onClick={() => movecurrentquestion_sibling(i)}>
+                  Question n°{i}</label>
                 </li>
               ))}
             </ul>
@@ -494,26 +505,30 @@ function CreateBox ({props}) {
         </div>
       </div>
 
-      {/*Question position (between it siblings)*/}
+      {/*Question situation (child or sibling of the upper question)*/}
       <div className="row align-items-center p-2 m-0 border-bottom">
         {/*Information text*/}
-        <div className="col-sm-4 align-items-center">
-          <text className="text-custom">Sélectionnez la position de la question : </text>
+        <div className="col-sm-4 align-items-center text-custom">
+          Placer la question comme découlant d'une autre :
         </div>
         <div className="col-sm-4 align-items-center">
         </div>
-        {/*Position of question selection dropdown*/}
+        {/*Choice between child and sibling*/}
         <div className="col-sm-4 align-items-center p-0 text-center">
           <div className="dropdown text-center">
-            <button className="btn btn-change dropdown-toggle" type="button" id="dropdownMenuButton1"
+            <button className="btn btn-change dropdown-toggle text-custom" type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
-              <text className="text-custom"> Quelle position ?</text>
+              Quelle question ?
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              {/*Put the question at this position*/}
-              {currentParentQuestion.values.map((value, index) => (
-                <li><a className="dropdown-item" href="#" onClick={() => changepositionquestion(index)}>
-                  <text className="text-custom">Question n°{value.id}</text></a>
+              {/*Put the question at top level*/}
+              <li><label className="dropdown-item text-custom" onClick={() => movecurrentquestion_child(-1)}>
+                Aucune</label>
+                </li>
+              {/*Put the question at child of another question*/}
+              {questionList.map((i, index) => (
+                <li key={index}><label className="dropdown-item text-custom" onClick={() => movecurrentquestion_child(i)}>
+                  Question n°{i}</label>
                 </li>
               ))}
             </ul>
@@ -524,8 +539,8 @@ function CreateBox ({props}) {
       {/*(Multi)selection of answers of the current question*/}
       <div className="row align-items-center p-2 m-0 border-bottom">
         {/*Information text*/}
-        <div className="col-sm-4 align-items-center">
-          <text className="text-custom">Quelles réponses possibles ? : </text>
+        <div className="col-sm-4 align-items-center text-custom">
+          Quelles réponses possibles ? :
         </div>
         <div className="col-sm-4 align-items-center">
         </div>
@@ -533,8 +548,8 @@ function CreateBox ({props}) {
         -> For now, the only solution i found to have the dropdown reset correctly when question switch is have one separate dropdown for each question, but only one shown
         -> clearly not optimal (but big problem when doing the simple way : the current selection of answers is not reset when question switch and component update -> very annoying*/}
         <div className="col-sm-4 align-items-center p-0 text-center">
-          {questionList.map(elm => (
-            elm === currentQuestion.id ? <BootstrapSelect options={possible_answers} isMultiSelect={true} placeholder="Aucune" onChange={changecheck} onClose={forceUpdate}/>: null
+          {questionList.map((elm, index) => (
+            elm === currentQuestion.id ? <BootstrapSelect key={index} className="w-100 text-custom" options={possible_answers} isMultiSelect={true} placeholder="Aucune" onChange={changecheck} onClose={forceUpdate}/>: null
           ))}
           {/*Simple way*/}
           {/*<BootstrapSelect options={possible_options} isMultiSelect={true} placeholder="Aucune" onChange={changecheck} onClose={forceUpdate}/>*/}
@@ -543,29 +558,29 @@ function CreateBox ({props}) {
 
       {/*Question conditions of the current question (optional part, so it needs to be collapsable)*/}
       <div className="border-bottom m-0 p-0 text-center">
-        <button className="btn btn-change m-auto p-2 my-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestionConditions"
+        <button className="btn btn-change m-auto p-2 my-2 text-custom" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestionConditions"
                 aria-expanded="false" aria-controls="collapseExample">
-          <text className="text-custom"> <i className="fas fa-caret-down"/>Ajouter/Supprimer des conditions sur les autres questions <i className="fas fa-caret-down"/> </text>
+          + Ajouter/Supprimer des conditions sur les autres questions +
         </button>
         <div className="collapse m-0 p-0" id="collapseQuestionConditions">
           <div className="row align-items-center p-2 m-0">
-            <div className="col-sm-3 align-items-center">
-              <text className="text-custom">Quelles conditions sur les réponses ? : </text>
+            <div className="col-sm-3 align-items-center text-custom">
+              Quelles conditions sur les réponses ? :
             </div>
             <div className="col-sm-9 align-items-center">
-              {utils.list_possible_answer.map(answer => (
-                <div className="row">
+              {utils.list_possible_answer.map((answer, index) => (
+                <div key={index} className="row">
                   <div className="col align-items-center p-2 my-auto">
-                    <div className="card card-grey text-center shadow-sm m-0 ">
-                      <text className="text-custom">{trad_answer(answer)}</text>
+                    <div className="card card-grey text-center shadow-sm m-0  text-custom">
+                      {trad_answer(answer)}
                     </div>
                   </div>
                   <div className="col align-items-center p-2">
                     <div className="input-group m-0">
                       {/*For each possible answer, if in item.check, we put a checkbox*/}
-                      {currentQuestion.cond[answer] ? currentQuestion.cond[answer].map( id => (
-                        <div className="input-group-prepend">
-                          <button className="btn btn-outline-secondary" type="button" onClick={() => deletecond(answer, id)} ><text className="text-custom">{id}</text> </button>
+                      {currentQuestion.cond[answer] ? currentQuestion.cond[answer].map( (id, index) => (
+                        <div key={index} className="input-group-prepend">
+                          <button className="btn btn-outline-secondary text-custom" type="button" onClick={() => deletecond(answer, id)} >{id} </button>
                         </div>
                       )): null}
                     </div>
@@ -573,14 +588,14 @@ function CreateBox ({props}) {
                   </div>
                   <div className="col align-items-center p-2">
                     <div className="dropdown text-center">
-                      <button className="btn btn-change dropdown-toggle" type="button" id="dropdownMenuButton1"
+                      <button className="btn btn-change dropdown-toggle text-custom" type="button" id="dropdownMenuButton1"
                               data-bs-toggle="dropdown" aria-expanded="false">
-                        <text className="text-custom"> Quelle question ?</text>
+                        Quelle question ?
                       </button>
                       <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         {questionList.map((id, index) => (
-                          <li><a className="dropdown-item" href="#" onClick={() => addcond(answer, id)}>
-                            <text className="text-custom">Question n°{id}</text></a>
+                          <li key={index}><label className="dropdown-item text-custom" onClick={() => addcond(answer, id)}>
+                            Question n°{id}</label>
                           </li>
                         ))}
                       </ul>
@@ -595,33 +610,33 @@ function CreateBox ({props}) {
 
       {/*Numerical conditions of the current question*/}
       <div className="border-bottom m-0 p-0 text-center">
-        <button className="btn btn-change m-auto p-2 my-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNumConditions"
+        <button className="btn btn-change m-auto p-2 my-2 text-custom" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNumConditions"
                 aria-expanded="false" aria-controls="collapseExample">
-          <text className="text-custom"><i className="fas fa-caret-down"/> Ajouter/Supprimer des conditions numériques <i className="fas fa-caret-down"/> </text>
+          + Ajouter/Supprimer des conditions numériques +
         </button>
         <div className="collapse m-0 p-0" id="collapseNumConditions">
           <div className="col align-items-center p-2 m-0 border-bottom">
             {/*Current Numerical condition list display*/}
             {currentQuestion.cond.num ? currentQuestion.cond.num.map( (num, index) => (
-              <div className="row justify-content-md-center py-2">
+              <div  key={index} className="row justify-content-md-center py-2">
                 <div className="col-sm-2 align-items-center my-auto">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{trad_num_var(num.var)}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {trad_num_var(num.var)}
                   </div>
                 </div>
                 <div className="col-sm-2 align-items-center my-auto ">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{num.op}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {num.op}
                   </div>
                 </div>
                 <div className="col-sm-2 align-items-center my-auto ">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{num.val}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {num.val}
                   </div>
                 </div>
                 <div className="col-sm-2 align-items-center my-auto text-center">
-                  <button className="btn btn-delete" onClick={() => removenum(index)} >
-                    <div className="text-custom" ><i className="fas fa-trash"/></div>
+                  <button className="btn btn-delete text-custom" onClick={() => removenum(index)} >
+                    x
                   </button>
                 </div>
               </div>
@@ -629,9 +644,9 @@ function CreateBox ({props}) {
             {/*Add numerical condition section */}
             <div>
               {/*Same problem than with other (multi) bootstrap select, must see if another solution. If we switch between checklist 0 question 1 and checklist 1 question 1, problem stay*/}
-              {questionList.map(elm => (
+              {questionList.map((elm, index) => (
                 elm === currentQuestion.id ? (
-                  <div className="row justify-content-md-center py-2">
+                  <div  key={index} className="row justify-content-md-center py-2">
                     <div className="col-sm-2 align-items-center ">
                       <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quelle variable ?" options={possible_vars} onChange={addtempnumvar}/>
                     </div>
@@ -642,8 +657,8 @@ function CreateBox ({props}) {
                       <input type="number" className="form-control text-custom" placeholder="Quelle valeur ?" onChange={addtempnumval}/>
                     </div>
                     <div className="col-sm-2 align-items-center text-center">
-                      <button className="btn btn-change w-100 " onClick={() => addnum()} >
-                        <div className="text-custom" >Valider</div>
+                      <button className="btn btn-change w-100 text-custom" onClick={() => addnum()} >
+                        Valider
                       </button>
                     </div>
                   </div>)
@@ -655,33 +670,33 @@ function CreateBox ({props}) {
 
       {/*Precheck conditions of the current question*/}
       <div className="border-bottom m-0 p-0 text-center">
-        <button className="btn btn-change m-auto p-2 my-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePreCheck"
+        <button className="btn btn-change m-auto p-2 my-2 text-custom" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePreCheck"
                 aria-expanded="false" aria-controls="collapseExample">
-          <text className="text-custom"><i className="fas fa-caret-down"/> Ajouter/Supprimer des conditions pour que la question soit pré-checkée<i className="fas fa-caret-down"/> </text>
+          + Ajouter/Supprimer des conditions pour que la question soit pré-checkée +
         </button>
         <div className="collapse m-0 p-0" id="collapsePreCheck">
           <div className="col align-items-center p-2 m-0 border-bottom">
             {/*Current PreCheck condition list (and then value) display*/}
             {currentQuestion.pre_check ? currentQuestion.pre_check.if.map( (pre_check, index) => (
-              <div className="row justify-content-md-center py-2">
+              <div  key={index} className="row justify-content-md-center py-2">
                 <div className="col-sm-2 align-items-center my-auto">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{trad_num_var(pre_check.var)}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {trad_num_var(pre_check.var)}
                   </div>
                 </div>
                 <div className="col-sm-2 align-items-center my-auto ">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{pre_check.op}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {pre_check.op}
                   </div>
                 </div>
                 <div className="col-sm-2 align-items-center my-auto ">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{pre_check.val}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {pre_check.val}
                   </div>
                 </div>
                 <div className="col-sm-2 align-items-center my-auto text-center">
-                  <button className="btn btn-delete" onClick={() => removeprecheck(index)} >
-                    <div className="text-custom" ><i className="fas fa-trash"/></div>
+                  <button className="btn btn-delete text-custom" onClick={() => removeprecheck(index)} >
+                    x
                   </button>
                 </div>
               </div>
@@ -689,8 +704,8 @@ function CreateBox ({props}) {
             {currentQuestion.pre_check ? (
               <div className="row justify-content-md-center py-2">
                 <div className="col-sm-2 align-items-center my-auto ">
-                  <div className="card card-grey shadow-sm text-center">
-                    <text className="text-custom">{trad_answer(currentQuestion.pre_check.then)}</text>
+                  <div className="card card-grey shadow-sm text-center text-custom">
+                    {trad_answer(currentQuestion.pre_check.then)}
                   </div>
                 </div>
               </div>
@@ -700,9 +715,9 @@ function CreateBox ({props}) {
             {/*Add PreCheck condition and then value section*/}
             <div>
               {/*Same problem than with other (multi) bootstrap select, must see if another solution. If we switch between checklist 0 question 1 and checklist 1 question 1, problem stay*/}
-              {questionList.map(elm => (
+              {questionList.map((elm, index) => (
                 elm === currentQuestion.id ? (
-                  <div>
+                  <div key={index}>
                     <div className="row justify-content-md-center py-2">
                       <div className="col-sm-2 align-items-center ">
                         <BootstrapSelect className="w-100 text-custom" selectStyle="btn btn-light border" placeholder="Quelle variable ?" options={possible_vars} onChange={addtempprecheckvar}/>
@@ -714,8 +729,8 @@ function CreateBox ({props}) {
                         <input type="number" className="form-control text-custom" placeholder="Quelle valeur ?" onChange={addtempprecheckval}/>
                       </div>
                       <div className="col-sm-2 align-items-center text-center">
-                        <button className="btn btn-change w-100 " onClick={() => addprecheck()} >
-                          <div className="text-custom" >Valider</div>
+                        <button className="btn btn-change w-100  text-custom" onClick={() => addprecheck()} >
+                          Valider
                         </button>
                       </div>
                     </div>
@@ -737,20 +752,20 @@ function CreateBox ({props}) {
       <div className="row align-items-center p-2 m-0">
         {/*Button to remove the current checklist*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-change " >
-            <text className="text-custom" onClick={function(event){ removechecklist(); forceUpdate()}}>Supprimer la checklist</text>
+          <button className="btn btn-change text-custom " onClick={removechecklist} >
+            Supprimer la checklist
           </button>
         </div>
         {/*Button to import in .json the list of checklist*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-change " >
-            <text className="text-custom" onClick={() => utils.checklist_to_json(checklistList)}>Sauvegarder la liste de checklists</text>
+          <button className="btn btn-change text-custom " onClick={() => checklist_to_json(checklistList)}>
+            Sauvegarder la liste de checklists
           </button>
         </div>
         {/*Button to remove the current question*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-change " >
-            <text className="text-custom" onClick={function(event){ removequestion(); forceUpdate()}}>Supprimer la question</text>
+          <button className="btn btn-change text-custom" onClick={removequestion}>
+            Supprimer la question
           </button>
         </div>
       </div>

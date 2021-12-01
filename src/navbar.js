@@ -54,33 +54,33 @@ function AppNavbar ({props}) {
     <nav className="navbar navbar-expand-lg navbar-light border-bottom border-light shadow-sm mb-4">
       <div className="container-fluid">
         {/*Navbar Title*/}
-        <a className="navbar-brand" href="#" onClick={deactivatecreditmode}><text className="text-custom text-title">SLS</text></a>
+        <label className="navbar-brand text-custom text-title" onClick={deactivatecreditmode}>SLS</label>
         {/*Navbar Toggler button*/}
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        <label className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
-        </button>
+        </label>
         {/*Navbar links*/}
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav">
-            <a className="nav-link active" aria-current="page" href="#"><text className="text-custom" onClick={deactivatecreditmode}>Page d'accueil</text></a>
-            <a className="nav-link" href="#" onClick={import_csv_result}><text className="text-custom">Importer la checklist</text></a>
-            <a className="nav-link" href="#" onClick={image_download}><text className="text-custom">Importer la signature</text></a>
+            <label className="nav-link active text-custom" aria-current="page" onClick={deactivatecreditmode}>Page d'accueil</label>
+            <label className="nav-link text-custom" onClick={import_csv_result}>Importer la checklist</label>
+            <label className="nav-link text-custom" onClick={image_download}>Importer la signature</label>
             {/*Navbar checklist selection dropdown link*/}
             <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+              <label className="nav-link dropdown-toggle text-custom" id="navbarDropdown" role="button"
                  data-bs-toggle="dropdown" aria-expanded="false">
-                <text className="text-custom">Liste des checklists disponibles</text>
-              </a>
+                Liste des checklists disponibles
+              </label>
               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                {checklistList.map(i => (
-                  <li><a className="dropdown-item" href="#" onClick={() => swapchecklist(i.checklist_id)}><text className="text-custom">Checklist n°{i.checklist_id}</text></a></li>
+                {checklistList.map((i, index) => (
+                  <li key={index}><label className="dropdown-item text-custom" onClick={() => swapchecklist(i.checklist_id)}>Checklist n°{i.checklist_id}</label></li>
                 ))}
               </ul>
             </li>
-            <a className="nav-link" href="#" onClick={activatecreatemode}><text className="text-custom">Activer le mode Création</text></a>
-            <a className="nav-link" href="#" onClick={deactivatecreatemode}><text className="text-custom">Désactiver le mode Création</text></a>
-            <a className="nav-link" href="#" onClick={activatecreditmode}><text className="text-custom">A propos</text></a>
+            <label className="nav-link text-custom"  onClick={activatecreatemode}>Activer le mode Création</label>
+            <label className="nav-link text-custom" onClick={deactivatecreatemode}>Désactiver le mode Création</label>
+            <label className="nav-link text-custom" onClick={activatecreditmode}>A propos</label>
           </div>
         </div>
       </div>

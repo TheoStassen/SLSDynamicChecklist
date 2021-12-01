@@ -28,7 +28,7 @@ export default function App() {
   * */
   let [checklistId, setChecklistId] = useState(0)
   let [checklistList, setChecklistList] = useState(temp_data.checklist_list)
-  let [patientList, setPatientList] = useState(temp_data.patients)
+  let [patientList, ] = useState(temp_data.patients)
   let [currentPatient, setCurrentPatient] = useState(patientList[0])
   let [checklist, setChecklist] = useState(checklistList.filter(e => e.checklist_id === checklistId)[0])
   let [result, setResult] = useState({})
@@ -78,6 +78,11 @@ export default function App() {
     return checklist
   }
 
+  // console.log("app")
+  // console.log("isPreCheckDone", isPreCheckDone)
+  // console.log("isDict", isDict)
+  // console.log("result", result)
+
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
@@ -92,8 +97,8 @@ export default function App() {
               :
               <PatientBox props={{patientList, currentPatient, setCurrentPatient}} />
             }
-            {values ? values.map(i => (
-              <ChecklistItem init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} />))
+            {values ? values.map((i, index) => (
+              <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} />))
               :
               null
             }
@@ -106,7 +111,7 @@ export default function App() {
       </div>
       <div>
         <nav className="navbar navbar-hidden">
-          <a className="navbar-brand" href="#">{null}</a>
+          <label className="navbar-brand">{null}</label>
         </nav>
       </div>
     </div>

@@ -47,8 +47,9 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /* If the item as pre check conditions and his precheck as not already been made,
   * we check the condition in 'pre_check.if' and if it passes, we do as if the 'pre_check.then' answer was clicked
   */
+
   if(item.pre_check && !isPreCheckDone.includes(item.id)){
-    if (item.pre_check.if.every(function (item){ return utils.simple_operation(numDict[item.var],item.op, item.val);})){
+    if (item.pre_check.if.every(function (elm){ return utils.simple_operation(numDict[elm.var],elm.op, elm.val);})){
       handleOnChangeIs(item.pre_check.then); isPreCheckDone.push(item.id); setIsPreCheckDone(isPreCheckDone);
     }
   }
@@ -63,12 +64,17 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   if (values && values.length) {
     children = (
       <ul className="mb-0">
-        {values.map(i => (
-          <ChecklistItem init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}/>
+        {values.map((i, index) => (
+          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}/>
         ))}
       </ul>
     );
   }
+
+
+  // console.log("Item return", item)
+  // console.log("isDict", isDict["yes"][10])
+  // console.log("result", result)
 
   /*We return the different elements of the current item, and also his children*/
   return (
@@ -79,8 +85,8 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         {/*Item Id*/}
         <div className="col-sm-1 m-0 p-0 w-auto">
           <div className="card card-grey text-center w-100 shadow-sm" >
-            <div className="card-body">
-              <text>{item.id}</text>
+            <div className="card-body  text-custom">
+              {item.id}
             </div>
           </div>
         </div>
@@ -90,14 +96,14 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           {/*Item comment (above the item name)*/}
           {item.comment ? (
             <div className="alert alert-info m-0 mt-0 align- shadow-sm" role="alert">
-              <p className="mb-0"> <text className="text-custom">{item.comment}</text> </p>
+              <p className="mb-0  text-custom"> {item.comment} </p>
             </div>
             ) : null
           }
           {/*Item name*/}
           <div className="card w-100 shadow-sm" >
-            <div className="card-body">
-              <text className="text-custom">{item.name}</text>
+            <div className="card-body text-custom">
+              {item.name}
             </div>
           </div>
         </div>
@@ -107,18 +113,16 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         <div className="col-md-auto">
           <div className="input-group ">
             {/*For each possible answer, if in item.check, we put a checkbox*/}
-            {utils.list_possible_answer.map(answer => (
+            {utils.list_possible_answer.map((answer, index) => (
               item.check.includes(answer) ? (
-              <div className="input-group-prepend ">
-                <div className="input-group-text shadow">
-                  <text className="text-custom">
-                    <input type="checkbox"
-                           aria-label="Checkbox"
-                           checked={isDict[answer][item.id]}
-                           onChange={function(event){handleOnChangeIs(answer); forceUpdate()}}
-                    />
-                      &nbsp;{utils.trad_answer(answer)}
-                  </text>
+              <div  key={index} className="input-group-prepend ">
+                <div className="input-group-text shadow  text-custom">
+                  <input type="checkbox"
+                         aria-label="Checkbox"
+                         checked={isDict[answer][item.id] ? 1:0}
+                         onChange={function(event){handleOnChangeIs(answer); forceUpdate()}}
+                  />
+                  &nbsp;{utils.trad_answer(answer)}
                 </div>
               </div>
               ) : null
@@ -127,9 +131,11 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
             {item.check.includes("text") ? (
             <div className="input-group-prepend">
               <div className="input-group-text">
-                  <input type = "text"
-                         aria-label="text input"
-                         onChange={handleOnChangeText}
+                  <input
+                    className="card w-100 text-custom"
+                    type = "text"
+                    aria-label="text input"
+                    onChange={handleOnChangeText}
                   />
               </div>
             </div>

@@ -20,26 +20,26 @@ function PatientBox ({props}) {
     <div className="container p-2 container-custom border border-2 shadow-sm">
       <div className="row align-items-center p-2 m-0">
         {/*Indication text*/}
-        <div className="col-sm-4 align-items-center ">
-          <text className="text-custom"> Patient Actuel : </text>
+        <div className="col-sm-4 align-items-center text-custom ">
+          Patient Actuel :
         </div>
         {/*Current patient name*/}
         <div className="col-sm-4 align-items-center ">
-          <div className="card card-grey text-center shadow-sm">
-            <text className="text-custom">{currentPatient.name}</text>
+          <div className="card card-grey text-center shadow-sm text-custom">
+            {currentPatient.name}
           </div>
         </div>
         {/*Current patient selection dropdown*/}
         <div className="col-sm-4 align-items-center ">
           <div className="dropdown text-center">
-            <button className="btn btn-val dropdown-toggle" type="button" id="dropdownMenuButton1"
+            <button className="btn btn-val dropdown-toggle text-custom" type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
-              <text className="text-custom"> Sélectionnez le patient</text>
+              Sélectionnez le patient
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              {patientList.map(i => (
-                <li><a className="dropdown-item" href="#" onClick={() => changecurrentpatient(i.id)}>
-                  <text className="text-custom">{i.name}</text></a>
+              {patientList.map((i, index) => (
+                <li key={index}><label className="dropdown-item  text-custom" onClick={() => changecurrentpatient(i.id)}>
+                  {i.name}</label>
                 </li>
               ))}
             </ul>
