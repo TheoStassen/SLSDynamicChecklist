@@ -12,6 +12,12 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
   let [isDict, setIsDict, numDict, result, setResult, isPreCheckDone, setIsPreCheckDone] = dicts
 
+  // console.log(item)
+  // console.log("isDict", isDict)
+  // console.log("result", result)
+  // console.log("isprecheck", isPreCheckDone)
+  // console.log("numdict", numDict)
+
   /* Function triggered when the user click on one answer, we update the isDict and results and clean (remove from isDict and results) questions
   * that must not be visible anymore, because of there cond's */
   const handleOnChangeIs = (answer) => {
@@ -49,7 +55,9 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   */
 
   if(item.pre_check && !isPreCheckDone.includes(item.id)){
+
     if (item.pre_check.if.every(function (elm){ return utils.simple_operation(numDict[elm.var],elm.op, elm.val);})){
+
       handleOnChangeIs(item.pre_check.then); isPreCheckDone.push(item.id); setIsPreCheckDone(isPreCheckDone);
     }
   }
@@ -78,53 +86,48 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
   /*We return the different elements of the current item, and also his children*/
   return (
-    <div className="container m-0 mt-3 p-0 mx-auto">
+    <div className="container p-0 mt-3 px-3 mx-auto">
       {/*Current Item*/}
       <div className="row align-items-center m-0 p-0">
 
         {/*Item Id*/}
-        <div className="col-sm-1 m-0 p-0 w-auto">
-          <div className="card card-grey text-center w-100 shadow-sm" >
-            <div className="card-body  text-custom">
+        <div className="col list-group list-group-horizontal m-0 p-0 w-auto">
+          <div className="list-group-item m-0 p-0  bg-info text-center shadow-sm my-auto" >
+            <h5 className="card-body p-auto ">
               {item.id}
-            </div>
+            </h5>
           </div>
-        </div>
 
-        {/*Item body*/}
-        <div className="col m-0 p-0 ">
-          {/*Item comment (above the item name)*/}
-          {item.comment ? (
-            <div className="alert alert-info m-0 mt-0 align- shadow-sm" role="alert">
-              <p className="mb-0  text-custom"> {item.comment} </p>
-            </div>
-            ) : null
-          }
           {/*Item name*/}
-          <div className="card w-100 shadow-sm" >
-            <div className="card-body text-custom">
+          <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark"  >
+              {item.comment ? (
+                <div className="alert alert-info m-0 mt-0 border-0 text-primary my-auto" role="alert">
+                  {item.comment}
+                </div>
+              ) : null}
+            <div className="card-body my-auto">
               {item.name}
             </div>
+            {/*Item comment (above the item name)*/}
           </div>
+
         </div>
 
         {/*Item answers (if any, if not empty col)*/}
         {item.check.length ? (
-        <div className="col-md-auto">
-          <div className="input-group ">
+        <div className="col-md-auto p-0 pl-3">
+          <div className="list-group list-group-horizontal ">
             {/*For each possible answer, if in item.check, we put a checkbox*/}
             {utils.list_possible_answer.map((answer, index) => (
               item.check.includes(answer) ? (
-              <div  key={index} className="input-group-prepend ">
-                <div className="input-group-text shadow  text-custom">
-                  <input type="checkbox"
+                <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (index === 0 ? " btn-outline-success" : (index === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
+                  <input  type="checkbox"
                          aria-label="Checkbox"
                          checked={isDict[answer][item.id] ? 1:0}
-                         onChange={function(event){handleOnChangeIs(answer); forceUpdate()}}
+                         onChange={function(event) {handleOnChangeIs(answer);forceUpdate()}}
                   />
                   &nbsp;{utils.trad_answer(answer)}
-                </div>
-              </div>
+                </label>
               ) : null
             ))}
             {/*If item answers must contain text, put a text input*/}
@@ -142,7 +145,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
             ) : null }
           </div>
         </div>
-        ) : <div className="col-sm-8"> {null} </div>}
+        ) : <div className="col-sm-6"> {null} </div>}
       </div>
       {/*Children of the current item*/}
       {children}

@@ -23,34 +23,32 @@ function AppSignature ({props}) {
 
   /*Return the signature elements*/
   return (
-    <div className="container mt-5 mx-auto p-0 container-custom">
+    <div className="container iq-card mt-5">
       <div className="row align-items-center p-0 m-0 h-100">
         {/*Information text*/}
-        <div className="col-sm-3 m-0 p-0 text-center">
-          <div className="card card-grey shadow-sm mx-4" >
-            <div className="card-body">
-              <div className="text-custom">Veuillez rentrer votre signature : </div>
+        <div className="col-sm-3 m-0 p-0 text-center text-dark">
+          Veuillez rentrer votre signature :
+        </div>
+        {/*Signature pad component, receiving the signature*/}
+        <div className="col m-0 p-0 h-100 py-2 ">
+          <div className="container iq-card m-0 bg-light border">
+            <div className="sigContainer">
+              <SignaturePad canvasProps={{className: "sigPad"}}
+                ref={(ref) => { sigpad = ref }} />
             </div>
           </div>
         </div>
-        {/*Signature pad component, receiving the signature*/}
-        <div className="col m-0 p-0 h-100 ">
-          <div className="sigContainer">
-            <SignaturePad canvasProps={{className: "sigPad"}}
-              ref={(ref) => { sigpad = ref }} />
-          </div>
-        </div>
         {/*Validation and Reinitialisation buttons*/}
-        <div className="col-md-auto mx-2 p-0">
+        <div className="col-sm-3 mx-2 p-0">
           {/*Button to validate the current signature and put info into data*/}
-          <div className="row align-items-center p-0 m-0 w-100 mb-2">
-            <button type="button" className="btn btn-val shadow-sm text-custom" onClick={trim_canvas}>
+          <div className="row align-items-center p-0 m-0 mb-2 px-4">
+            <button type="button" className="btn btn-primary w-100" onClick={trim_canvas}>
               Valider la signature
             </button>
           </div>
           {/*Button to clean the current signature canvas and remove info in data*/}
-          <div className=" row align-items-center p-0 m-0 h-100">
-            <button type="button" className="btn btn-change shadow-sm text-custom"onClick={reinit_canvas}>
+          <div className=" row align-items-center p-0 m-0 px-4">
+            <button type="button" className="btn btn-warning text-dark w-100" onClick={reinit_canvas}>
               Réinitialiser
             </button>
           </div>

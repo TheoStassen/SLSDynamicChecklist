@@ -2,13 +2,13 @@
 
 
 /*We consider a constant list of all possible answers to a question*/
-const list_possible_answer = ["yes","no","idk","ok","not_ok"]
-const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","not_ok":"Non OK"}
+const list_possible_answer = ["yes","no","idk","ok","not_ok", "normal", "anormal"]
+const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","not_ok":"Non OK", "normal":"Normal", "anormal":"Anormal",}
 
 const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender"]
 const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre"}
 
-const list_possible_op = ["<",">","="]
+const list_possible_op = ["<",">","=","est"]
 
 
 /*Function to translate an answer into mountable french version*/
@@ -29,6 +29,7 @@ const simple_operation = (val1, string_op, val2) => {
     case ">" : return val1 > val2;
     case "<" : return val1 < val2;
     case "=" : return val1 === val2 ;
+    case "est" : return val1 === val2;
     default: return true;
   }
 }

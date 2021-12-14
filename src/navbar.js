@@ -51,40 +51,46 @@ function AppNavbar ({props}) {
 
   /*Return the different elements of the navbar*/
   return (
-    <nav className="navbar navbar-expand-lg navbar-light border-bottom border-light shadow-sm mb-4">
-      <div className="container-fluid">
-        {/*Navbar Title*/}
-        <label className="navbar-brand text-custom text-title" onClick={deactivatecreditmode}>SLS</label>
-        {/*Navbar Toggler button*/}
-        <label className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </label>
-        {/*Navbar links*/}
-        <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div className="navbar-nav">
-            <label className="nav-link active text-custom" aria-current="page" onClick={deactivatecreditmode}>Page d'accueil</label>
-            <label className="nav-link text-custom" onClick={import_csv_result}>Importer la checklist</label>
-            <label className="nav-link text-custom" onClick={image_download}>Importer la signature</label>
-            {/*Navbar checklist selection dropdown link*/}
-            <li className="nav-item dropdown">
-              <label className="nav-link dropdown-toggle text-custom" id="navbarDropdown" role="button"
-                 data-bs-toggle="dropdown" aria-expanded="false">
-                Liste des checklists disponibles
-              </label>
-              <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                {checklistList.map((i, index) => (
-                  <li key={index}><label className="dropdown-item text-custom" onClick={() => swapchecklist(i.checklist_id)}>Checklist n°{i.checklist_id}</label></li>
-                ))}
-              </ul>
-            </li>
-            <label className="nav-link text-custom"  onClick={activatecreatemode}>Activer le mode Création</label>
-            <label className="nav-link text-custom" onClick={deactivatecreatemode}>Désactiver le mode Création</label>
-            <label className="nav-link text-custom" onClick={activatecreditmode}>A propos</label>
+    <div className="iq-top-navbar h-auto " >
+      <div className="iq-navbar-custom py-2">
+        <nav className="navbar navbar-expand-lg navbar-light p-0">
+          {/*Navbar Title*/}
+          <div className="navbar-brand pl-4">
+            <a href="#" onClick={deactivatecreditmode}>
+              <span>SLS</span>
+            </a>
           </div>
-        </div>
+          {/*/!*Navbar Toggler button*!/*/}
+          <label className="navbar-toggler p-0 m-0" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                  aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </label>
+          {/*/!*Navbar links*!/*/}
+          <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div className="navbar-nav  p-2 pl-4">
+              <label className="nav-link active m-0" aria-current="page" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={deactivatecreditmode}>Page d'accueil</label>
+              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={import_csv_result}>Importer la checklist</label>
+              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={image_download}>Importer la signature</label>
+              {/*Navbar checklist selection dropdown link*/}
+              <li className="nav-item dropdown">
+                <label className="nav-link dropdown-toggle m-0" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-expanded="false">
+                  Liste des checklists disponibles
+                </label>
+                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  {checklistList.map((i, index) => (
+                    <li key={index}><label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => swapchecklist(i.checklist_id)}>Checklist n°{i.checklist_id}</label></li>
+                  ))}
+                </ul>
+              </li>
+              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show"  onClick={activatecreatemode}>Activer le mode Création</label>
+              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={deactivatecreatemode}>Désactiver le mode Création</label>
+              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={activatecreditmode}>A propos</label>
+            </div>
+          </div>
+        </nav>
       </div>
-    </nav>
+    </div>
   )
 }
 

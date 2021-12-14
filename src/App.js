@@ -8,11 +8,19 @@ import {CreateBox} from "./creation_box.js"
 import {Credits} from "./credits.js"
 import {PatientBox} from "./patient_box.js"
 import {ChecklistItem} from "./item.js"
+import {SectionTitle} from "./section_title.js";
 
 /*Main Function
 * -Declare all the variables needed in different component
 * -Return a combination of different components (Navbar, CreateBox, Credits, PatientBox, ChecklistItem(s), Signature)
 * */
+
+function date_to_age (date){
+  let result = date.split("/")
+  let current_year = new Date()
+  return current_year.getFullYear() - result[2]
+}
+
 export default function App() {
 
   /*Function needed (for the moment), to force the components to update because they don't*/
@@ -52,19 +60,24 @@ export default function App() {
   utils.list_possible_answer.forEach(function (answer){init_dict[answer]={0:true}})
   const [isDict, setIsDict] = useState(init_dict)
 
+  // console.log("init_dict", init_dict)
+
 
   /* Fill in of numDict, containing all the numerical data (the way current patient info is extracted will be improved)*/
-  let num_values = checklist.num_values
+  let num_values = checklist ? checklist.num_values : []
   let numDict = {}
   num_values.forEach(function(elm) {numDict[elm.var] = elm.val})
-  numDict["yearofbirth"] = currentPatient.yearofbirth
-  numDict["gender"] = currentPatient.gender
+
+  for (const [key, value] of Object.entries(currentPatient)) {
+    numDict[key] = value
+  }
+  numDict["age"] = date_to_age(numDict["dateofbirth"])
 
   let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone ]
 
   /* Filter (check of the cond's) of the checklist  initial values (i.e. the questions at the first level of the tree)*/
   let values = null
-  if (checklist.values)
+  if (checklist && checklist.values)
     values = values_filter_cond(checklist.values, isDict, numDict, creationMode)
 
   /* Function that changes the current checklist to the checklist with checklist_id and resets dicts*/
@@ -73,8 +86,11 @@ export default function App() {
     checklist = checklistList.filter(e => e.checklist_id === checklist_id)[0]
     setChecklist(checklist)
     setResult({})
+    let init_dict = {}
+    utils.list_possible_answer.forEach(function (answer){init_dict[answer]={0:true}})
     setIsDict(init_dict)
     setIsPreCheckDone([])
+    console.log("isdict after swapchecklist", isDict)
     return checklist
   }
 
@@ -82,26 +98,32 @@ export default function App() {
   // console.log("isPreCheckDone", isPreCheckDone)
   // console.log("isDict", isDict)
   // console.log("result", result)
+  console.log(values)
 
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
   return (
-    <div>
-      <div className="bg-color-custom min-vh-100">
+    <div className="min-vh-100 content-page iq-bg-info">
+      <div>
         {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, result, checklistList, swapchecklist}}/>}
         {!creditMode ? (
           <div>
             {creationMode ?
-              <CreateBox props={{checklist, setChecklist, swapchecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate}} />
+              <CreateBox props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone}} />
               :
-              <PatientBox props={{patientList, currentPatient, setCurrentPatient}} />
+              <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
             }
-            {values ? values.map((i, index) => (
-              <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} />))
-              :
-              null
-            }
+            <div className="container p-0 border-left border-right border-bottom">
+              {values ? values.map((i, index) => (
+                <div>
+                  {i.section_title ? <SectionTitle section_title={i.section_title} /> : null}
+                  <div className="mb-3"><ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} /></div>
+                </div>))
+                :
+                null
+              }
+            </div>
             {!creationMode ? <AppSignature props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
           </div>
           )
@@ -110,7 +132,7 @@ export default function App() {
         }
       </div>
       <div>
-        <nav className="navbar navbar-hidden">
+        <nav className="navbar">
           <label className="navbar-brand">{null}</label>
         </nav>
       </div>
@@ -124,6 +146,8 @@ export default function App() {
 * + all num conditions
 */
 function values_filter_cond(values, isDict, numDict, creationMode) {
+  // console.log(values)
+  // console.log(isDict)
   return values.filter( item=>
       Object.keys(item.cond).every(
         function(answer){

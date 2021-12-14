@@ -7,16 +7,15 @@ const checklist_list = [
     checklist_id: 0,
     id: -1,
     num_values:[
-      {var:"difficult_intubation", val:1},
-      {var:"diabetic", val:1},
     ],
     values:[
       {
         id: 1,
         name: "Intubation Difficile ? ",
+        section_title : "Vérifications concernant l'intubation difficile",
         cond: {"yes":[], "no":[], num:[]},
         check : ["yes","no","idk"],
-        pre_check : {if:[{var:"difficult_intubation",op:"=",val:1}],then:"yes"},
+        pre_check : {if:[{var:"difficult_intubation",op:"est",val:"vrai"}],then:"yes"},
         values: [
           {
             id: 2,
@@ -80,8 +79,9 @@ const checklist_list = [
       {
         id: 10,
         name: "Est-elle susceptible d'être enceinte ?",
+        section_title : "Vérifications concernant une possible grossesse",
         comment: "(Les données patient nous indiquent que la patiente est âgée entre 15 et 60 ans)",
-        cond: {"yes":[], "no":[], num:[{var:"yearofbirth",op:">",val:1960}, {var:"gender",op:"=",val:"F"}]},
+        cond: {"yes":[], "no":[], num:[{var:"age",op:">",val:15},{var:"age",op:"<",val:60}, {var:"gender",op:"=",val:"F"}]},
         check : ["yes","no"],
         values: [
           {
@@ -125,9 +125,10 @@ const checklist_list = [
       {
         id: 16,
         name: "Le patient est-il diabétique ?",
+        section_title : "Vérification concernant le diabète",
         cond: {"yes":[], "no":[], num:[]},
         check : ["yes","no"],
-        pre_check : {if:[{var:"diabetic",op:"=",val:1}],then:"yes"},
+        pre_check : {if:[{var:"diabetic",op:"est",val:"vrai"}],then:"yes"},
         values: [
           {
             id: 17,
@@ -141,7 +142,7 @@ const checklist_list = [
                 cond: {"yes":[17], "no":[], num:[]},
                 check : ["yes", "no"],
                 values: []
-              }
+              },
             ]
           },
           {
@@ -159,24 +160,75 @@ const checklist_list = [
               }
             ]
           },
+          {
+            id: 21,
+            name: "Glycémie à l'arrivée HJ ?",
+            cond: {"yes":[16], "no":[], num:[]},
+            check : ["normal", "anormal"],
+            values: []
+          },
         ]
+      },
+      {
+        id: 22,
+        name: "Consentement chirugicaux et anéstésiques de père/mère",
+        section_title : "Concernant les consentements parentaux",
+        comment: "Enfant de <15 ans, nécessite les consentement des parents",
+        cond: {"yes":[],"no":[],num:[{var:"age",op:"<",val:15}]},
+        check: [],
+        values: [
+          {
+            id: 23,
+            name: "Consentement chirugical du père",
+            cond: {"yes":[], num:[{var:"age",op:"<",val:15}]},
+            check: ["yes", "no"],
+            values: []
+          },
+          {
+            id: 24,
+            name: "Consentement chirurgical de la mère",
+            cond: {"yes":[], num:[{var:"age",op:"<",val:15}]},
+            check: ["yes", "no"],
+            values: []
+          },
+          {
+            id: 25,
+            name: "Consentement anestésique du père",
+            cond: {"yes":[], num:[{var:"age",op:"<",val:15}]},
+            check: ["yes", "no"],
+            values: []
+          },
+          {
+            id: 26,
+            name: "Consentement anestésique de la mère",
+            cond: {"yes":[], num:[{var:"age",op:"<",val:15}]},
+            check: ["yes", "no"],
+            values: []
+          },
+        ]
+      },
+      {
+        id: 27,
+        name: "Check Vernis à ongle",
+        section_title : "Checks globaux pour anestésie",
+        comment: "Ado/Adulte, nécessite vérification du vernis à ongle",
+        cond: {"yes":[], num:[{var:"age",op:">",val:10}]},
+        check: ["ok", "not_ok"],
+        values: []
       }
     ]
   },
   {
     checklist_id: 1,
     id: -1,
-    num_values:[
-      {var:"Intubation_difficile", val:1},
-      {var:"Diabétique", val:1},
-    ],
+    num_values:[],
     values:[
       {
         id: 1,
         name: "Intubation ? ",
         cond: {"yes": [], "no": [], num: []},
         check: ["yes", "no", "?"],
-        pre_check: {if: [{var: "Intubation_difficile", op: "=", val: 1}], then: "yes"},
+        pre_check: {if: [{var: "difficult_intubation", op: "est", val: "vrai"}], then: "yes"},
         values: []
       },
       {
@@ -192,11 +244,15 @@ const checklist_list = [
 
 /*List of all patients*/
 const patients = [
-  {id: 0, name: "Jean Dupont", gender: "M", yearofbirth: 1970},
-  {id: 1, name: "Robert Edwards", gender: "M", yearofbirth: 1998},
-  {id: 2, name: "Luc Monjeau", gender: "M", yearofbirth: 1965},
-  {id: 3, name: "Eglantine Racine", gender: "F", yearofbirth: 1987},
-  {id: 4, name: "Georgette Cailot", gender: "F", yearofbirth: 1941}
+  {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940", "diabetic":"faux", "difficult_intubation":"vrai"  },
+  {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/1960", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 2, "lastname": "Perlot", "firstname": "Claude", "gender": "M", "dateofbirth": "12/16/1975", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 3, "lastname": "Boulet", "firstname": "Arnaud", "gender": "M", "dateofbirth": "03/17/1981", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 4, "lastname": "Charlier", "firstname": "Emile", "gender": "M", "dateofbirth": "09/19/1953", "diabetic":"faux", "difficult_intubation":"vrai" },
+  {"id": 5, "lastname": "Nash", "firstname": "Emilie", "gender": "F", "dateofbirth": "03/30/2015", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
 ]
 
 
