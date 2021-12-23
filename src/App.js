@@ -9,6 +9,7 @@ import {Credits} from "./credits.js"
 import {PatientBox} from "./patient_box.js"
 import {ChecklistItem} from "./item.js"
 import {SectionTitle} from "./section_title.js";
+import {ValidationButton} from "./validation_button";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -26,6 +27,12 @@ export default function App() {
   /*Function needed (for the moment), to force the components to update because they don't*/
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
+  let checklist_list = []
+  for (let i=0;i<temp_data.checklist_list_array.length;i++){
+    checklist_list.push(utils.checklist_flat_to_tree(temp_data.checklist_list_array[i],i))
+  }
+  console.log(checklist_list)
+
   /*Main state variables :
   * -checklistId : Id of the current checklist
   * -checklistList : List containing the different checklists (from backend, will be a database call)
@@ -35,12 +42,16 @@ export default function App() {
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * */
   let [checklistId, setChecklistId] = useState(0)
-  let [checklistList, setChecklistList] = useState(temp_data.checklist_list)
+  let [checklistList, setChecklistList] = useState(checklist_list)
   let [patientList, ] = useState(temp_data.patients)
   let [currentPatient, setCurrentPatient] = useState(patientList[0])
   let [checklist, setChecklist] = useState(checklistList.filter(e => e.checklist_id === checklistId)[0])
   let [result, setResult] = useState({})
+  let [visibleList, setVisibleList] = useState([])
   let [isPreCheckDone, setIsPreCheckDone] = useState([])
+
+  let [currentQuestion, setCurrentQuestion] = useState(checklist && checklist.values.length ? checklist.values[0] : null)
+
 
   /* Other state variables
   * -creationMode : bool indicates if we are in creation mode
@@ -73,12 +84,17 @@ export default function App() {
   }
   numDict["age"] = date_to_age(numDict["dateofbirth"])
 
-  let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone ]
+
 
   /* Filter (check of the cond's) of the checklist  initial values (i.e. the questions at the first level of the tree)*/
   let values = null
-  if (checklist && checklist.values)
+  visibleList = []
+  if (checklist && checklist.values) {
     values = values_filter_cond(checklist.values, isDict, numDict, creationMode)
+    values.forEach(value => visibleList.push(value.id))
+  }
+
+   let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
 
   /* Function that changes the current checklist to the checklist with checklist_id and resets dicts*/
   const swapchecklist = (checklist_id) => {
@@ -94,11 +110,23 @@ export default function App() {
     return checklist
   }
 
+    /*Create a table containing results and export it as .csv file*/
+  function import_csv_result () {
+    let result_table = [["id", "name", "answer"]]
+    for (const [key, value] of Object.entries(result)){
+      result_table.push([key, value.name, value.answer])
+    }
+    let csvGenerator = new utils.CsvGenerator(result_table, 'my_csv.csv');
+    csvGenerator.download(true);
+  }
+
+
   // console.log("app")
   // console.log("isPreCheckDone", isPreCheckDone)
   // console.log("isDict", isDict)
   // console.log("result", result)
-  console.log(values)
+  console.log(result)
+  console.log(visibleList)
 
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
@@ -106,25 +134,31 @@ export default function App() {
   return (
     <div className="min-vh-100 content-page iq-bg-info">
       <div>
-        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, result, checklistList, swapchecklist}}/>}
+        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, import_csv_result, result}}/>}
         {!creditMode ? (
           <div>
             {creationMode ?
-              <CreateBox props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone}} />
+              <CreateBox props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion}} />
               :
               <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
             }
-            <div className="container p-0 border-left border-right border-bottom">
+            <div className="container p-0 border-bottom border-right border-left border-dark">
               {values ? values.map((i, index) => (
                 <div>
-                  {i.section_title ? <SectionTitle section_title={i.section_title} /> : null}
-                  <div className="mb-3"><ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} /></div>
+                  {i.section_title ? <SectionTitle section_title={i.section_title} /> : <div className="border-top border-dark"/>}
+                  <div className="mb-3 px-3">
+                    <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts}
+                                   forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
+                                   creationMode={creationMode} currentId = {currentQuestion.id} />
+                  </div>
                 </div>))
                 :
                 null
               }
             </div>
+            <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist}/>
             {!creationMode ? <AppSignature props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
+
           </div>
           )
           :
@@ -146,7 +180,7 @@ export default function App() {
 * + all num conditions
 */
 function values_filter_cond(values, isDict, numDict, creationMode) {
-  // console.log(values)
+  console.log(values)
   // console.log(isDict)
   return values.filter( item=>
       Object.keys(item.cond).every(

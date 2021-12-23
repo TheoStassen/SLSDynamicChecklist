@@ -8,9 +8,11 @@ import React from "react";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode}) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId}) {
 
-  let [isDict, setIsDict, numDict, result, setResult, isPreCheckDone, setIsPreCheckDone] = dicts
+
+
+  let [isDict, setIsDict, numDict, result, setResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList] = dicts
 
   // console.log(item)
   // console.log("isDict", isDict)
@@ -65,15 +67,17 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /* Filter (check of the cond's) of the item values (children) */
   let children = null;
   let values = null;
-  if (item.values)
+  if (item.values) {
     values = values_filter_cond(item.values, isDict, numDict, creationMode)
+    values.forEach(value => !visibleList.includes(value.id) && value.check.length ? visibleList.push(value.id) : null)
+  }
 
   /*We create the children components of the current item*/
   if (values && values.length) {
     children = (
       <ul className="mb-0">
         {values.map((i, index) => (
-          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}/>
+          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} />
         ))}
       </ul>
     );
@@ -83,12 +87,14 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   // console.log("Item return", item)
   // console.log("isDict", isDict["yes"][10])
   // console.log("result", result)
+  console.log(result)
+  console.log(visibleList)
 
   /*We return the different elements of the current item, and also his children*/
   return (
-    <div className="container p-0 mt-3 px-3 mx-auto">
+    <div className={"container p-0 mt-3 mx-auto "}>
       {/*Current Item*/}
-      <div className="row align-items-center m-0 p-0">
+      <div id={"question"+item.id} className={"row align-items-center m-0 p-0" + (creationMode && currentId === item.id ? " border border-danger " : " " )}>
 
         {/*Item Id*/}
         <div className="col list-group list-group-horizontal m-0 p-0 w-auto">
@@ -101,7 +107,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           {/*Item name*/}
           <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark"  >
               {item.comment ? (
-                <div className="alert alert-info m-0 mt-0 border-0 text-primary my-auto" role="alert">
+                <div className="alert alert-light m-0 mt-0 border-0 text-primary my-auto" role="alert">
                   {item.comment}
                 </div>
               ) : null}
@@ -118,17 +124,15 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         <div className="col-md-auto p-0 pl-3">
           <div className="list-group list-group-horizontal ">
             {/*For each possible answer, if in item.check, we put a checkbox*/}
-            {utils.list_possible_answer.map((answer, index) => (
-              item.check.includes(answer) ? (
-                <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (index === 0 ? " btn-outline-success" : (index === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
-                  <input  type="checkbox"
-                         aria-label="Checkbox"
-                         checked={isDict[answer][item.id] ? 1:0}
-                         onChange={function(event) {handleOnChangeIs(answer);forceUpdate()}}
-                  />
-                  &nbsp;{utils.trad_answer(answer)}
-                </label>
-              ) : null
+            {item.check.map((answer, index) => (
+              <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
+                <input  type="checkbox"
+                       aria-label="Checkbox"
+                       checked={isDict[answer] && isDict[answer][item.id] ? 1:0}
+                       onChange={function(event) {handleOnChangeIs(answer);forceUpdate()}}
+                />
+                &nbsp;{utils.trad_answer(answer)}
+              </label>
             ))}
             {/*If item answers must contain text, put a text input*/}
             {item.check.includes("text") ? (

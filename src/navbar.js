@@ -11,22 +11,12 @@ import * as utils from "./utils";
 * */
 function AppNavbar ({props}) {
 
-  let {setCreationMode, setCreditMode, trimmedCanvasUrl, result, checklistList, swapchecklist} = props;
+  let {setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, import_csv_result, result} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
     if(trimmedCanvasUrl)
       downloadImage(trimmedCanvasUrl, "image.png");
-  }
-
-  /*Create a table containing results and export it as .csv file*/
-  function import_csv_result () {
-    let result_table = [["id", "name", "answer"]]
-    for (const [key, value] of Object.entries(result)){
-      result_table.push([key, value.name, value.answer])
-    }
-    let csvGenerator = new utils.CsvGenerator(result_table, 'my_csv.csv');
-    csvGenerator.download(true);
   }
 
   /*Activate the creation mode*/

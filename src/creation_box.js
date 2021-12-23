@@ -15,7 +15,7 @@ import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answ
 * */
 function CreateBox ({props}) {
 
-  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone} = props
+  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion} = props
 
   /* State variables used only in creation mode
   * -currentQuestion : the question currently into creation/modification
@@ -24,7 +24,7 @@ function CreateBox ({props}) {
   * -tempNums : the numerical condition values (var, op and val) of the current condition the user is going to add
   * -tempPreChech : the precheck condition values (var, op, val) and then value of the current precheck the user is going to add
   */
-  let [currentQuestion, setCurrentQuestion] = useState(checklist && checklist.values.length ? checklist.values[0] : null)
+
   let [currentParentQuestion, setCurrentParentQuestion] = useState(checklist)
   let [currentName, setCurrentName] = useState(checklist && checklist.values.length ? checklist.values[0].name : " " )
   let [currentComment, setCurrentComment] = useState(checklist && checklist.comment ? checklist.comment : null)
@@ -153,6 +153,7 @@ function CreateBox ({props}) {
         name : "",
         cond: {"yes":[], "no":[], num:[]},
         check : ["yes", "no"],
+        color : [0,1],
         values: [],
       }
     checklist.values.push(new_empty_question)
@@ -224,8 +225,16 @@ function CreateBox ({props}) {
   const changecheck = (selectedOptions) => {
     if (selectedOptions.selectedKey.length){
       currentQuestion.check = selectedOptions.selectedKey
+      let current_colors = currentQuestion.color
+      console.log(current_colors)
+      if (currentQuestion.check.length >= current_colors.length)
+        current_colors = current_colors.concat(new Array(currentQuestion.check.length - current_colors.length).fill(2))
+      else
+        current_colors.splice(currentQuestion.check.length)
+      currentQuestion.color = current_colors
+      console.log(current_colors)
+
       setCurrentQuestion(currentQuestion)
-      console.log("test")
       switchpairindicator()
       forceUpdate()
     }
@@ -244,6 +253,7 @@ function CreateBox ({props}) {
             id: 1,
             name : "",
             check : ["yes","no"],
+            color : [0,1],
             cond: {"yes":[], "no":[], num:[]},
             values: []
           }
@@ -303,9 +313,6 @@ function CreateBox ({props}) {
     tempNums.var = selectedOptions.selectedKey[0]
     setTempNums(tempNums)
 
-    console.log("pairindicator", pairIndicator)
-    console.log(tempNums)
-    switchpairindicator()
     forceUpdate()
   }
   /*Function that update the tempNum.op variable with input*/
@@ -356,7 +363,6 @@ function CreateBox ({props}) {
     tempPreCheck = {}
     tempPreCheck.var = selectedOptions.selectedKey[0]
     setTempPreCheck(tempPreCheck)
-    switchpairindicator()
     forceUpdate()
   }
   /*Function that update the tempPrecheck.op variable with input*/
@@ -429,9 +435,15 @@ function CreateBox ({props}) {
     pairIndicator = (pairIndicator + 1)%4
   }
 
+  const changecolor = (answer, color_id) => {
+    currentQuestion.color[currentQuestion.check.indexOf(answer)] = color_id
+    setCurrentQuestion(currentQuestion)
+    forceUpdate()
+  }
+
   /*Return the create box, with all it elements*/
   return (
-    <div className="container iq-card pt-2 border">
+    <div className="container iq-card pt-2 border border-dark">
 
       {/*Title text*/}
       <div className="iq-card bg-primary text-center mb-2">
@@ -609,11 +621,58 @@ function CreateBox ({props}) {
           </div>
         </div>
 
+        {/*selection of colors of answers of the current question*/}
+        <div className="border-bottom m-0 py-2 text-center">
+          <button className="btn btn-secondary m-auto p-2 my-2 " type="button" data-toggle="collapse" data-target="#collapseColors"
+                  aria-expanded="false" aria-controls="collapseExample">
+            <i className="las la-angle-down"/> Modifier les couleurs des questions <i className="las la-angle-down"/>
+          </button>
+          <div className="collapse m-0 p-0" id="collapseColors">
+            <div className="row align-items-center p-2 m-0 border-bottom">
+              {/*Information text*/}
+              <div className="col-sm-3 align-items-center text-dark ">
+                Avec quelles couleurs ? :
+              </div>
+              <div className="col-sm-9 align-items-center text-center">
+                {currentQuestion.check.map((answer,index) => (
+                  <div key={index} className="row">
+                    <div className="col text-center justify-content-center my-4">
+                      <div className=" iq-card card-grey text-center shadow-sm text-dark m-0">
+                        {utils.trad_answer(answer)}
+                      </div>
+                    </div>
+                    <div className="col text-center justify-content-center my-4">
+                      <div className=" iq-card card-grey text-center shadow-sm text-dark m-0">
+                        {currentQuestion.color[index] === 0 ? "Vert" : currentQuestion.color[index] === 1 ? "Rouge" : "Gris"}
+                      </div>
+                    </div>
+                    <div className="col text-center justify-content-center my-3">
+                      <div className="dropleft text-center">
+                        <button className="btn btn-warning dropdown-toggle m-0 " type="button" id="dropdownMenuButton1"
+                                data-toggle="dropdown" aria-expanded="false">
+                          Quelle couleur ?
+                        </button>
+                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                          {["Vert","Rouge","Gris"].map((color, index) => (
+                            <li key={index}><label className="dropdown-item " onClick={() => changecolor(answer, index)}>
+                              {color}</label>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/*Question conditions of the current question (optional part, so it needs to be collapsable)*/}
         <div className="border-bottom m-0 py-2 text-center">
           <button className="btn btn-secondary m-auto p-2 my-2 " type="button" data-toggle="collapse" data-target="#collapseQuestionConditions"
                   aria-expanded="false" aria-controls="collapseExample">
-            + Ajouter/Supprimer des conditions sur les autres questions +
+            <i className="las la-angle-down"/> Ajouter/Supprimer des conditions sur les autres questions <i className="las la-angle-down"/>
           </button>
           <div className="collapse m-0 p-0" id="collapseQuestionConditions">
             <div className="row align-items-center p-2 m-0">
@@ -663,7 +722,7 @@ function CreateBox ({props}) {
         <div className="border-bottom m-0 py-2 text-center">
           <button className="btn btn-secondary m-auto p-2 my-2 " type="button" data-toggle="collapse" data-target="#collapseNumConditions"
                   aria-expanded="false" aria-controls="collapseExample">
-            + Ajouter/Supprimer des conditions numériques +
+            <i className="las la-angle-down"/> Ajouter/Supprimer des conditions numériques <i className="las la-angle-down"/>
           </button>
           <div className="collapse m-0 p-0" id="collapseNumConditions">
             <div className="col align-items-center p-2 m-0">
@@ -687,7 +746,7 @@ function CreateBox ({props}) {
                   </div>
                   <div className="col-sm-3 align-items-center my-auto text-center">
                     <button className="btn btn-danger " onClick={() => removenum(index)} >
-                      <i className="fa fa-trash-o m-0"></i>
+                      <div data-icon="&#xe053;" className="icon mt-1"/>
                     </button>
                   </div>
                 </div>
@@ -733,7 +792,7 @@ function CreateBox ({props}) {
         <div className="border-bottom m-0 py-2 text-center">
           <button className="btn btn-secondary m-auto p-2 my-2 " type="button" data-toggle="collapse" data-target="#collapsePreCheck"
                   aria-expanded="false" aria-controls="collapseExample">
-            + Ajouter/Supprimer des conditions pour que la question soit pré-checkée +
+            <i className="las la-angle-down"/> Ajouter/Supprimer des conditions pour que la question soit pré-checkée <i className="las la-angle-down"/>
           </button>
           <div className="collapse m-0 p-0" id="collapsePreCheck">
             <div className="col align-items-center p-2 m-0">
@@ -757,7 +816,7 @@ function CreateBox ({props}) {
                   </div>
                   <div className="col-sm-3 align-items-center my-auto text-center">
                     <button className="btn btn-danger " onClick={() => removeprecheck(index)} >
-                      <i className="fa fa-trash-o m-0"></i>
+                      <div data-icon="&#xe053;" className="icon mt-1"/>
                     </button>
                   </div>
                 </div>
@@ -829,19 +888,19 @@ function CreateBox ({props}) {
       <div className="row align-items-center p-2 m-0">
         {/*Button to remove the current checklist*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-warning  " onClick={removechecklist} >
+          <button className="btn btn-danger  " onClick={removechecklist} >
             Supprimer la checklist
           </button>
         </div>
         {/*Button to import in .json the list of checklist*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-warning  " onClick={() => checklist_to_json(checklistList)}>
-            Sauvegarder la liste de checklists
+          <button className="btn btn-warning  " onClick={() =>  utils.checklist_tree_to_flat(checklist)}>
+            Sauvegarder la checklist
           </button>
         </div>
         {/*Button to remove the current question*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-warning " onClick={removequestion}>
+          <button className="btn btn-danger " onClick={removequestion}>
             Supprimer la question
           </button>
         </div>

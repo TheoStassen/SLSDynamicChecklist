@@ -1,4 +1,6 @@
 /*Diverse utility elements*/
+import { Series, DataFrame } from 'pandas-js';
+
 
 
 /*We consider a constant list of all possible answers to a question*/
@@ -8,7 +10,7 @@ const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","n
 const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender"]
 const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre"}
 
-const list_possible_op = ["<",">","=","est"]
+const list_possible_op = ["<",">","="]
 
 
 /*Function to translate an answer into mountable french version*/
@@ -109,7 +111,64 @@ function CsvGenerator(dataArray, fileName, separator, addQuotes) {
     };
 }
 
+function checklist_tree_to_flat(checklist_tree ) {
+    let checklist_array = [["id", "name", "parent_id", "position", "comment", "cond", "check", "color", "pre_check"]]
+    checklist_array = checklist_tree_to_flat_rec(checklist_tree, checklist_array, 0, 0);
+    console.log(checklist_array)
+    let csvGenerator = new CsvGenerator(checklist_array, 'my_csv.csv', ";");
+    csvGenerator.download(true);
+
+    return checklist_array
+}
+
+function checklist_tree_to_flat_rec(item, array, parent_id, position){
+    if (item.id > 0){
+        array.push([item.id, item.name, parent_id, position, item.comment, JSON.stringify(item.cond), JSON.stringify(item.check), JSON.stringify(item.color), JSON.stringify(item.pre_check)])
+    }
+    for (let i=0; i<item.values.length; i++){
+        array = checklist_tree_to_flat_rec(item.values[i], array, item.id, i)
+    }
+    return array
+}
+
+function checklist_flat_to_tree(checklist_array, checklist_id){
+  let root_item = {
+    checklist_id:checklist_id,
+    id:-1,
+    num_values:[],
+    values:[]
+  }
+  return checklist_flat_to_tree_rec(root_item, checklist_array)
+}
+
+function checklist_flat_to_tree_rec(item, array){
+  let child_array = array.filter(elm => elm[2] === item.id)
+  child_array.sort(function(a, b){return a[3] - b[3]})
+  // console.log(array)
+  // console.log(child_array)
+  if (!child_array.length){
+    return item
+  }
+  for (let i=0; i< child_array.length; i++){
+    const elm = child_array[i]
+    let new_item = {
+      id: elm[0],
+      name : JSON.parse(elm[1]),
+      parent_id : elm[2],
+      position : elm[3],
+      comment : JSON.parse(elm[4]),
+      cond : JSON.parse(elm[5]),
+      check : JSON.parse(elm[6]),
+      color : JSON.parse(elm[7]),
+      pre_check : JSON.parse(elm[8]),
+      values:[]
+    }
+    new_item = checklist_flat_to_tree_rec(new_item, array)
+    item.values.push(new_item)
+  }
+  return item
+}
 
 
 
-export {list_possible_answer_trad, list_possible_answer, list_possible_num_var_trad, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, CsvGenerator, simple_operation, checklist_to_json}
+export {list_possible_answer_trad, list_possible_answer, list_possible_num_var_trad, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, CsvGenerator, simple_operation, checklist_to_json, checklist_tree_to_flat, checklist_flat_to_tree}
