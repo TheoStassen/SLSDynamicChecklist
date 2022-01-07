@@ -1,7 +1,8 @@
 import BootstrapSelect from "react-bootstrap-select-dropdown";
 import * as utils from "./utils";
 import React, {useState} from "react";
-import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, checklist_to_json} from "./utils";
+import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, checklist_to_json,} from "./utils";
+import * as temp from "./temporary_data";
 
 /* Component for the creation mode box
 * -checklist: current checklist (state variable)
@@ -27,12 +28,15 @@ function CreateBox ({props}) {
 
   let [currentParentQuestion, setCurrentParentQuestion] = useState(checklist)
   let [currentName, setCurrentName] = useState(checklist && checklist.values.length ? checklist.values[0].name : " " )
-  let [currentComment, setCurrentComment] = useState(checklist && checklist.comment ? checklist.comment : null)
+  let [currentComment, setCurrentComment] = useState(checklist && checklist.values[0].comment ? checklist.values[0].comment : null)
+  let [currentSectionTitle, setCurrentSectionTitle] = useState(checklist && checklist.values[0].section_title ? checklist.values[0].section_title : null)
 
   let [tempNums, setTempNums] = useState({})
   let [tempPreCheck, setTempPreCheck] = useState({})
 
   let [pairIndicator, setPairIndicator] = useState(0)
+
+  let [isAltAnswers, setIsAltAnswers] = useState(false)
 
 
   // console.log("main", currentQuestion)
@@ -50,14 +54,20 @@ function CreateBox ({props}) {
 
   /*Create a list, usable by the select component, of the possible answer*/
   let possible_answers = []
+  let alt_possible_answers = []
   function construct_possible_answers (){
     possible_answers = []
     list_possible_answer.forEach(function(answer){
-      possible_answers.push({
+      if(["text","list"].includes(answer)){
+        alt_possible_answers.push({"labelKey": answer,"value": trad_answer(answer)})
+      }
+      else{
+        possible_answers.push({
           "labelKey": answer,
         "value": trad_answer(answer),
         "isSelected":currentQuestion.check.includes(answer),
-      })
+        })
+      }
     })
   }
   if (currentQuestion) construct_possible_answers()
@@ -92,6 +102,14 @@ function CreateBox ({props}) {
   }
   if (currentQuestion) construct_possible_pre_check()
 
+  let possible_lists = []
+  function construct_possible_lists () {
+    Object.keys(temp.lists).forEach(function (name){
+      possible_lists.push({"labelKey": name, "value": temp.lists_trad[name]})
+    })
+    return possible_lists
+  }
+  if (currentQuestion) construct_possible_lists()
 
   // /*Set state variables*/
   // function set_elements () {
@@ -121,6 +139,7 @@ function CreateBox ({props}) {
       setCurrentName(currentQuestion.name)
       setTempNums({})
       setCurrentComment(currentQuestion.comment)
+      setCurrentSectionTitle(currentQuestion.section_title)
       setPairIndicator(!pairIndicator)
       return currentQuestion
     }
@@ -221,23 +240,46 @@ function CreateBox ({props}) {
     forceUpdate()
   }
 
+  /*Modify the current name*/
+  const modifysectiontitle= (event) => {
+    currentSectionTitle = event.target.value
+    setCurrentSectionTitle(currentSectionTitle)
+  }
+
+  /*Update the current question name*/
+  const updatesectiontitle = () => {
+    if (currentSectionTitle)
+      currentQuestion.section_title = currentSectionTitle
+    else
+      delete currentQuestion.section_title
+    forceUpdate()
+  }
+
   /*Change the check array of the current question, containing the possible answers*/
   const changecheck = (selectedOptions) => {
-    if (selectedOptions.selectedKey.length){
-      currentQuestion.check = selectedOptions.selectedKey
-      let current_colors = currentQuestion.color
-      console.log(current_colors)
-      if (currentQuestion.check.length >= current_colors.length)
-        current_colors = current_colors.concat(new Array(currentQuestion.check.length - current_colors.length).fill(2))
-      else
-        current_colors.splice(currentQuestion.check.length)
-      currentQuestion.color = current_colors
-      console.log(current_colors)
-
+    if (selectedOptions.selectedKey.length) {
+      if (!(selectedOptions.selectedKey.includes("list") || selectedOptions.selectedKey.includes("text"))) {
+        currentQuestion.check = selectedOptions.selectedKey
+        let current_colors = currentQuestion.color
+        if (currentQuestion.check.length >= current_colors.length)
+          current_colors = current_colors.concat(new Array(currentQuestion.check.length - current_colors.length).fill(2))
+        // else
+        //   current_colors.splice(currentQuestion.check.length)
+        currentQuestion.color = current_colors
+      }
+      else if(selectedOptions.selectedKey[0] === "list"){
+        currentQuestion.check = ["list_meds"]
+      }
+      else{
+        currentQuestion.check = selectedOptions.selectedKey
+      }
+    }
+    else{
+      currentQuestion.check = []
+    }
       setCurrentQuestion(currentQuestion)
       switchpairindicator()
       forceUpdate()
-    }
   }
 
   /*Add a checklist (with basic content) to the list of checklist, and switch to this checklist*/
@@ -441,9 +483,20 @@ function CreateBox ({props}) {
     forceUpdate()
   }
 
+  const changelist = (selectedOptions) => {
+    if (selectedOptions.selectedKey.length) {
+      currentQuestion.check = [currentQuestion.check[0].split("_")[0] + "_" + selectedOptions.selectedKey[0]]
+      console.log(currentQuestion.check)
+      setCurrentQuestion(currentQuestion)
+      forceUpdate()
+    }
+  }
+
+  console.log(currentQuestion)
+
   /*Return the create box, with all it elements*/
   return (
-    <div className="container iq-card pt-2 border border-dark">
+    <div className="container iq-card pt-2 border border-dark shadow">
 
       {/*Title text*/}
       <div className="iq-card bg-primary text-center mb-2">
@@ -535,7 +588,7 @@ function CreateBox ({props}) {
           </div>
           {/*Question comment text input */}
           <div className="col-sm-4 align-items-center ">
-            <textarea className="form-control form-control-custom" id="exampleFormControlTextarea1" rows="2" value={currentComment ? currentComment:""} onChange={modifycomment}/>
+            <textarea className="form-control form-control-custom textarea" id="exampleFormControlTextarea1" rows="2" value={currentComment ? currentComment:""} onChange={modifycomment}/>
           </div>
           {/*Question comment validation button*/}
           <div className="col-sm-4 align-items-center p-0 text-center">
@@ -544,6 +597,26 @@ function CreateBox ({props}) {
             </button>
           </div>
         </div>
+
+        {/*Question Section Title selection*/}
+        {currentQuestion.parent_id === -1 ? (
+          <div className="row align-items-center p-2 m-0 border-bottom">
+            {/*Information text*/}
+            <div className="col-sm-4 align-items-center text-dark  ">
+              Nom de section (optionnel) devant la question :
+            </div>
+            {/*Question comment text input */}
+            <div className="col-sm-4 align-items-center ">
+              <textarea className="form-control form-control-custom textarea" id="exampleFormControlTextarea1" rows="2" value={currentSectionTitle ? currentSectionTitle:""} onChange={modifysectiontitle}/>
+            </div>
+            {/*Question comment validation button*/}
+            <div className="col-sm-4 align-items-center p-0 text-center">
+              <button className="btn btn-warning " onClick={function(event){ updatesectiontitle(); forceUpdate()}}>
+                Valider le titre
+              </button>
+            </div>
+          </div>
+        ): null}
 
         {/*Question Position (below which question the current question must be put)*/}
         <div className="row align-items-center p-2 m-0 border-bottom">
@@ -614,59 +687,90 @@ function CreateBox ({props}) {
             Quelles réponses possibles ? :
           </div>
           <div className="col-sm-4 align-items-center">
+
           </div>
           {/*(Multi)Selection dropdown*/}
           <div className="col-sm-4 align-items-center p-0 text-center">
-            <BootstrapSelect key={pairIndicator} className=" w-100 " selectStyle ="btn-warning" options={possible_answers} isMultiSelect={true} placeholder="Aucune" onChange={changecheck}/>
-          </div>
-        </div>
-
-        {/*selection of colors of answers of the current question*/}
-        <div className="border-bottom m-0 py-2 text-center">
-          <button className="btn btn-secondary m-auto p-2 my-2 " type="button" data-toggle="collapse" data-target="#collapseColors"
-                  aria-expanded="false" aria-controls="collapseExample">
-            <i className="las la-angle-down"/> Modifier les couleurs des questions <i className="las la-angle-down"/>
-          </button>
-          <div className="collapse m-0 p-0" id="collapseColors">
-            <div className="row align-items-center p-2 m-0 border-bottom">
-              {/*Information text*/}
-              <div className="col-sm-3 align-items-center text-dark ">
-                Avec quelles couleurs ? :
-              </div>
-              <div className="col-sm-9 align-items-center text-center">
-                {currentQuestion.check.map((answer,index) => (
-                  <div key={index} className="row">
-                    <div className="col text-center justify-content-center my-4">
-                      <div className=" iq-card card-grey text-center shadow-sm text-dark m-0">
-                        {utils.trad_answer(answer)}
-                      </div>
-                    </div>
-                    <div className="col text-center justify-content-center my-4">
-                      <div className=" iq-card card-grey text-center shadow-sm text-dark m-0">
-                        {currentQuestion.color[index] === 0 ? "Vert" : currentQuestion.color[index] === 1 ? "Rouge" : "Gris"}
-                      </div>
-                    </div>
-                    <div className="col text-center justify-content-center my-3">
-                      <div className="dropleft text-center">
-                        <button className="btn btn-warning dropdown-toggle m-0 " type="button" id="dropdownMenuButton1"
-                                data-toggle="dropdown" aria-expanded="false">
-                          Quelle couleur ?
-                        </button>
-                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                          {["Vert","Rouge","Gris"].map((color, index) => (
-                            <li key={index}><label className="dropdown-item " onClick={() => changecolor(answer, index)}>
-                              {color}</label>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="row">
+              {!isAltAnswers ?
+                <BootstrapSelect key={pairIndicator} className=" col w-100 my-auto " selectStyle ="btn-warning" options={possible_answers} isMultiSelect={true} placeholder="Entrer checkboxs" onChange={changecheck}/>
+                :
+                <BootstrapSelect key={!pairIndicator} className=" col w-100 my-auto " selectStyle ="btn-warning" options={alt_possible_answers} isMultiSelect={false} placeholder="Entrer Autres" onChange={changecheck}/>
+              }
+              <button className={"col-sm-2 btn btn-outline-info"} onClick={function (){setIsAltAnswers(!isAltAnswers)}}>
+                <div data-icon="&#xe049;" className="icon mt-1"></div>
+              </button>
             </div>
           </div>
         </div>
+
+        {/*Select of the list (if the answer is list)*/}
+        { currentQuestion.check[0] && currentQuestion.check[0].split("_")[0] === "list" ?
+          <div className="row align-items-center p-2 m-0 border-bottom">
+            {/*Information text*/}
+            <div className="col-sm-4 align-items-center text-dark ">
+              Quelle liste ? :
+            </div>
+            <div className="col-sm-4 align-items-center">
+
+            </div>
+            {/*(Multi)Selection dropdown*/}
+            <div className="col-sm-4 align-items-center p-0 text-center">
+              <div className="row">
+                <BootstrapSelect key={pairIndicator} className=" col w-100 my-auto " selectStyle ="btn-warning" options={possible_lists} isMultiSelect={false} placeholder="Aucune" onChange={changelist}/>
+              </div>
+            </div>
+          </div>
+        : null}
+
+        {/*selection of colors of answers of the current question*/}
+        { !isAltAnswers ?
+          <div className="border-bottom m-0 py-2 text-center">
+            <button className="btn btn-secondary m-auto p-2 my-2 " type="button" data-toggle="collapse" data-target="#collapseColors"
+                    aria-expanded="false" aria-controls="collapseExample">
+              <i className="las la-angle-down"/> Modifier les couleurs des questions <i className="las la-angle-down"/>
+            </button>
+            <div className="collapse m-0 p-0" id="collapseColors">
+              <div className="row align-items-center p-2 m-0 border-bottom">
+                {/*Information text*/}
+                <div className="col-sm-3 align-items-center text-dark ">
+                  Avec quelles couleurs ? :
+                </div>
+                <div className="col-sm-9 align-items-center text-center">
+                  {currentQuestion.check.map((answer,index) => (
+                    <div key={index} className="row">
+                      <div className="col text-center justify-content-center my-4">
+                        <div className=" iq-card card-grey text-center shadow-sm text-dark m-0">
+                          {utils.trad_answer(answer)}
+                        </div>
+                      </div>
+                      <div className="col text-center justify-content-center my-4">
+                        <div className=" iq-card card-grey text-center shadow-sm text-dark m-0">
+                          {currentQuestion.color[index] === 0 ? "Vert" : currentQuestion.color[index] === 1 ? "Rouge" : "Gris"}
+                        </div>
+                      </div>
+                      <div className="col text-center justify-content-center my-3">
+                        <div className="dropleft text-center">
+                          <button className="btn btn-warning dropdown-toggle m-0 " type="button" id="dropdownMenuButton1"
+                                  data-toggle="dropdown" aria-expanded="false">
+                            Quelle couleur ?
+                          </button>
+                          <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            {["Vert","Rouge","Gris"].map((color, index) => (
+                              <li key={index}><label className="dropdown-item " onClick={() => changecolor(answer, index)}>
+                                {color}</label>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        : null}
 
         {/*Question conditions of the current question (optional part, so it needs to be collapsable)*/}
         <div className="border-bottom m-0 py-2 text-center">

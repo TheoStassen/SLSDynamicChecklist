@@ -8,28 +8,29 @@ function check_all_question_answered (visibleList, result){
   )
 }
 
-function search_question_not_answered (visibleList, result){
-  for (let i=0; i<visibleList.length;i=i+1){
-    if(!result[visibleList[i]]){
-      return "question" + (visibleList[i-1])
+
+
+function ValidationButton ({visibleList, result, import_csv_result, checklist, setWarningId}) {
+
+  function search_question_not_answered (visibleList, result, is_set){
+    const visibleListsorted = visibleList.sort(function (elm1,elm2){return elm1>elm2})
+    for (let i=0; i<visibleListsorted.length;i=i+1){
+      if(!result[visibleListsorted[i]]){
+        if (is_set) setWarningId(visibleListsorted[i])
+        return "question" + (visibleListsorted[i-1])
+      }
     }
+    if (is_set) setWarningId(0)
+    return ""
   }
-  return ""
-}
 
-function ValidationButton ({visibleList, result, import_csv_result, checklist}) {
-
-
-  console.log(visibleList, result)
-  console.log(check_all_question_answered(visibleList, result))
-  console.log(search_question_not_answered(visibleList,result))
   return (
-    <div className="container  mt-5 text-center">
-      <a onClick={() => check_all_question_answered(visibleList,result) ? import_csv_result() : null }
-         href={"#"+search_question_not_answered(visibleList, result)}
+    <div className="container iq-card  mt-5 text-center p-2 shadow">
+      <a onClick={() => search_question_not_answered(visibleList, result, true) === "" ? import_csv_result() : null }
+         href={"#" + search_question_not_answered(visibleList, result, false)}
          className=""
       >
-        <button className="btn btn-warning text-center w-100 shadow">
+        <button className="btn btn-warning text-center w-100 rounded b">
           Valider la checklist
         </button>
       </a>

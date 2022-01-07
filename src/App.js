@@ -10,6 +10,7 @@ import {PatientBox} from "./patient_box.js"
 import {ChecklistItem} from "./item.js"
 import {SectionTitle} from "./section_title.js";
 import {ValidationButton} from "./validation_button";
+import {AlertsBox} from "./alerts_box";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -27,11 +28,12 @@ export default function App() {
   /*Function needed (for the moment), to force the components to update because they don't*/
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
+  /*Create the nested version of the cheklist list, using as input the flat version*/
   let checklist_list = []
   for (let i=0;i<temp_data.checklist_list_array.length;i++){
     checklist_list.push(utils.checklist_flat_to_tree(temp_data.checklist_list_array[i],i))
   }
-  console.log(checklist_list)
+
 
   /*Main state variables :
   * -checklistId : Id of the current checklist
@@ -49,6 +51,7 @@ export default function App() {
   let [result, setResult] = useState({})
   let [visibleList, setVisibleList] = useState([])
   let [isPreCheckDone, setIsPreCheckDone] = useState([])
+  let [warningId, setWarningId] = useState(0)
 
   let [currentQuestion, setCurrentQuestion] = useState(checklist && checklist.values.length ? checklist.values[0] : null)
 
@@ -94,7 +97,7 @@ export default function App() {
     values.forEach(value => visibleList.push(value.id))
   }
 
-   let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
+  let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
 
   /* Function that changes the current checklist to the checklist with checklist_id and resets dicts*/
   const swapchecklist = (checklist_id) => {
@@ -140,23 +143,26 @@ export default function App() {
             {creationMode ?
               <CreateBox props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion}} />
               :
-              <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
+              <div>
+                <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
+                <AlertsBox props={{}}/>
+              </div>
             }
-            <div className="container p-0 border-bottom border-right border-left border-dark">
+            <div className="container p-0 border-bottom border border-dark rounded shadow">
               {values ? values.map((i, index) => (
                 <div>
-                  {i.section_title ? <SectionTitle section_title={i.section_title} /> : <div className="border-top border-dark"/>}
+                  {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"" + (index ? "border-dark border-top":"")}/>}
                   <div className="mb-3 px-3">
                     <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts}
                                    forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
-                                   creationMode={creationMode} currentId = {currentQuestion.id} />
+                                   creationMode={creationMode} currentId = {currentQuestion.id} warningId={warningId}/>
                   </div>
                 </div>))
                 :
                 null
               }
             </div>
-            <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist}/>
+            {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId}/> : null }
             {!creationMode ? <AppSignature props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
 
           </div>

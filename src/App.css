@@ -232,3 +232,16 @@ background-color: #f5f5f5;
 .border-danger {
     border-width: 4px !important;
 }
+
+.textarea {
+  line-height: 25px;
+}
+
+.rounded-0-bottom {
+    border-bottom-left-radius : 0 !important;
+    border-bottom-right-radius : 0 !important;
+}
+
+.border-grey{
+    border-color: black;
+}

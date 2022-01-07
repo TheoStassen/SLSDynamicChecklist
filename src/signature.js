@@ -48,7 +48,7 @@ function AppSignature ({props}) {
           </div>
           {/*Button to clean the current signature canvas and remove info in data*/}
           <div className=" row align-items-center p-0 m-0 px-4">
-            <button type="button" className="btn btn-warning text-dark w-100" onClick={reinit_canvas}>
+            <button type="button" className="btn btn-warning w-100" onClick={reinit_canvas}>
               Réinitialiser
             </button>
           </div>

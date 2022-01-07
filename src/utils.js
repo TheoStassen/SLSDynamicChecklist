@@ -4,8 +4,8 @@ import { Series, DataFrame } from 'pandas-js';
 
 
 /*We consider a constant list of all possible answers to a question*/
-const list_possible_answer = ["yes","no","idk","ok","not_ok", "normal", "anormal"]
-const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","not_ok":"Non OK", "normal":"Normal", "anormal":"Anormal",}
+const list_possible_answer = ["yes","no","idk","ok","not_ok", "normal", "anormal", "text", "list"]
+const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","not_ok":"Non OK", "normal":"Normal", "anormal":"Anormal", "text":"Texte", "list":"Liste"}
 
 const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender"]
 const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre"}
@@ -112,7 +112,7 @@ function CsvGenerator(dataArray, fileName, separator, addQuotes) {
 }
 
 function checklist_tree_to_flat(checklist_tree ) {
-    let checklist_array = [["id", "name", "parent_id", "position", "comment", "cond", "check", "color", "pre_check"]]
+    let checklist_array = [["id", "name", "parent_id", "position", "comment", "section_title", "cond", "check", "color", "pre_check"]]
     checklist_array = checklist_tree_to_flat_rec(checklist_tree, checklist_array, 0, 0);
     console.log(checklist_array)
     let csvGenerator = new CsvGenerator(checklist_array, 'my_csv.csv', ";");
@@ -123,7 +123,7 @@ function checklist_tree_to_flat(checklist_tree ) {
 
 function checklist_tree_to_flat_rec(item, array, parent_id, position){
     if (item.id > 0){
-        array.push([item.id, item.name, parent_id, position, item.comment, JSON.stringify(item.cond), JSON.stringify(item.check), JSON.stringify(item.color), JSON.stringify(item.pre_check)])
+        array.push([item.id, item.name, parent_id, position, item.comment, item.section_title, JSON.stringify(item.cond), JSON.stringify(item.check), JSON.stringify(item.color), JSON.stringify(item.pre_check)])
     }
     for (let i=0; i<item.values.length; i++){
         array = checklist_tree_to_flat_rec(item.values[i], array, item.id, i)
@@ -157,10 +157,11 @@ function checklist_flat_to_tree_rec(item, array){
       parent_id : elm[2],
       position : elm[3],
       comment : JSON.parse(elm[4]),
-      cond : JSON.parse(elm[5]),
-      check : JSON.parse(elm[6]),
-      color : JSON.parse(elm[7]),
-      pre_check : JSON.parse(elm[8]),
+      section_title : JSON.parse(elm[5]),
+      cond : JSON.parse(elm[6]),
+      check : JSON.parse(elm[7]),
+      color : JSON.parse(elm[8]),
+      pre_check : JSON.parse(elm[9]),
       values:[]
     }
     new_item = checklist_flat_to_tree_rec(new_item, array)
