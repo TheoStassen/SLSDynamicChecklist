@@ -11,7 +11,7 @@ import * as utils from "./utils";
 * */
 function AppNavbar ({props}) {
 
-  let {setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, import_csv_result, result} = props;
+  let {setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -68,9 +68,9 @@ function AppNavbar ({props}) {
                   Liste des checklists disponibles
                 </label>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  {checklistList.map((i, index) => (
-                    <li key={index}><label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => swapchecklist(i.checklist_id)}>Checklist n°{i.checklist_id}</label></li>
-                  ))}
+                  {checklistList ? checklistList.map((i, index) => (
+                    <li key={index}><label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={function (){swapchecklist(i.checklist_id) } }>{i.name}</label></li>
+                  )): null}
                 </ul>
               </li>
               <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show"  onClick={activatecreatemode}>Activer le mode Création</label>

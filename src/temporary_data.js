@@ -2,7 +2,7 @@
 * */
 
 /*Initial checklist list*/
-const checklist_list = [
+const checklist_trees = [
   {
     checklist_id: 0,
     id: -1,
@@ -369,7 +369,7 @@ const checklist_list = [
   }
 ];
 
-const checklist_list_array = [
+const checklist_arrays = [
   [
     [
       '"id"',
@@ -393,7 +393,7 @@ const checklist_list_array = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","idk"]',
       '[0,1,2]',
-      '{"if":[{"var":"difficult_intubation","op":"est","val":"vrai"}],"then":"yes"}'
+      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}'
     ],
     [
       2,
@@ -573,7 +573,7 @@ const checklist_list_array = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      '{"if":[{"var":"diabetic","op":"est","val":"vrai"}],"then":"yes"}'
+      '{"if":[[{"var":"diabetic","op":"est","val":"vrai"}]],"then":"yes"}'
     ],
     [
       17,
@@ -753,7 +753,7 @@ const checklist_list_array = [
       '{"yes":[30],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      '{"if":[[{"val":"yes","var":34},{"val":"yes","var":37}]],"then":"no"}'
     ],
     [
       32,
@@ -786,10 +786,10 @@ const checklist_list_array = [
       1,
       null,
       null,
-      '{"yes":[30],"no":[31],"num":[]}',
+      '{"yes":[30],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      '{"if":[[{"val":"yes","var":31},{"val":"yes","var":37}]],"then":"no"}'
     ],
     [
       35,
@@ -822,10 +822,10 @@ const checklist_list_array = [
       2,
       null,
       null,
-      '{"yes":[30],"no":[31,34],"num":[]}',
+      '{"yes":[30],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      '{"if":[[{"var":31,"val":"yes"},{"val":"yes","var":34}]],"then":"no"}'
     ],
     [
       38,
@@ -848,6 +848,18 @@ const checklist_list_array = [
       null,
       '{"yes":[37],"num":[]}',
       '["ok","not_ok"]',
+      '[0,1]',
+      null
+    ],
+    [
+      40,
+      '"Autre moyen de transmission"',
+      30,
+      3,
+      null,
+      null,
+      '{"yes":[30],"no":[31,34,37],"num":[]}',
+      '["text"]',
       '[0,1]',
       null
     ],
@@ -887,23 +899,936 @@ const checklist_list_array = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","idk"]',
       '[0,1,2]',
-      '{"if":[{"var":"difficult_intubation","op":"est","val":"vrai"}],"then":"yes"}'
+      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}'
+    ],
+  ],
+  [
+    [
+      '"id"',
+      '"name"',
+      '"parent_id"',
+      '"position"',
+      '"comment"',
+      '"section_title"',
+      '"cond"',
+      '"check"',
+      '"color"',
+      '"pre_check"'
     ],
     [
-      2,
-      '"A confirmer l\'incubation difficile"',
       1,
+      '"Intervention urgente"',
+      -1,
       0,
       null,
       null,
-      '{"yes":[],"no":[],"idk":[1],"num":[]}',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[1,0,2]',
+      null
+    ],
+    [
+      2,
+      '"Dossier infirmier présent"',
+      -1,
+      1,
+      null,
+      '"Infirmière de l\'unité de soin qui prépare le patient"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      3,
+      '"Patient (A=conscient, B=inconscient, C=dément)"',
+      -1,
+      2,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["a","b","c"]',
+      '[2,2,2,2,2]',
+      null
+    ],
+    [
+      4,
+      '"Patient"',
+      -1,
+      3,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_patient-states"]',
+      '[0,1]',
+      null
+    ],
+    [
+      5,
+      '"Le patient décline son nom"',
+      -1,
+      4,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      6,
+      '"Le patient décline son prénom "',
+      -1,
+      5,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      7,
+      '"Le patient décline sa date de naissance"',
+      -1,
+      6,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      8,
+      '"Vérifier la concordance entre le dossier et le bracelet d\'identité du patient"',
+      -1,
+      7,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["ok","not_ok"]',
+      '[0,1]',
+      null
+    ],
+    [
+      9,
+      '"Consentement du patient/parent <18 ans"',
+      -1,
+      8,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      10,
+      '"Le patient décline le côté à opérer"',
+      -1,
+      9,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["left","right","na"]',
+      '[2,2,2,2,2]',
+      null
+    ],
+    [
+      11,
+      '"L\'infirmière vérifie dans le dossier le type d\'intervention"',
+      -1,
+      10,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      12,
+      '"Maladies transmissibles connues"',
+      -1,
+      11,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_diseases"]',
+      '[0,1]',
+      null
+    ],
+    [
+      13,
+      '"Patient(e) à jeun"',
+      -1,
+      12,
+      null,
+      '"À vérifier"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      14,
+      '"Vernis à ongle ôté"',
+      -1,
+      13,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      15,
+      '"A uriné"',
+      -1,
+      14,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      16,
+      '"Proth. dentaire/auditives/lentilles ôtées"',
+      -1,
+      15,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      17,
+      '"Bijoux/piercings ôtés"',
+      -1,
+      16,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      18,
+      '"Médicamenteuses"',
+      -1,
+      17,
+      null,
+      '"Le patient déclare ses allergies"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      19,
+      '"Lesquelles ?"',
+      -1,
+      18,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_alergy-meds"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      20,
+      '"Alimentaires"',
+      -1,
+      19,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      21,
+      '"Lesquelles ?"',
+      -1,
+      20,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_alergy-aliments"]',
+      '[0,1]',
+      null
+    ],
+    [
+      22,
+      '"Hygiène du patient correcte"',
+      -1,
+      21,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      23,
+      '"Propreté et intégrité du site opératoire"',
+      -1,
+      22,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      24,
+      '"Dépilation"',
+      -1,
+      23,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      25,
+      '"Présence de bas de contention"',
+      -1,
+      24,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      26,
+      '"Nom"',
+      -1,
+      25,
+      null,
+      '"Infirmière de l\'US qui a préparé le patient pour le BO "',
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ]
+  ],
+  [
+    [
+      '"id"',
+      '"name"',
+      '"parent_id"',
+      '"position"',
+      '"comment"',
+      '"section_title"',
+      '"cond"',
+      '"check"',
+      '"color"',
+      '"pre_check"'
+    ],
+    [
+      1,
+      '"Intervention Urgente"',
+      -1,
+      0,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[1,0,2]',
+      null
+    ],
+    [
+      2,
+      '"Dossier infirmier présent"',
+      -1,
+      1,
+      null,
+      '"Infirmière BO qui accueille le patient"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      3,
+      '"Patient (A=conscient, B=inconscient, C=dément)"',
+      -1,
+      2,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["a","b","c"]',
+      '[2,2,2,2,2]',
+      null
+    ],
+    [
+      4,
+      '"Le patient décline son nom"',
+      -1,
+      3,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      5,
+      '"Le patient décline son prénom"',
+      -1,
+      4,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      6,
+      '"Le patient décline sa date de naissance"',
+      -1,
+      5,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      7,
+      '"Vérifier la concordance entre le dossier et le bracelet d\'identité du patient "',
+      -1,
+      6,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["ok","not_ok"]',
+      '[0,1]',
+      null
+    ],
+    [
+      8,
+      '"Consentement du patient/d\'un parent <18 ans"',
+      -1,
+      7,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      9,
+      '"Le patient décline le côté à opérer"',
+      -1,
+      8,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["left","right","na"]',
+      '[2,2,2,2]',
+      null
+    ],
+    [
+      10,
+      '"L\'infirmière vérifie dans le dossier le type d\'intervention"',
+      -1,
+      9,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["ok", "not_ok"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      11,
+      '"Maladies transmissibles connues"',
+      -1,
+      10,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[1,0]',
       null
     ],
+    [
+      12,
+      '"Lesquelles ?"',
+      -1,
+      11,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_diseases"]',
+      '[0,1]',
+      null
+    ],
+    [
+      13,
+      '"Patient(e) à jeun"',
+      -1,
+      12,
+      null,
+      '"À vérifier"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      14,
+      '"Vernis à ongles ôté"',
+      -1,
+      13,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      15,
+      '"A uriné"',
+      -1,
+      14,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      16,
+      '"Proth. dentaires/auditives/lentilles ôtées"',
+      -1,
+      15,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      17,
+      '"Bijoux/piercings ôtés"',
+      -1,
+      16,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      18,
+      '"Médicamenteuses"',
+      -1,
+      17,
+      null,
+      '"Le patient déclare ses allergies :"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[1,0,2]',
+      null
+    ],
+    [
+      19,
+      '"Lesquelles ?"',
+      -1,
+      18,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_alergy-meds"]',
+      '[0,1]',
+      null
+    ],
+    [
+      20,
+      '"Alimentaires"',
+      -1,
+      19,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[1,0,2]',
+      null
+    ],
+    [
+      21,
+      '"Lesquelles ?"',
+      -1,
+      20,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["list_alergy-aliments"]',
+      '[0,1]',
+      null
+    ],
+    [
+      22,
+      '"Hygiène du patient correcte"',
+      -1,
+      21,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      23,
+      '"Propreté et intégrité du site opératoire"',
+      -1,
+      22,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      24,
+      '"Dépilation"',
+      -1,
+      23,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      25,
+      '"Présence de bas de contention"',
+      -1,
+      24,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      26,
+      '"Nom"',
+      -1,
+      25,
+      null,
+      '"Infirmière qui accueille le patient au BO :"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ]
+  ],
+  [
+    [
+      '"id"',
+      '"name"',
+      '"parent_id"',
+      '"position"',
+      '"comment"',
+      '"section_title"',
+      '"cond"',
+      '"check"',
+      '"color"',
+      '"pre_check"'
+    ],
+    [
+      1,
+      '"Date de l\'intervention"',
+      -1,
+      0,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1,2]',
+      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}'
+    ],
+    [
+      2,
+      '"Salle "',
+      -1,
+      1,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ],
+    [
+      3,
+      '"Présentation des perso..."',
+      -1,
+      2,
+      null,
+      '"Chirurgien / Inf. circul. / Instrumentaliste / Anesthésiste"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      4,
+      '"Vérification identité du...."',
+      -1,
+      3,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      5,
+      '"Rappel de l\'intitulé de l..."',
+      -1,
+      4,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      6,
+      '"Site opératoire"',
+      -1,
+      5,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["left","right","na"]',
+      '[2,2,2,2,2]',
+      null
+    ],
+    [
+      7,
+      '"Maladies transmissibles"',
+      -1,
+      6,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[1,0]',
+      null
+    ],
+    [
+      8,
+      '"Risque de perte sanguine... Si oui, des poches de sang..."',
+      -1,
+      7,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[1,0,2]',
+      null
+    ],
+    [
+      9,
+      '"Vérif. administr. AB Prophyl."',
+      -1,
+      8,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null
+    ],
+    [
+      10,
+      '"Heure"',
+      -1,
+      9,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ],
+    [
+      11,
+      '"Matériel d\'anesthésie disponible / ordre de marche"',
+      -1,
+      10,
+      null,
+      '"Anésthesiste"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      12,
+      '"Respirateur"',
+      -1,
+      11,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      13,
+      '"Oxym. de pouls"',
+      -1,
+      12,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      14,
+      '"Monitoring"',
+      -1,
+      13,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      15,
+      '"Difficultés airways et/ou intubation"',
+      -1,
+      14,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[1,0,2]',
+      null
+    ],
+    [
+      16,
+      '"Si oui, glydescope ou équivalent présent"',
+      -1,
+      15,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      17,
+      '"Matériel pour l\'infirmière circulante disponible et en ordre de marche (laryngoscope, ...)"',
+      -1,
+      16,
+      null,
+      '"Infirmière circulante"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      18,
+      '"La stérilité du matériel disposable et non disposable a été vérifiée (résultats des indicateurs + vérification date péremption)"',
+      -1,
+      17,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      19,
+      '"Induction - Nom "',
+      -1,
+      18,
+      null,
+      '"Anesthésistes"',
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ],
+    [
+      20,
+      '"Réveil - Nom"',
+      -1,
+      19,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ],
+    [
+      21,
+      '"Si changement - Nom"',
+      -1,
+      20,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["text"]',
+      '[0,1]',
+      null
+    ]
   ]
 ]
 
+const checklist_list = [
+  {checklist_id: 0, name: "Principale"},
+  {checklist_id: 1, name: "Seconde"},
+  {checklist_id: 2, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient "},
+  {checklist_id: 3, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient"},
+  {checklist_id: 4, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anésthésiste"}
+]
 
 
 /*List of all patients*/
@@ -920,11 +1845,14 @@ const patients = [
 ]
 
 const lists = {
-  "meds": ["Mc","Lis","Kl","Eft"],
-  "diseases": ["Covid","Grippe","Pneumonie"]
+  "meds": ["Mc","Lis","Kl","Eft", "Aucun"],
+  "diseases": ["Covid","Grippe","Pneumonie", "Aucune"],
+  "patient-states" : ["Conscient","Inconscient","Dément"],
+  "alergy-meds" : ["Latex","Peniciline","Insuline", "Ibuprofène", "Aucune"],
+  "alergy-aliments" : ["Gluten","Lactose","Arachides", "Aucune"]
 }
 
-const lists_trad = {"meds":"Médicaments", "diseases":"Maladies"}
+const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients", "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires"}
 
 const alerts = [
   {"id":0, "question_id":1, "info": "Réponse précedente problèmatique", "gravity":0},
@@ -933,4 +1861,4 @@ const alerts = [
   {"id":3, "question_id":30, "info": "Réponse précedente problèmatique","gravity":2}
 ]
 
-export {checklist_list, checklist_list_array, patients, lists, lists_trad, alerts}
+export {checklist_trees, checklist_arrays, checklist_list, patients, lists, lists_trad, alerts}

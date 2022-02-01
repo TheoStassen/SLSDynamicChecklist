@@ -24,7 +24,7 @@ function PatientBox ({props}) {
 
   /*Return the patient box elements*/
   return (
-    <div className="container iq-card p-2 py-3 ">
+    <div className="container iq-card p-2 py-3 my-0 border border-dark shadow rounded-0-bottom">
       <div className="row align-items-center m-0">
         {/*Indication text*/}
         <div className="col-sm-4 align-items-center text-dark">

@@ -242,6 +242,11 @@ background-color: #f5f5f5;
     border-bottom-right-radius : 0 !important;
 }
 
+.rounded-0-top {
+    border-top-left-radius : 0 !important;
+    border-top-right-radius : 0 !important;
+}
+
 .border-grey{
     border-color: black;
 }

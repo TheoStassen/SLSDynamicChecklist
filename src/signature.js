@@ -23,7 +23,7 @@ function AppSignature ({props}) {
 
   /*Return the signature elements*/
   return (
-    <div className="container iq-card mt-5">
+    <div className="container iq-card rounded-0-top border-bottom border-right border-left border-dark shadow">
       <div className="row align-items-center p-0 m-0 h-100">
         {/*Information text*/}
         <div className="col-sm-3 m-0 p-0 text-center text-dark">
@@ -42,13 +42,13 @@ function AppSignature ({props}) {
         <div className="col-sm-3 mx-2 p-0">
           {/*Button to validate the current signature and put info into data*/}
           <div className="row align-items-center p-0 m-0 mb-2 px-4">
-            <button type="button" className="btn btn-primary w-100" onClick={trim_canvas}>
+            <button type="button" className="btn btn-warning w-100" onClick={trim_canvas}>
               Valider la signature
             </button>
           </div>
           {/*Button to clean the current signature canvas and remove info in data*/}
           <div className=" row align-items-center p-0 m-0 px-4">
-            <button type="button" className="btn btn-warning w-100" onClick={reinit_canvas}>
+            <button type="button" className="btn btn-secondary w-100" onClick={reinit_canvas}>
               Réinitialiser
             </button>
           </div>

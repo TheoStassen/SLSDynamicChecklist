@@ -16,7 +16,7 @@ function AlertsBox ({props}) {
   const second_half_list = list_alert.length % 2 === 0 ? list_alert.slice(-half) : list_alert.slice(-half+1)
 
   return (
-    <div className={"container iq-card pt-3 pb-1"}>
+    <div className={"container iq-card pt-3 pb-1 border-bottom border-left border-right border-dark shadow rounded-0-top"}>
       <div className="row align-items-center">
         <div className={"col-sm-6 pr-2"}>
           {first_half_list.map((alert, index) =>

@@ -1,8 +1,10 @@
 import BootstrapSelect from "react-bootstrap-select-dropdown";
 import * as utils from "./utils";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, checklist_to_json,} from "./utils";
 import * as temp from "./temporary_data";
+import * as temp_data from "./temporary_data";
+import axios from "axios";
 
 /* Component for the creation mode box
 * -checklist: current checklist (state variable)
@@ -16,7 +18,7 @@ import * as temp from "./temporary_data";
 * */
 function CreateBox ({props}) {
 
-  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion} = props
+  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist} = props
 
   /* State variables used only in creation mode
   * -currentQuestion : the question currently into creation/modification
@@ -26,18 +28,18 @@ function CreateBox ({props}) {
   * -tempPreChech : the precheck condition values (var, op, val) and then value of the current precheck the user is going to add
   */
 
+
   let [currentParentQuestion, setCurrentParentQuestion] = useState(checklist)
   let [currentName, setCurrentName] = useState(checklist && checklist.values.length ? checklist.values[0].name : " " )
   let [currentComment, setCurrentComment] = useState(checklist && checklist.values[0].comment ? checklist.values[0].comment : null)
   let [currentSectionTitle, setCurrentSectionTitle] = useState(checklist && checklist.values[0].section_title ? checklist.values[0].section_title : null)
 
   let [tempNums, setTempNums] = useState({})
-  let [tempPreCheck, setTempPreCheck] = useState({})
+  let [tempPreCheck, setTempPreCheck] = useState({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
 
   let [pairIndicator, setPairIndicator] = useState(0)
 
   let [isAltAnswers, setIsAltAnswers] = useState(false)
-
 
   // console.log("main", currentQuestion)
 
@@ -54,6 +56,7 @@ function CreateBox ({props}) {
 
   /*Create a list, usable by the select component, of the possible answer*/
   let possible_answers = []
+  let possible_answers_single = []
   let alt_possible_answers = []
   function construct_possible_answers (){
     possible_answers = []
@@ -66,6 +69,10 @@ function CreateBox ({props}) {
           "labelKey": answer,
         "value": trad_answer(answer),
         "isSelected":currentQuestion.check.includes(answer),
+        })
+        possible_answers_single.push({
+          "labelKey": answer,
+        "value": trad_answer(answer),
         })
       }
     })
@@ -81,6 +88,14 @@ function CreateBox ({props}) {
     })
   }
   if (currentQuestion) construct_possible_vars()
+
+  let possible_vars_extended = JSON.parse( JSON.stringify(possible_vars) )
+  function construct_possible_vars_extended(){
+    questionList.forEach(function (question){
+      possible_vars_extended.push({"labelKey": question, "value": "Question "+ question})
+    })
+  }
+  if (currentQuestion) construct_possible_vars_extended()
 
   /*Create a list, usable by the select component, of the possible operators of conditions*/
   let possible_op = []
@@ -121,10 +136,15 @@ function CreateBox ({props}) {
 
   /*Reinitialize the current question, which means taking the first question of the current checklist as current question*/
   function reinit_current_question (checklist) {
+    console.log("reinit", checklist)
     setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
     setCurrentParentQuestion(checklist)
     setCurrentName(checklist && checklist.values.length ? checklist.values[0].name : "")
     setCurrentComment(checklist && checklist.values.length ? checklist.values[0].comment : "")
+    setCurrentSectionTitle(checklist && checklist.values[0].section_title ? checklist.values[0].section_title : null)
+    setTempNums({})
+    setTempPreCheck({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
+    setIsAltAnswers(false)
   }
 
   /*Search for a question (with id) in item and his children, knowing that parent_item is the parent of item. When found, set
@@ -138,9 +158,11 @@ function CreateBox ({props}) {
       setCurrentParentQuestion(currentParentQuestion)
       setCurrentName(currentQuestion.name)
       setTempNums({})
+      setTempPreCheck({})
       setCurrentComment(currentQuestion.comment)
       setCurrentSectionTitle(currentQuestion.section_title)
       setPairIndicator(!pairIndicator)
+      setIsAltAnswers(false)
       return currentQuestion
     }
     let current_question = null
@@ -283,51 +305,37 @@ function CreateBox ({props}) {
   }
 
   /*Add a checklist (with basic content) to the list of checklist, and switch to this checklist*/
+
   const addchecklist = () => {
-    const n_checklist = checklistList.length ? checklistList[checklistList.length-1].checklist_id+1 : 0
-    let new_empty_checklist =
-      {
-        checklist_id: n_checklist,
-        id: -1,
-        num_values: [],
-        values: [
-          {
-            id: 1,
-            name : "",
-            check : ["yes","no"],
-            color : [0,1],
-            cond: {"yes":[], "no":[], num:[]},
-            values: []
-          }
-        ],
-      }
-    checklistList.push(new_empty_checklist)
-    setChecklistList(checklistList)
-    swapchecklist_creation_mode(n_checklist)
+    const checklist_id = checklistList.length ? checklistList[checklistList.length-1].checklist_id+1 : 0
+
+    // Inform that we want to add a new checklist and receive in response the new checklist list
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call to add checklist
+    .then(function(response){
+
+      //Must handle incoming data
+
+      setChecklist(checklistList)
+
+      swapchecklist(checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
+      console.log("add checklist get call and set finished")
+    });
   }
 
   /*Remove the current checklist from the list of checklist and take the first checklist still available as current checklist*/
   const removechecklist = () => {
-    console.log(checklistList, checklistId)
-    checklistList = checklistList.filter(e => e.checklist_id !== checklistId)
-    console.log(checklistList)
-    setChecklistId(checklistList.length ? checklistList[0].checklist_id : " -")
-    checklist = checklistList.length ? checklistList[0] : null
-    setChecklist(checklist)
-    setChecklistList(checklistList)
-    reinit_current_question(checklist)
-  }
+    const checklist_id = checklistList.length ? checklistList[0].checklist_id : 0
 
-  /*Function that swap the current checklist and reinitialize the current question*/
-  const swapchecklist_creation_mode = (checklist_id) =>  {
-    setChecklistId(checklist_id);
-    checklist = checklistList.filter(e => e.checklist_id === checklist_id)[0]
-    setChecklist(checklist)
-    setResult({})
-    setIsDict(init_dict)
-    setIsPreCheckDone([]) //Do a warning when switch checklist but seems not causing problem
-    setPairIndicator(!pairIndicator)
-    reinit_current_question(checklist)
+    // Inform that we want to del a checklist and receive in response the new checklist list
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call to del checklist
+    .then(function(response){
+
+      //Must handle incoming data
+      setChecklist(checklistList)
+
+      swapchecklist(checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
+      console.log("remove checklist get call and set finished")
+    });
   }
 
   /*Function that add a  question condition (with it answer and id) to current question*/
@@ -401,23 +409,20 @@ function CreateBox ({props}) {
 
   /*Function that update the tempPrecheck.var variable with input*/
   const addtempprecheckvar = (selectedOptions) => {
-    if (!tempPreCheck){ tempPreCheck = {}}
-    tempPreCheck = {}
+    tempPreCheck = {type:tempPreCheck.type, then:currentQuestion.pre_check && currentQuestion.pre_check.then ? currentQuestion.pre_check.then: null}
     tempPreCheck.var = selectedOptions.selectedKey[0]
     setTempPreCheck(tempPreCheck)
     forceUpdate()
   }
   /*Function that update the tempPrecheck.op variable with input*/
   const addtempprecheckop = (selectedOptions) => {
-    if (!tempPreCheck){ tempPreCheck = {}}
     tempPreCheck.op = selectedOptions.selectedKey[0]
     setTempPreCheck(tempPreCheck)
     forceUpdate()
   }
   /*Function that update the tempPrecheck.val variable with input*/
   const addtempprecheckval = (event) => {
-    if (!tempPreCheck){ tempPreCheck = {}}
-    if(tempPreCheck.var && ["diabetic","difficult_intubation", "gender"].includes(tempPreCheck.var) )
+    if(tempPreCheck.var && !["age","yearofbirth"].includes(tempPreCheck.var))
       tempPreCheck.val = event.selectedKey[0]
     else
       tempPreCheck.val = event.target.value
@@ -427,8 +432,14 @@ function CreateBox ({props}) {
 
     /*Function that update the tempPrecheck.then variable with input*/
   const addtempprecheckthen = (selectedOptions) => {
-    if (!tempPreCheck){ tempPreCheck = {}}
-    tempPreCheck.then = selectedOptions.selectedKey[0]
+    if (selectedOptions.selectedKey[0]) tempPreCheck.then = selectedOptions.selectedKey[0]
+    setTempPreCheck(tempPreCheck)
+    forceUpdate()
+  }
+
+  /*Function that update the tempPrecheck.then variable with input*/
+  const addtempprechecktype = (selectedOptions) => {
+    if (selectedOptions.selectedKey[0]) tempPreCheck.type = selectedOptions.selectedKey[0]
     setTempPreCheck(tempPreCheck)
     forceUpdate()
   }
@@ -436,19 +447,18 @@ function CreateBox ({props}) {
 
   /*Function that add a precheck condition (with values contains in tempPreCheck) and precheck then to currentQuestion*/
   const addprecheck = () => {
-    if(tempPreCheck.var && tempPreCheck.val && tempPreCheck.then &&  ["diabetic","difficult_intubation", "gender"].includes(tempPreCheck.var)){
+    console.log(tempPreCheck)
+    if(tempPreCheck.var && tempPreCheck.val && tempPreCheck.then && (!["age","yearofbirth"].includes(tempPreCheck.var) || tempPreCheck.op)){
       if (!currentQuestion.pre_check)
         currentQuestion.pre_check = {if:[],then:null}
       currentQuestion.pre_check.then = tempPreCheck.then
-      currentQuestion.pre_check.if.push({var: tempPreCheck.var, op: "est", val: tempPreCheck.val})
-      setCurrentQuestion(currentQuestion)
-      forceUpdate()
-    }
-    else if (tempPreCheck.var && tempPreCheck.op && tempPreCheck.val && tempPreCheck.then) {
-      if (!currentQuestion.pre_check)
-        currentQuestion.pre_check = {if:[],then:null}
-      currentQuestion.pre_check.then = tempPreCheck.then
-      currentQuestion.pre_check.if.push({var: tempPreCheck.var, op: tempPreCheck.op, val: tempPreCheck.val})
+      if (!tempPreCheck.op) utils.list_possible_num_var.includes(tempPreCheck.var) ? tempPreCheck.op = "est" : tempPreCheck.op = null
+      if (tempPreCheck.type === "and" || !currentQuestion.pre_check.if.length)
+        currentQuestion.pre_check.if.push([{var: tempPreCheck.var, val: tempPreCheck.val, op:tempPreCheck.op}])
+      else if (tempPreCheck.type === "or") {
+        console.log(currentQuestion.pre_check.if.length)
+        currentQuestion.pre_check.if[currentQuestion.pre_check.if.length - 1].push({var: tempPreCheck.var, val: tempPreCheck.val, op: tempPreCheck.op})
+      }
       setCurrentQuestion(currentQuestion)
       forceUpdate()
     }
@@ -463,9 +473,10 @@ function CreateBox ({props}) {
   }
 
   /*Function that remove a precheck condition of the currentQuestion*/
-  const removeprecheck = (index) => {
-    console.log("supprimer", index)
-    currentQuestion.pre_check.if.splice(index,1)
+  const removeprecheck = (index1, index2) => {
+    currentQuestion.pre_check.if[index1].splice(index2,1)
+    if (!currentQuestion.pre_check.if[index1].length)
+      currentQuestion.pre_check.if.splice(index1,1)
     if (!currentQuestion.pre_check.if.length)
       currentQuestion.pre_check = null
     setCurrentQuestion(currentQuestion)
@@ -493,6 +504,7 @@ function CreateBox ({props}) {
   }
 
   console.log(currentQuestion)
+  console.log(currentName)
 
   /*Return the create box, with all it elements*/
   return (
@@ -521,8 +533,8 @@ function CreateBox ({props}) {
               <li><label className="dropdown-item " onClick={function(event){ addchecklist(); forceUpdate()}}>Nouvelle checklist</label></li>
               {/*Select an existing checklist*/}
               {checklistList.map((i, index) => (
-                <li key={index}><label className="dropdown-item " onClick={function (){swapchecklist_creation_mode(i.checklist_id)}}>
-                  Checklist n°{i.checklist_id}</label>
+                <li key={index}><label className="dropdown-item " onClick={function (){swapchecklist(i.checklist_id)}}>
+                  Checklist {i.name}</label>
                 </li>
               ))}
             </ul>
@@ -561,7 +573,7 @@ function CreateBox ({props}) {
         </div>
       </div>
 
-      {currentQuestion ? ( <div>
+      {currentQuestion ? ( <div key={currentQuestion.id}>
         {/*Question Name selection*/}
         <div className="row align-items-center p-2 m-0 border-bottom">
           {/*Information text*/}
@@ -570,7 +582,7 @@ function CreateBox ({props}) {
           </div>
           {/*Question name text input */}
           <div className="col-sm-4 align-items-center">
-            <input className="form-control w-100 mb-0" type = "text " aria-label="text input" value={currentName} onChange={modifyname}/>
+            <input key={checklistId} className="form-control w-100 mb-0" type = "text " aria-label="text input" value={currentName} onChange={modifyname}/>
           </div>
           {/*Question name validation button*/}
           <div className="col-sm-4 align-items-center p-0 text-center ">
@@ -599,7 +611,7 @@ function CreateBox ({props}) {
         </div>
 
         {/*Question Section Title selection*/}
-        {currentQuestion.parent_id === -1 ? (
+        {currentParentQuestion.id === -1 ? (
           <div className="row align-items-center p-2 m-0 border-bottom">
             {/*Information text*/}
             <div className="col-sm-4 align-items-center text-dark  ">
@@ -901,33 +913,41 @@ function CreateBox ({props}) {
           <div className="collapse m-0 p-0" id="collapsePreCheck">
             <div className="col align-items-center p-2 m-0">
               {/*Current PreCheck condition list (and then value) display*/}
-              {(currentQuestion && currentQuestion.pre_check) ? currentQuestion.pre_check.if.map( (pre_check, index) => (
-                <div  key={index} className="row justify-content-md-center py-2">
-                  <div className="col-sm-3 align-items-center my-auto">
-                    <div className="iq-card card-grey shadow-sm text-center m-0 text-dark ">
-                      {trad_num_var(pre_check.var)}
+              {(currentQuestion && currentQuestion.pre_check) ? currentQuestion.pre_check.if.map( (pre_checks, index1) => (
+                <div>
+                  {index1 ? <div className={"mx-auto w-50 border-top border-bottom border-light"}>et</div> : <div className={"mx-auto w-50 border-top border-light"}/>}
+                  {pre_checks.map((pre_check, index2) => (
+                    <div>
+                      {index2 ? <div>ou</div> : null}
+                      <div  key={index1} className="row justify-content-md-center py-2">
+                        <div className="col-sm-3 align-items-center my-auto">
+                          <div className="iq-card card-grey shadow-sm text-center m-0 text-dark ">
+                            {list_possible_num_var.includes(pre_check.var) ? trad_num_var(pre_check.var) : "Question " + pre_check.var}
+                          </div>
+                        </div>
+                        <div className="col-sm-3 align-items-center my-auto ">
+                          <div className="iq-card card-grey shadow-sm text-center m-0 text-dark">
+                            {pre_check.op ? pre_check.op : "est"}
+                          </div>
+                        </div>
+                        <div className="col-sm-3 align-items-center my-auto ">
+                          <div className="iq-card card-grey shadow-sm text-center m-0 text-dark">
+                            {list_possible_num_var.includes(pre_check.var) ? pre_check.val : trad_answer(pre_check.val)}
+                          </div>
+                        </div>
+                        <div className="col-sm-3 align-items-center my-auto text-center">
+                          <button className="btn btn-danger " onClick={() => removeprecheck(index1, index2)} >
+                            <div data-icon="&#xe053;" className="icon mt-1"/>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-sm-3 align-items-center my-auto ">
-                    <div className="iq-card card-grey shadow-sm text-center m-0 text-dark">
-                      {pre_check.op}
-                    </div>
-                  </div>
-                  <div className="col-sm-3 align-items-center my-auto ">
-                    <div className="iq-card card-grey shadow-sm text-center m-0 text-dark">
-                      {pre_check.val}
-                    </div>
-                  </div>
-                  <div className="col-sm-3 align-items-center my-auto text-center">
-                    <button className="btn btn-danger " onClick={() => removeprecheck(index)} >
-                      <div data-icon="&#xe053;" className="icon mt-1"/>
-                    </button>
-                  </div>
+                  ))}
                 </div>
               )): null}
               {(currentQuestion && currentQuestion.pre_check) ? (
-                <div className="row justify-content-md-center py-2">
-                  <div className="col-sm-2 align-items-center my-auto ">
+                <div className="row mx-auto w-50 justify-content-md-center py-2 border-top">
+                  <div className="col-sm-2 align-items-center my-auto">
                     <div className="iq-card card-grey shadow-sm text-center m-0 text-dark">
                       {trad_answer(currentQuestion.pre_check.then)}
                     </div>
@@ -942,13 +962,16 @@ function CreateBox ({props}) {
                 <div>
                   <div className="row justify-content-md-center py-2">
                     <div className="col-sm-3 align-items-center my-auto">
-                      <BootstrapSelect key={pairIndicator} className="w-100 " selectStyle="btn border" placeholder="Quelle variable ?" options={possible_vars} onChange={addtempprecheckvar}/>
+                      <BootstrapSelect key={pairIndicator} className="w-100 " selectStyle="btn border" placeholder="Et/Ou" options={[{"labelKey": "and", "value": "Et", "isSelected":true},{"labelKey": "or", "value": "Ou"}]  } onChange={addtempprechecktype}/>
+                    </div>
+                    <div className="col-sm-3 align-items-center my-auto">
+                      <BootstrapSelect key={pairIndicator} className="w-100 " selectStyle="btn border" placeholder="Quelle variable ?" options={possible_vars_extended} onChange={addtempprecheckvar}/>
                     </div>
                     <div className="col-sm-3 align-items-center my-auto ">
-                      {["diabetic","difficult_intubation", "gender"].includes(tempPreCheck.var) ?
+                      {!["age","yearofbirth"].includes(tempPreCheck.var) ?
                         <div>est</div>
                         :
-                        <BootstrapSelect key={pairIndicator} className="w-100 " selectStyle="btn border" placeholder="Quel opérateur ?" options={possible_op} onChange={addtempprecheckop}/>
+                        <BootstrapSelect key={tempPreCheck.var} className="w-100 " selectStyle="btn border" placeholder="Quel opérateur ?" options={possible_op} onChange={addtempprecheckop}/>
                       }
                     </div>
                     <div className="col-sm-3 align-items-center my-auto">
@@ -960,23 +983,31 @@ function CreateBox ({props}) {
                           <BootstrapSelect key={tempPreCheck.var} className="w-100 " selectStyle="btn border" placeholder="Quelle valeur ?"
                                        options={[{"labelKey": "F", "value": "F"},{"labelKey": "M", "value": "M"}] } onChange={addtempprecheckval}/>
                           :
-                          <input type="number" className="form-control " placeholder="Quelle valeur ?" onChange={addtempprecheckval}/>
-                        } </div>
+                          <div> {Number.isInteger(tempPreCheck.var) ?
+                            <BootstrapSelect key={tempPreCheck.var} className="w-100 " selectStyle="btn border" placeholder="Quelle valeur ?"
+                                             options={possible_answers_single} onChange={addtempprecheckval}/>
+                            :
+                            <input key={tempPreCheck.var} type="number" className="form-control " placeholder="Quelle valeur ?"
+                                   onChange={addtempprecheckval}/>
+                          }
+                          </div>
+                        }
+                        </div>
                       }
-                    </div>
-                    <div className="col-sm-3 align-items-center text-center my-auto">
-                      <button className="btn btn-warning w-100  " onClick={() => addprecheck()} >
-                        Valider
-                      </button>
                     </div>
                   </div>
                   <div className="row justify-content-md-center py-2">
                     <div className="col-sm-3 align-items-center my-auto ">
-                      <BootstrapSelect key={tempPreCheck.var} className="w-100 " selectStyle="btn border" placeholder="Quel pre-check ?" options={possible_pre_check} onChange={addtempprecheckthen}/>
+                      <BootstrapSelect key={tempPreCheck.var + currentQuestion.check.length} className="w-100 " selectStyle="btn border" placeholder="Quel pre-check ?" options={possible_pre_check} onChange={addtempprecheckthen}/>
                     </div>
                     <div className="col-sm-3 align-items-center ">
                       <button className="btn btn-warning w-100  " onClick={() => updateprecheckthen()} >
                         Modifier le precheck
+                      </button>
+                    </div>
+                    <div className="col-sm-3 align-items-center text-center my-auto">
+                      <button className="btn btn-warning w-100  " onClick={() => addprecheck()} >
+                        Valider
                       </button>
                     </div>
                   </div>

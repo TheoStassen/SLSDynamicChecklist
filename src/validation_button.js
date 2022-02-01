@@ -25,14 +25,14 @@ function ValidationButton ({visibleList, result, import_csv_result, checklist, s
   }
 
   return (
-    <div className="container iq-card  mt-5 text-center p-2 shadow">
+    <div className="container iq-card  mt-5 text-center p-2 shadow border border-dark">
       <a onClick={() => search_question_not_answered(visibleList, result, true) === "" ? import_csv_result() : null }
          href={"#" + search_question_not_answered(visibleList, result, false)}
          className=""
       >
-        <button className="btn btn-warning text-center w-100 rounded b">
-          Valider la checklist
-        </button>
+        <div className="btn-group btn-group-lg w-100 " role="group" aria-label="Basic example">
+          <button type="button" className="btn btn-warning w-100">Valider la checklist</button>
+        </div>
       </a>
     </div>
   )

@@ -10,7 +10,9 @@ import BootstrapSelect from "react-bootstrap-select-dropdown";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId}) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode}) {
+
+  // console.log("enter item", item)
 
 
 
@@ -78,9 +80,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   };
 
   const create_possible_list_answers = (name) => {
-    console.log(name)
     const list_answers = temp_data.lists[name]
-    console.log(list_answers)
     const list_possible_answers = []
     list_answers.forEach(function(answer){
       list_possible_answers.push({
@@ -95,9 +95,18 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /* If the item as pre check conditions and his precheck as not already been made,
   * we check the condition in 'pre_check.if' and if it passes, we do as if the 'pre_check.then' answer was clicked
   */
+  // console.log(item.id, item.pre_check)
 
-  if(item.pre_check && !isPreCheckDone.includes(item.id)){
-    if (item.pre_check.if.every(function (elm){ return utils.simple_operation(numDict[elm.var],elm.op, elm.val);})){
+  if(precheckMode && item.pre_check && !isPreCheckDone.includes(item.id)){
+    // console.log("enter precheck", item, isDict)
+    if (item.pre_check.if.every(function (elms){
+        return elms.some(function (elm){
+          if (elm.op)
+            return utils.simple_operation(numDict[elm.var],elm.op, elm.val);
+          else
+            return isDict[elm.val][elm.var]
+        })
+    })){
       handleOnChangeIs(item.pre_check.then); isPreCheckDone.push(item.id); setIsPreCheckDone(isPreCheckDone);
     }
   }
@@ -125,7 +134,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
 
   // console.log("Item return", item)
-  // console.log("isDict", isDict["yes"][10])
+  // console.log("isDict", isDict)
   // console.log("result", result)
   // console.log(result)
   // console.log(visibleList)
@@ -133,7 +142,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   // console.log(warningId)
   // console.log(currentId)
   //
-  console.log(item)
+  // console.log(item)
 
   /*We return the different elements of the current item, and also his children*/
   return (
@@ -153,14 +162,14 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
         {/*Item Id*/}
         <div className="col list-group list-group-horizontal m-0 p-0 w-auto">
-          <div className="list-group-item m-0 p-0  bg-info text-center shadow-sm my-auto" >
-            <h5 className="card-body p-auto ">
+          <div className="list-group-item m-0 p-0  bg-primary text-center shadow-sm my-auto" >
+            <h5 className="card-body p-auto text-white">
               {item.id}
             </h5>
           </div>
 
           {/*Item name*/}
-          <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark"  >
+          <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark "  >
               {item.comment ? (
                 <div className="alert alert-light m-0 mt-0 border-0 text-primary my-auto" role="alert">
                   {item.comment}

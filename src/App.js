@@ -1,6 +1,7 @@
-import React, {useState, useReducer} from "react";
+import React, {useEffect, useReducer, useState} from "react";
+import axios from "axios";
 import "./App.css";
-import  * as temp_data from "./temporary_data.js";
+import * as temp_data from "./temporary_data.js";
 import * as utils from "./utils.js";
 import {AppNavbar} from "./navbar.js";
 import {AppSignature} from "./signature.js"
@@ -11,6 +12,8 @@ import {ChecklistItem} from "./item.js"
 import {SectionTitle} from "./section_title.js";
 import {ValidationButton} from "./validation_button";
 import {AlertsBox} from "./alerts_box";
+import {Title} from "./title";
+import {checklist_arrays, checklist_list} from "./temporary_data.js";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -28,12 +31,6 @@ export default function App() {
   /*Function needed (for the moment), to force the components to update because they don't*/
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  /*Create the nested version of the cheklist list, using as input the flat version*/
-  let checklist_list = []
-  for (let i=0;i<temp_data.checklist_list_array.length;i++){
-    checklist_list.push(utils.checklist_flat_to_tree(temp_data.checklist_list_array[i],i))
-  }
-
 
   /*Main state variables :
   * -checklistId : Id of the current checklist
@@ -44,16 +41,57 @@ export default function App() {
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * */
   let [checklistId, setChecklistId] = useState(0)
-  let [checklistList, setChecklistList] = useState(checklist_list)
+
+  //On fait l'appel qui va chercher la liste des checklists (constant)
+  let [checklistList, setChecklistList] = useState(null)
+
+  //On fait l'appel qui va chercher la checklist 'checklistId = 0'
+  let [checklist, setChecklist] = useState(null)
+
+  let [currentQuestion, setCurrentQuestion] = useState(null)
+
+
+  // Init calls (get checklist list and the initial checklist
+  useEffect(() => {
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
+      .then(function(response){
+
+        //Must handle incoming data
+        console.log("call response", response)
+        console.log(temp_data.checklist_list)
+
+        //For now we use temp_data
+
+        setChecklistList(temp_data.checklist_list);
+        // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
+        // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
+        setChecklist(checklist)
+        console.log("initial get checklist list call and set finished")
+      });
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    .then(function(response){
+
+      //Must handle incoming data
+      console.log("call response", response)
+      console.log(temp_data.checklist_arrays[0])
+
+      //For now we use temp_data
+      const init_checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[0],0)
+
+      setChecklist(init_checklist);
+      setCurrentQuestion(init_checklist && init_checklist.values.length ? init_checklist.values[0] : null)
+      console.log("initial get first checklist call and set finished")
+    });
+  }, [])
+
   let [patientList, ] = useState(temp_data.patients)
   let [currentPatient, setCurrentPatient] = useState(patientList[0])
-  let [checklist, setChecklist] = useState(checklistList.filter(e => e.checklist_id === checklistId)[0])
   let [result, setResult] = useState({})
   let [visibleList, setVisibleList] = useState([])
   let [isPreCheckDone, setIsPreCheckDone] = useState([])
   let [warningId, setWarningId] = useState(0)
+  let [precheckMode, setPrecheckMode] = useState(true)
 
-  let [currentQuestion, setCurrentQuestion] = useState(checklist && checklist.values.length ? checklist.values[0] : null)
 
 
   /* Other state variables
@@ -66,7 +104,7 @@ export default function App() {
   let [trimmedCanvasUrl, setTrimmedCanvasUrl] = useState(null)
   let sigpad = {}
 
-  /* Initial set of isDict state variable
+  /* Initial set of isDict state variablesetTotalReactPackages
   * -init_dict : dict containing {0:true} for each possible answer (yes, no, etc), defined in utils.js
   * -isDict : dict containing a dict for each possible response,
   * containing the questions id's that have this response checked at this moment*/
@@ -76,6 +114,7 @@ export default function App() {
 
   // console.log("init_dict", init_dict)
 
+  // console.log(checklist)
 
   /* Fill in of numDict, containing all the numerical data (the way current patient info is extracted will be improved)*/
   let num_values = checklist ? checklist.num_values : []
@@ -94,22 +133,46 @@ export default function App() {
   visibleList = []
   if (checklist && checklist.values) {
     values = values_filter_cond(checklist.values, isDict, numDict, creationMode)
-    values.forEach(value => visibleList.push(value.id))
+    values.forEach(value => value.check.length ? visibleList.push(value.id): null)
   }
 
   let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
 
+  function reset (){
+    setResult({})
+    let init_dict_ = {}
+    utils.list_possible_answer.forEach(function (answer){init_dict_[answer]={0:true}})
+    setIsDict(init_dict_)
+    setIsPreCheckDone([])
+  }
+
   /* Function that changes the current checklist to the checklist with checklist_id and resets dicts*/
   const swapchecklist = (checklist_id) => {
-    setChecklistId(checklist_id);
-    checklist = checklistList.filter(e => e.checklist_id === checklist_id)[0]
-    setChecklist(checklist)
-    setResult({})
-    let init_dict = {}
-    utils.list_possible_answer.forEach(function (answer){init_dict[answer]={0:true}})
-    setIsDict(init_dict)
-    setIsPreCheckDone([])
-    console.log("isdict after swapchecklist", isDict)
+
+      //On fait l'appel qui va chercher la checklist 'checklistId = x'
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    .then(function(response){
+
+      //Must handle incoming data
+      console.log("swap call response", response)
+      console.log(temp_data.checklist_arrays[checklist_id])
+
+
+      //For now we use temp_data
+      const current_creation_mode = creationMode
+      checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[checklist_id],checklist_id)
+      checklist.name = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].name
+      checklist.person = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].person
+      setChecklist(checklist)
+
+      setCreationMode(false)
+      setChecklistId(checklist_id);
+      setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
+      setCreationMode(current_creation_mode)
+      reset()
+      console.log("switch checklist get call and set finished")
+    })
+
     return checklist
   }
 
@@ -128,8 +191,11 @@ export default function App() {
   // console.log("isPreCheckDone", isPreCheckDone)
   // console.log("isDict", isDict)
   // console.log("result", result)
-  console.log(result)
-  console.log(visibleList)
+  // console.log(result)
+  // console.log(visibleList)
+  // console.log(isDict)
+  // console.log(isPreCheckDone)
+  // console.log(result)
 
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
@@ -137,33 +203,37 @@ export default function App() {
   return (
     <div className="min-vh-100 content-page iq-bg-info">
       <div>
-        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, import_csv_result, result}}/>}
+        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result}}/>}
         {!creditMode ? (
           <div>
+            <Title checklistList={checklistList} checklistId={checklistId}/>
             {creationMode ?
-              <CreateBox props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion}} />
+              <CreateBox key={checklistId} props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist}} />
               :
               <div>
                 <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
                 <AlertsBox props={{}}/>
               </div>
             }
-            <div className="container p-0 border-bottom border border-dark rounded shadow">
+            <div className="container p-0 border-bottom border border-dark  shadow rounded rounded-0-bottom">
+
               {values ? values.map((i, index) => (
                 <div>
                   {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"" + (index ? "border-dark border-top":"")}/>}
                   <div className="mb-3 px-3">
                     <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts}
                                    forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
-                                   creationMode={creationMode} currentId = {currentQuestion.id} warningId={warningId}/>
+                                   creationMode={creationMode} currentId = {currentQuestion ? currentQuestion.id: null} warningId={warningId} precheckMode={precheckMode}
+                    />
                   </div>
                 </div>))
                 :
                 null
               }
             </div>
-            {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId}/> : null }
             {!creationMode ? <AppSignature props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
+            {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId}/> : null }
+
 
           </div>
           )
@@ -186,7 +256,7 @@ export default function App() {
 * + all num conditions
 */
 function values_filter_cond(values, isDict, numDict, creationMode) {
-  console.log(values)
+  // console.log(values)
   // console.log(isDict)
   return values.filter( item=>
       Object.keys(item.cond).every(
