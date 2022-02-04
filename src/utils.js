@@ -4,9 +4,9 @@ import { Series, DataFrame } from 'pandas-js';
 
 
 /*We consider a constant list of all possible answers to a question*/
-const list_possible_answer = ["yes","no","idk","ok","not_ok", "normal", "anormal",  "left", "right","na", "a", "b", "c", "text", "list"]
+const list_possible_answer = ["yes","no","idk","ok","not_ok", "normal", "anormal",  "left", "right","na", "a", "b", "c", "d", "text", "list"]
 const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","not_ok":"Non OK",
-  "normal":"Normal", "anormal":"Anormal", "na": "N.A.", "left": "Gauche", "right": "Droite", "a":"A", "b":"B", "c":"C", "text":"Texte", "list":"Liste"}
+  "normal":"Normal", "anormal":"Anormal", "na": "N.A.", "left": "Gauche", "right": "Droite", "a":"A", "b":"B", "c":"C", "d":"D", "text":"Texte", "list":"Liste"}
 
 const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender"]
 const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre"}

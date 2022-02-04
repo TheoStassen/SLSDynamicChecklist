@@ -16,7 +16,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
 
 
-  let [isDict, setIsDict, numDict, result, setResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList] = dicts
+  let [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList] = dicts
 
   // console.log(item)
   // console.log("isDict", isDict)
@@ -36,16 +36,21 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     // so we add in result and clean questions that depends of this item being with another answer (as it is not the case anymore)
     if (is_check){
       result[item.id]={name:item.name,answer:answer}
+      delete pbresult[item.id]
+      if (item.color[item.check.indexOf(answer)] === 1)
+        pbresult[item.id] = {name:item.name,answer:answer}
 
-      clean_children_rec(init_items, init_items, item.id,isDict, setIsDict, result, list_other_answer)
+      clean_children_rec(init_items, init_items, item.id,isDict, setIsDict, result, pbresult, list_other_answer)
     }
     // If is_check = false, it means that the state of the answer check -> uncheck,
     // so we remove in result and clean questions that depends of this item being with this answer (as it is not the case anymore)
     else{
       delete result[item.id]
-      clean_children_rec(init_items, init_items, item.id, isDict, setIsDict, result, [answer])
+      delete pbresult[item.id]
+      clean_children_rec(init_items, init_items, item.id, isDict, setIsDict, result, pbresult, [answer])
     }
     setResult(result)
+    setPbResult(pbresult)
     isDict[answer][item.id] = is_check
     list_other_answer.forEach(function(elm){isDict[elm][item.id]= false})
     setIsDict(isDict)
@@ -59,23 +64,24 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   };
 
   const handleOnChangeList = (selectedOptions) => {
-    const input_answer = selectedOptions.selectedValue[0];
-    if (selectedOptions.selectedKey[0] === "other") {
-      delete result[item.id]
-      setResult(result)
+    const input_answer = JSON.parse(JSON.stringify(selectedOptions.selectedValue));
+    if (selectedOptions.selectedKey.includes("other")) {
       setIsOther(true)
     }
     else{
-      result[item.id]={name:item.name,answer:input_answer}
-      setResult(result)
       setIsOther(false)
     }
+    result[item.id]={name:item.name,answer:input_answer}
+    setResult(result)
   };
 
   /*Function triggered where the user enter a text in a text question. We update the result*/
   const handleOnChangeListOther = (event) => {
     const input_text = event.target.value;
-    result[item.id]={name:item.name,answer:input_text}
+    let input_answer = result[item.id].answer
+    input_answer.pop() // With the first letter typed, remove the "other" field, when you continue to type, remove the previous word and add the new
+    input_answer.push(input_text)
+    result[item.id]={name:item.name,answer:input_answer}
     setResult(result)
   };
 
@@ -208,7 +214,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
             {/*If item answers must contain list, put a list dropdown input*/}
             {item.check[0].split("_").includes("list") ? (
-              <BootstrapSelect key={item.check[0].split("_")[1]} className=" w-100 my-auto " selectStyle ="py-2 px-4 btn btn-outline-dark bg-white text-dark" options={create_possible_list_answers(item.check[0].split("_")[1])} isMultiSelect={false} placeholder="Aucun" onChange={handleOnChangeList}/>
+              <BootstrapSelect key={item.check[0].split("_")[1]} className=" w-100 my-auto " selectStyle ="py-2 px-4 btn btn-outline-dark bg-white text-dark" options={create_possible_list_answers(item.check[0].split("_")[1])} isMultiSelect={true} placeholder="Aucun" onChange={handleOnChangeList}/>
             ) : null }
 
             {/*If item answers is list and the answer is Other, put a text*/}
@@ -234,13 +240,14 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   * -We call the function recursively on each child of the current item
   * - If the current item as been removed, we call recursively, s
   * */
-function clean_children_rec(init_item, item, id, isDict, setIsDict, result, answers) {
+function clean_children_rec(init_item, item, id, isDict, setIsDict, result, pbresult, answers) {
   let is_remove = false
   if(item.cond){
     answers.forEach(function(answer){
       if(item.cond[answer] && item.cond[answer].includes(id)){
         utils.list_possible_answer.forEach(function(elm){isDict[elm][item.id]= false})
         delete result[item.id]
+        delete pbresult[item.id]
         is_remove = true
       }
     })
@@ -248,11 +255,11 @@ function clean_children_rec(init_item, item, id, isDict, setIsDict, result, answ
 
   if (item.values && item.values.length){
     item.values.forEach( function (value) {
-      clean_children_rec(init_item, value, id, isDict, setIsDict, result, answers)
+      clean_children_rec(init_item, value, id, isDict, setIsDict, result, pbresult, answers)
     })
   }
   if (id !== item.id && is_remove) {
-        clean_children_rec(init_item, init_item, item.id, isDict, setIsDict, result, answers)
+        clean_children_rec(init_item, init_item, item.id, isDict, setIsDict, result, pbresult, answers)
   }
 }
 

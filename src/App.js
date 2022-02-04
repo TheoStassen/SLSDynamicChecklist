@@ -50,9 +50,12 @@ export default function App() {
 
   let [currentQuestion, setCurrentQuestion] = useState(null)
 
+  let [alertList,setAlertList] = useState(null)
+
 
   // Init calls (get checklist list and the initial checklist
   useEffect(() => {
+
     axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response){
 
@@ -68,8 +71,8 @@ export default function App() {
         setChecklist(checklist)
         console.log("initial get checklist list call and set finished")
       });
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
-    .then(function(response){
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set first checklist
+      .then(function(response){
 
       //Must handle incoming data
       console.log("call response", response)
@@ -82,11 +85,24 @@ export default function App() {
       setCurrentQuestion(init_checklist && init_checklist.values.length ? init_checklist.values[0] : null)
       console.log("initial get first checklist call and set finished")
     });
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set alert list
+      .then(function(response){
+
+        //Must handle incoming data
+        console.log("call response", response)
+        console.log(temp_data.alerts)
+
+        //For now we use temp_data
+        setAlertList(temp_data.alerts);
+        console.log("initial get alert list call and set finished")
+      });
+    // forceUpdate()
   }, [])
 
   let [patientList, ] = useState(temp_data.patients)
   let [currentPatient, setCurrentPatient] = useState(patientList[0])
   let [result, setResult] = useState({})
+  let [pbresult, setPbResult] = useState({})
   let [visibleList, setVisibleList] = useState([])
   let [isPreCheckDone, setIsPreCheckDone] = useState([])
   let [warningId, setWarningId] = useState(0)
@@ -136,10 +152,11 @@ export default function App() {
     values.forEach(value => value.check.length ? visibleList.push(value.id): null)
   }
 
-  let dicts = [isDict, setIsDict, numDict, result, setResult,isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
+  let dicts = [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
 
   function reset (){
     setResult({})
+    setPbResult({})
     let init_dict_ = {}
     utils.list_possible_answer.forEach(function (answer){init_dict_[answer]={0:true}})
     setIsDict(init_dict_)
@@ -165,9 +182,13 @@ export default function App() {
       checklist.person = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].person
       setChecklist(checklist)
 
-      setCreationMode(false)
+      setCreationMode(0)
       setChecklistId(checklist_id);
       setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
+      let alert_list = []
+      Object.keys(pbresult).forEach((key, index) =>
+        alert_list.push({"id":index, "question_id":key, "info": "Réponse précedente ("+ pbresult[key].name +" -> "+ utils.list_possible_answer_trad[pbresult[key].answer]+  " ) problèmatique", "gravity":0},))
+      setAlertList(alert_list)
       setCreationMode(current_creation_mode)
       reset()
       console.log("switch checklist get call and set finished")
@@ -197,6 +218,8 @@ export default function App() {
   // console.log(isPreCheckDone)
   // console.log(result)
 
+  console.log(pbresult)
+  console.log(result)
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
@@ -212,7 +235,7 @@ export default function App() {
               :
               <div>
                 <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
-                <AlertsBox props={{}}/>
+                <AlertsBox alertList={alertList}/>
               </div>
             }
             <div className="container p-0 border-bottom border border-dark  shadow rounded rounded-0-bottom">

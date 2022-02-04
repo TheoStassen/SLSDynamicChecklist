@@ -941,13 +941,13 @@ const checklist_arrays = [
     ],
     [
       3,
-      '"Patient (A=conscient, B=inconscient, C=dément)"',
+      '"Patient (A=conscient, B=inconscient, C=dément, D=Discommunicant)"',
       -1,
       2,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["a","b","c"]',
+      '["a","b","c","d"]',
       '[2,2,2,2,2]',
       null
     ],
@@ -1013,21 +1013,33 @@ const checklist_arrays = [
     ],
     [
       9,
-      '"Consentement du patient/parent <18 ans"',
+      '"Consentement du patient"',
       -1,
       8,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":17}]}',
       '["yes","no"]',
       '[0,1]',
       null
     ],
     [
       10,
-      '"Le patient décline le côté à opérer"',
+      '"Consentement du parent ( <18 ans ) "',
       -1,
       9,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[{"var":"age","op":"<","val":18}]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      11,
+      '"Le patient décline le côté à opérer"',
+      -1,
+      10,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1036,10 +1048,10 @@ const checklist_arrays = [
       null
     ],
     [
-      11,
+      12,
       '"L\'infirmière vérifie dans le dossier le type d\'intervention"',
       -1,
-      10,
+      11,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1048,10 +1060,10 @@ const checklist_arrays = [
       null
     ],
     [
-      12,
+      13,
       '"Maladies transmissibles connues"',
       -1,
-      11,
+      12,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1060,10 +1072,10 @@ const checklist_arrays = [
       null
     ],
     [
-      13,
+      14,
       '"Patient(e) à jeun"',
       -1,
-      12,
+      13,
       null,
       '"À vérifier"',
       '{"yes":[],"no":[],"num":[]}',
@@ -1072,20 +1084,8 @@ const checklist_arrays = [
       null
     ],
     [
-      14,
-      '"Vernis à ongle ôté"',
-      -1,
-      13,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null
-    ],
-    [
       15,
-      '"A uriné"',
+      '"Vernis à ongle ôté"',
       -1,
       14,
       null,
@@ -1097,7 +1097,7 @@ const checklist_arrays = [
     ],
     [
       16,
-      '"Proth. dentaire/auditives/lentilles ôtées"',
+      '"A uriné"',
       -1,
       15,
       null,
@@ -1109,7 +1109,7 @@ const checklist_arrays = [
     ],
     [
       17,
-      '"Bijoux/piercings ôtés"',
+      '"Proth. dentaire/auditives/lentilles ôtées"',
       -1,
       16,
       null,
@@ -1121,9 +1121,21 @@ const checklist_arrays = [
     ],
     [
       18,
-      '"Médicamenteuses"',
+      '"Bijoux/piercings ôtés"',
       -1,
       17,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      19,
+      '"Médicamenteuses"',
+      -1,
+      18,
       null,
       '"Le patient déclare ses allergies"',
       '{"yes":[],"no":[],"num":[]}',
@@ -1132,19 +1144,19 @@ const checklist_arrays = [
       null
     ],
     [
-      19,
+      20,
       '"Lesquelles ?"',
-      -1,
-      18,
+      19,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[19],"no":[],"num":[]}',
       '["list_alergy-meds"]',
       '[0,1,2]',
       null
     ],
     [
-      20,
+      21,
       '"Alimentaires"',
       -1,
       19,
@@ -1156,34 +1168,22 @@ const checklist_arrays = [
       null
     ],
     [
-      21,
+      22,
       '"Lesquelles ?"',
-      -1,
-      20,
+      19,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[21],"no":[],"num":[]}',
       '["list_alergy-aliments"]',
       '[0,1]',
       null
     ],
     [
-      22,
+      23,
       '"Hygiène du patient correcte"',
       -1,
-      21,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null
-    ],
-    [
-      23,
-      '"Propreté et intégrité du site opératoire"',
-      -1,
-      22,
+      20,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1193,9 +1193,9 @@ const checklist_arrays = [
     ],
     [
       24,
-      '"Dépilation"',
+      '"Propreté et intégrité du site opératoire"',
       -1,
-      23,
+      21,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1205,9 +1205,21 @@ const checklist_arrays = [
     ],
     [
       25,
+      '"Dépilation"',
+      -1,
+      22,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      26,
       '"Présence de bas de contention"',
       -1,
-      24,
+      23,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1216,10 +1228,10 @@ const checklist_arrays = [
       null
     ],
     [
-      26,
+      27,
       '"Nom"',
       -1,
-      25,
+      24,
       null,
       '"Infirmière de l\'US qui a préparé le patient pour le BO "',
       '{"yes":[],"no":[],"num":[]}',
@@ -1267,13 +1279,13 @@ const checklist_arrays = [
     ],
     [
       3,
-      '"Patient (A=conscient, B=inconscient, C=dément)"',
+      '"Patient (A=conscient, B=inconscient, C=dément, D=Discommunicant)"',
       -1,
       2,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["a","b","c"]',
+      '["a","b","c","d"]',
       '[2,2,2,2,2]',
       null
     ],
@@ -1327,21 +1339,33 @@ const checklist_arrays = [
     ],
     [
       8,
-      '"Consentement du patient/d\'un parent <18 ans"',
+      '"Consentement du patient"',
       -1,
       7,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":17}]}',
       '["yes","no"]',
       '[0,1]',
       null
     ],
     [
       9,
-      '"Le patient décline le côté à opérer"',
+      '"Consentement du parent ( <18 ans )"',
       -1,
       8,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[{"var":"age","op":"<","val":18}]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      10,
+      '"Le patient décline le côté à opérer"',
+      -1,
+      9,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1350,10 +1374,10 @@ const checklist_arrays = [
       null
     ],
     [
-      10,
+      11,
       '"L\'infirmière vérifie dans le dossier le type d\'intervention"',
       -1,
-      9,
+      10,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1362,10 +1386,10 @@ const checklist_arrays = [
       null
     ],
     [
-      11,
+      12,
       '"Maladies transmissibles connues"',
       -1,
-      10,
+      11,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1374,19 +1398,19 @@ const checklist_arrays = [
       null
     ],
     [
-      12,
+      13,
       '"Lesquelles ?"',
-      -1,
-      11,
+      12,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[12],"no":[],"num":[]}',
       '["list_diseases"]',
       '[0,1]',
       null
     ],
     [
-      13,
+      14,
       '"Patient(e) à jeun"',
       -1,
       12,
@@ -1398,7 +1422,7 @@ const checklist_arrays = [
       null
     ],
     [
-      14,
+      15,
       '"Vernis à ongles ôté"',
       -1,
       13,
@@ -1410,7 +1434,7 @@ const checklist_arrays = [
       null
     ],
     [
-      15,
+      16,
       '"A uriné"',
       -1,
       14,
@@ -1422,7 +1446,7 @@ const checklist_arrays = [
       null
     ],
     [
-      16,
+      17,
       '"Proth. dentaires/auditives/lentilles ôtées"',
       -1,
       15,
@@ -1434,7 +1458,7 @@ const checklist_arrays = [
       null
     ],
     [
-      17,
+      18,
       '"Bijoux/piercings ôtés"',
       -1,
       16,
@@ -1446,7 +1470,7 @@ const checklist_arrays = [
       null
     ],
     [
-      18,
+      19,
       '"Médicamenteuses"',
       -1,
       17,
@@ -1458,22 +1482,22 @@ const checklist_arrays = [
       null
     ],
     [
-      19,
+      20,
       '"Lesquelles ?"',
-      -1,
-      18,
+      19,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[19],"no":[],"num":[]}',
       '["list_alergy-meds"]',
       '[0,1]',
       null
     ],
     [
-      20,
+      21,
       '"Alimentaires"',
       -1,
-      19,
+      18,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1482,34 +1506,22 @@ const checklist_arrays = [
       null
     ],
     [
-      21,
+      22,
       '"Lesquelles ?"',
-      -1,
-      20,
+      21,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[21],"no":[],"num":[]}',
       '["list_alergy-aliments"]',
       '[0,1]',
       null
     ],
     [
-      22,
+      23,
       '"Hygiène du patient correcte"',
       -1,
-      21,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null
-    ],
-    [
-      23,
-      '"Propreté et intégrité du site opératoire"',
-      -1,
-      22,
+      19,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1519,9 +1531,9 @@ const checklist_arrays = [
     ],
     [
       24,
-      '"Dépilation"',
+      '"Propreté et intégrité du site opératoire"',
       -1,
-      23,
+      20,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1531,9 +1543,21 @@ const checklist_arrays = [
     ],
     [
       25,
+      '"Dépilation"',
+      -1,
+      21,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null
+    ],
+    [
+      26,
       '"Présence de bas de contention"',
       -1,
-      24,
+      22,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1542,10 +1566,10 @@ const checklist_arrays = [
       null
     ],
     [
-      26,
+      27,
       '"Nom"',
       -1,
-      25,
+      23,
       null,
       '"Infirmière qui accueille le patient au BO :"',
       '{"yes":[],"no":[],"num":[]}',
@@ -1593,7 +1617,7 @@ const checklist_arrays = [
     ],
     [
       3,
-      '"Présentation des perso..."',
+      '"Présentation des personnes habituelles"',
       -1,
       2,
       null,
@@ -1605,7 +1629,7 @@ const checklist_arrays = [
     ],
     [
       4,
-      '"Vérification identité du...."',
+      '"Vérification identité du patient"',
       -1,
       3,
       null,
@@ -1617,7 +1641,7 @@ const checklist_arrays = [
     ],
     [
       5,
-      '"Rappel de l\'intitulé de l..."',
+      '"Rappel de l\'intitulé de l\'intervention"',
       -1,
       4,
       null,
@@ -1653,7 +1677,19 @@ const checklist_arrays = [
     ],
     [
       8,
-      '"Risque de perte sanguine... Si oui, des poches de sang..."',
+      '"Lesquelles"',
+      7,
+      0,
+      null,
+      null,
+      '{"yes":[7],"no":[],"num":[]}',
+      '["list_diseases"]',
+      '[1,0]',
+      null
+    ],
+    [
+      9,
+      '"Risque de perte sanguine..."',
       -1,
       7,
       null,
@@ -1664,7 +1700,19 @@ const checklist_arrays = [
       null
     ],
     [
+      10,
+      '"Poches de sang..."',
       9,
+      0,
+      null,
+      null,
+      '{"yes":[9],"no":[],"num":[]}',
+      '["ok","not_ok"]',
+      '[0,1]',
+      null
+    ],
+    [
+      11,
       '"Vérif. administr. AB Prophyl."',
       -1,
       8,
@@ -1676,7 +1724,7 @@ const checklist_arrays = [
       null
     ],
     [
-      10,
+      12,
       '"Heure"',
       -1,
       9,
@@ -1688,7 +1736,7 @@ const checklist_arrays = [
       null
     ],
     [
-      11,
+      13,
       '"Matériel d\'anesthésie disponible / ordre de marche"',
       -1,
       10,
@@ -1700,7 +1748,7 @@ const checklist_arrays = [
       null
     ],
     [
-      12,
+      14,
       '"Respirateur"',
       -1,
       11,
@@ -1712,7 +1760,7 @@ const checklist_arrays = [
       null
     ],
     [
-      13,
+      15,
       '"Oxym. de pouls"',
       -1,
       12,
@@ -1724,7 +1772,7 @@ const checklist_arrays = [
       null
     ],
     [
-      14,
+      16,
       '"Monitoring"',
       -1,
       13,
@@ -1736,7 +1784,7 @@ const checklist_arrays = [
       null
     ],
     [
-      15,
+      17,
       '"Difficultés airways et/ou intubation"',
       -1,
       14,
@@ -1748,22 +1796,22 @@ const checklist_arrays = [
       null
     ],
     [
-      16,
-      '"Si oui, glydescope ou équivalent présent"',
-      -1,
-      15,
+      18,
+      '"Glydescope ou équivalent présent"',
+      17,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[17],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
       null
     ],
     [
-      17,
+      19,
       '"Matériel pour l\'infirmière circulante disponible et en ordre de marche (laryngoscope, ...)"',
       -1,
-      16,
+      15,
       null,
       '"Infirmière circulante"',
       '{"yes":[],"no":[],"num":[]}',
@@ -1772,10 +1820,10 @@ const checklist_arrays = [
       null
     ],
     [
-      18,
+      20,
       '"La stérilité du matériel disposable et non disposable a été vérifiée (résultats des indicateurs + vérification date péremption)"',
       -1,
-      17,
+      16,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1784,10 +1832,10 @@ const checklist_arrays = [
       null
     ],
     [
-      19,
+      21,
       '"Induction - Nom "',
       -1,
-      18,
+      17,
       null,
       '"Anesthésistes"',
       '{"yes":[],"no":[],"num":[]}',
@@ -1796,10 +1844,10 @@ const checklist_arrays = [
       null
     ],
     [
-      20,
+      22,
       '"Réveil - Nom"',
       -1,
-      19,
+      18,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1808,10 +1856,10 @@ const checklist_arrays = [
       null
     ],
     [
-      21,
+      23,
       '"Si changement - Nom"',
       -1,
-      20,
+      19,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1847,7 +1895,7 @@ const patients = [
 const lists = {
   "meds": ["Mc","Lis","Kl","Eft", "Aucun"],
   "diseases": ["Covid","Grippe","Pneumonie", "Aucune"],
-  "patient-states" : ["Conscient","Inconscient","Dément"],
+  "patient-states" : ["Conscient","Inconscient","Dément", "Discommunicant"],
   "alergy-meds" : ["Latex","Peniciline","Insuline", "Ibuprofène", "Aucune"],
   "alergy-aliments" : ["Gluten","Lactose","Arachides", "Aucune"]
 }
@@ -1855,10 +1903,10 @@ const lists = {
 const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients", "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires"}
 
 const alerts = [
-  {"id":0, "question_id":1, "info": "Réponse précedente problèmatique", "gravity":0},
-  {"id":1, "question_id":6, "info": "Réponse précedente positive, mais nécessite recheck", "gravity":1},
-  {"id":2, "question_id":28, "info": "Réponse précedente positive, mais nécessite recheck","gravity":1},
-  {"id":3, "question_id":30, "info": "Réponse précedente problèmatique","gravity":2}
+  // {"id":0, "question_id":1, "info": "Réponse précedente problèmatique", "gravity":0},
+  // {"id":1, "question_id":6, "info": "Réponse précedente positive, mais nécessite recheck", "gravity":1},
+  // {"id":2, "question_id":28, "info": "Réponse précedente positive, mais nécessite recheck","gravity":1},
+  // {"id":3, "question_id":30, "info": "Réponse précedente problèmatique","gravity":2}
 ]
 
 export {checklist_trees, checklist_arrays, checklist_list, patients, lists, lists_trad, alerts}

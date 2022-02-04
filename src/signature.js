@@ -41,13 +41,13 @@ function AppSignature ({props}) {
         {/*Validation and Reinitialisation buttons*/}
         <div className="col-sm-3 mx-2 p-0">
           {/*Button to validate the current signature and put info into data*/}
-          <div className="row align-items-center p-0 m-0 mb-2 px-4">
+          <div className="row align-items-center p-0 m-0 mb-2 mt-4 px-4">
             <button type="button" className="btn btn-warning w-100" onClick={trim_canvas}>
               Valider la signature
             </button>
           </div>
           {/*Button to clean the current signature canvas and remove info in data*/}
-          <div className=" row align-items-center p-0 m-0 px-4">
+          <div className=" row align-items-center p-0 m-0 mb-4 px-4">
             <button type="button" className="btn btn-secondary w-100" onClick={reinit_canvas}>
               Réinitialiser
             </button>
