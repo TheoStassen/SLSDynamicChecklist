@@ -68,7 +68,7 @@ export default function App() {
         setChecklistList(temp_data.checklist_list);
         // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
         // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
-        setChecklist(checklist)
+        // setChecklist(checklist)
         console.log("initial get checklist list call and set finished")
       });
     axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set first checklist
@@ -174,6 +174,10 @@ export default function App() {
       console.log("swap call response", response)
       console.log(temp_data.checklist_arrays[checklist_id])
 
+      let alert_list = []
+      Object.keys(pbresult).forEach((key, index) =>
+        alert_list.push({"id":index, "question_id":key, "info": "Réponse précedente ("+ pbresult[key].name +" -> "+ utils.list_possible_answer_trad[pbresult[key].answer]+  " ) problèmatique", "gravity":0},))
+      setAlertList(alert_list)
 
       //For now we use temp_data
       const current_creation_mode = creationMode
@@ -185,10 +189,7 @@ export default function App() {
       setCreationMode(0)
       setChecklistId(checklist_id);
       setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
-      let alert_list = []
-      Object.keys(pbresult).forEach((key, index) =>
-        alert_list.push({"id":index, "question_id":key, "info": "Réponse précedente ("+ pbresult[key].name +" -> "+ utils.list_possible_answer_trad[pbresult[key].answer]+  " ) problèmatique", "gravity":0},))
-      setAlertList(alert_list)
+
       setCreationMode(current_creation_mode)
       reset()
       console.log("switch checklist get call and set finished")
@@ -216,17 +217,15 @@ export default function App() {
   // console.log(visibleList)
   // console.log(isDict)
   // console.log(isPreCheckDone)
-  // console.log(result)
-
   console.log(pbresult)
-  console.log(result)
+  // console.log(currentQuestion)
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
   return (
     <div className="min-vh-100 content-page iq-bg-info">
       <div>
-        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result}}/>}
+        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist}}/>}
         {!creditMode ? (
           <div>
             <Title checklistList={checklistList} checklistId={checklistId}/>
@@ -238,15 +237,16 @@ export default function App() {
                 <AlertsBox alertList={alertList}/>
               </div>
             }
-            <div className="container p-0 border-bottom border border-dark  shadow rounded rounded-0-bottom">
+            <div className={"container p-0 border-bottom border border-dark  shadow rounded rounded-0-bottom "}>
 
               {values ? values.map((i, index) => (
-                <div>
-                  {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"" + (index ? "border-dark border-top":"")}/>}
-                  <div className="mb-3 px-3">
+                <div >
+                  {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"bg-primary " + (index ? "border-dark border-top":"")}/>}
+                  <div className={"pb-3 px-3 pt-3 " + (index || i.section_title ? "":" rounded rounded-0-bottom ") + (i.importance ? "iq-bg-danger": "iq-bg-info")}>
                     <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts}
                                    forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
                                    creationMode={creationMode} currentId = {currentQuestion ? currentQuestion.id: null} warningId={warningId} precheckMode={precheckMode}
+                                   is_root={true}
                     />
                   </div>
                 </div>))

@@ -15,7 +15,7 @@ function AlertsBox ({alertList}) {
   const half = list_alert ? Math.ceil(list_alert.length/2) : 0
 
   const first_half_list = list_alert ? list_alert.slice(0, half) : []
-  const second_half_list = list_alert ? list_alert.length % 2 === 0 ? list_alert.slice(-half) : list_alert.slice(-half+1) : []
+  const second_half_list = list_alert && list_alert.length > 1 ? list_alert.length % 2 === 0 ? list_alert.slice(-half) : list_alert.slice(-half+1) : []
 
   return (
     <div className={"container iq-card pt-3 pb-1 border-bottom border-left border-right border-dark shadow rounded-0-top"}>

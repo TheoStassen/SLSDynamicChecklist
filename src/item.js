@@ -10,7 +10,7 @@ import BootstrapSelect from "react-bootstrap-select-dropdown";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode}) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root}) {
 
   // console.log("enter item", item)
 
@@ -29,7 +29,9 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /* Function triggered when the user click on one answer, we update the isDict and results and clean (remove from isDict and results) questions
   * that must not be visible anymore, because of there cond's */
   const handleOnChangeIs = (answer) => {
+    console.log("handle change", item)
     const is_check = !isDict[answer][item.id]
+    console.log(is_check)
     const list_other_answer = utils.list_possible_answer.filter(elm => elm !== answer)
 
     // If is_check = true, it means that the state of the answer uncheck -> check,
@@ -130,7 +132,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     children = (
       <ul className="mb-0">
         {values.map((i, index) => (
-          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} warningId={warningId} />
+          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} warningId={warningId} is_root={false} />
         ))}
       </ul>
     );
@@ -148,11 +150,11 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   // console.log(warningId)
   // console.log(currentId)
   //
-  // console.log(item)
+  // console.log("item", item)
 
   /*We return the different elements of the current item, and also his children*/
   return (
-    <div className={"container p-0 mt-3 mx-auto "}>
+    <div className={"container p-0 mx-auto " + (is_root ? "":"mt-3") }>
       {/*Current Item*/}
 
       {warningId === item.id ? (
@@ -168,14 +170,14 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
         {/*Item Id*/}
         <div className="col list-group list-group-horizontal m-0 p-0 w-auto">
-          <div className="list-group-item m-0 p-0  bg-primary text-center shadow-sm my-auto" >
+          <div className={"list-group-item m-0 p-0 text-center shadow-sm my-auto " + (item.importance ? "bg-danger" : "bg-primary")} >
             <h5 className="card-body p-auto text-white">
               {item.id}
             </h5>
           </div>
 
           {/*Item name*/}
-          <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark "  >
+          <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark bg- "  >
               {item.comment ? (
                 <div className="alert alert-light m-0 mt-0 border-0 text-primary my-auto" role="alert">
                   {item.comment}
@@ -191,7 +193,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
         {/*Item answers (if any, if not empty col)*/}
         {item.check.length ? (
-        <div className="col-md-auto p-0 pl-3">
+        <div className="col-sm-auto p-0 pl-3">
           <div className="list-group list-group-horizontal ">
             {/*For each possible answer, if in item.check, we put a checkbox*/}
             {item.check.map((answer, index) =>
@@ -214,7 +216,10 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
             {/*If item answers must contain list, put a list dropdown input*/}
             {item.check[0].split("_").includes("list") ? (
-              <BootstrapSelect key={item.check[0].split("_")[1]} className=" w-100 my-auto " selectStyle ="py-2 px-4 btn btn-outline-dark bg-white text-dark" options={create_possible_list_answers(item.check[0].split("_")[1])} isMultiSelect={true} placeholder="Aucun" onChange={handleOnChangeList}/>
+              <BootstrapSelect key={item.check[0].split("_")[1]} className=" my-auto "
+                               selectStyle ="py-2  btn btn-outline-dark bg-white text-dark "
+                               options={create_possible_list_answers(item.check[0].split("_")[1])}
+                               isMultiSelect={true} placeholder="Aucun" onChange={handleOnChangeList} menuSize={10}/>
             ) : null }
 
             {/*If item answers is list and the answer is Other, put a text*/}
@@ -245,6 +250,7 @@ function clean_children_rec(init_item, item, id, isDict, setIsDict, result, pbre
   if(item.cond){
     answers.forEach(function(answer){
       if(item.cond[answer] && item.cond[answer].includes(id)){
+        console.log("delete", item)
         utils.list_possible_answer.forEach(function(elm){isDict[elm][item.id]= false})
         delete result[item.id]
         delete pbresult[item.id]

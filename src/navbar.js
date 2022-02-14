@@ -11,7 +11,7 @@ import * as utils from "./utils";
 * */
 function AppNavbar ({props}) {
 
-  let {setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result} = props;
+  let {setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -27,6 +27,7 @@ function AppNavbar ({props}) {
   /*Deactivate the creation mode*/
   const deactivatecreatemode = () => {
     setCreationMode(0)
+    setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
   }
 
   /*Activate the credit mode*/

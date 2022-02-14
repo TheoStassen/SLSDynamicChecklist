@@ -381,7 +381,8 @@ const checklist_arrays = [
       '"cond"',
       '"check"',
       '"color"',
-      '"pre_check"'
+      '"pre_check"',
+      '"importance'
     ],
     [
       1,
@@ -393,7 +394,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","idk"]',
       '[0,1,2]',
-      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}'
+      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}',
+      0,
     ],
     [
       2,
@@ -405,7 +407,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"idk":[1],"num":[]}',
       '["yes","no"]',
       '[1,0]',
-      null
+      null,
+      0,
     ],
     [
       3,
@@ -417,7 +420,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '["yes","no"]',
       '[1,0]',
-      null
+      null,
+      0,
     ],
     [
       4,
@@ -429,7 +433,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       5,
@@ -441,7 +446,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '[]',
       null,
-      null
+      null,
+      0,
     ],
     [
       6,
@@ -453,7 +459,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       7,
@@ -465,7 +472,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       8,
@@ -477,7 +485,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       9,
@@ -489,7 +498,8 @@ const checklist_arrays = [
       '{"yes":[1],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       10,
@@ -501,7 +511,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":15},{"var":"age","op":"<","val":60},{"var":"gender","op":"=","val":"F"}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       11,
@@ -513,7 +524,8 @@ const checklist_arrays = [
       '{"yes":[10],"no":[],"num":[]}',
       '["text"]',
       null,
-      null
+      null,
+      0,
     ],
     [
       12,
@@ -525,7 +537,8 @@ const checklist_arrays = [
       '{"yes":[10],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       13,
@@ -537,7 +550,8 @@ const checklist_arrays = [
       '{"yes":[12],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       14,
@@ -549,7 +563,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[12],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       15,
@@ -561,7 +576,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[12],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       16,
@@ -573,7 +589,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      '{"if":[[{"var":"diabetic","op":"est","val":"vrai"}]],"then":"yes"}'
+      '{"if":[[{"var":"diabetic","op":"est","val":"vrai"}]],"then":"yes"}',
+      0,
     ],
     [
       17,
@@ -585,7 +602,8 @@ const checklist_arrays = [
       '{"yes":[16],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       18,
@@ -597,7 +615,8 @@ const checklist_arrays = [
       '{"yes":[17],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       19,
@@ -609,7 +628,8 @@ const checklist_arrays = [
       '{"yes":[16],"no":[17],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       20,
@@ -621,7 +641,8 @@ const checklist_arrays = [
       '{"yes":[19],"no":[],"num":[]}',
       '["text"]',
       null,
-      null
+      null,
+      0,
     ],
     [
       21,
@@ -633,7 +654,8 @@ const checklist_arrays = [
       '{"yes":[16],"no":[],"num":[]}',
       '["normal","anormal"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       22,
@@ -645,7 +667,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[{"var":"age","op":"<","val":15}]}',
       '[]',
       null,
-      null
+      null,
+      0,
     ],
     [
       23,
@@ -657,7 +680,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":"<","val":15}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       24,
@@ -669,7 +693,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":"<","val":15}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       25,
@@ -681,7 +706,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":"<","val":15}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       26,
@@ -693,7 +719,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":"<","val":15}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       27,
@@ -705,7 +732,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":">","val":10}]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       28,
@@ -717,7 +745,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":">","val":10}]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       29,
@@ -729,7 +758,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[{"var":"age","op":">","val":10}]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       30,
@@ -741,7 +771,8 @@ const checklist_arrays = [
       '{"yes":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       31,
@@ -753,7 +784,8 @@ const checklist_arrays = [
       '{"yes":[30],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      '{"if":[[{"val":"yes","var":34},{"val":"yes","var":37}]],"then":"no"}'
+      '{"if":[[{"val":"yes","var":34},{"val":"yes","var":37}]],"then":"no"}',
+      0,
     ],
     [
       32,
@@ -765,7 +797,8 @@ const checklist_arrays = [
       '{"yes":[31],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       33,
@@ -777,7 +810,8 @@ const checklist_arrays = [
       '{"yes":[31],"num":[]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       34,
@@ -789,7 +823,8 @@ const checklist_arrays = [
       '{"yes":[30],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      '{"if":[[{"val":"yes","var":31},{"val":"yes","var":37}]],"then":"no"}'
+      '{"if":[[{"val":"yes","var":31},{"val":"yes","var":37}]],"then":"no"}',
+      0,
     ],
     [
       35,
@@ -801,7 +836,8 @@ const checklist_arrays = [
       '{"yes":[34],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       36,
@@ -813,7 +849,8 @@ const checklist_arrays = [
       '{"yes":[34],"num":[]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       37,
@@ -825,7 +862,8 @@ const checklist_arrays = [
       '{"yes":[30],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      '{"if":[[{"var":31,"val":"yes"},{"val":"yes","var":34}]],"then":"no"}'
+      '{"if":[[{"var":31,"val":"yes"},{"val":"yes","var":34}]],"then":"no"}',
+      0,
     ],
     [
       38,
@@ -837,7 +875,8 @@ const checklist_arrays = [
       '{"yes":[37],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       39,
@@ -849,7 +888,8 @@ const checklist_arrays = [
       '{"yes":[37],"num":[]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0,
     ],
     [
       40,
@@ -861,8 +901,9 @@ const checklist_arrays = [
       '{"yes":[30],"no":[31,34,37],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
-    ],
+      null,
+      0,
+    ]
     // [
     //   40,
     //   '"Médicament"',
@@ -887,8 +928,9 @@ const checklist_arrays = [
       '"cond"',
       '"check"',
       '"color"',
-      '"pre_check"'
-    ],
+      '"pre_check"',
+      '"importance',
+    ]
     [
       1,
       '"Intubation Difficile ? "',
@@ -899,7 +941,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","idk"]',
       '[0,1,2]',
-      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}'
+      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}',
+      0
     ],
   ],
   [
@@ -913,7 +956,8 @@ const checklist_arrays = [
       '"cond"',
       '"check"',
       '"color"',
-      '"pre_check"'
+      '"pre_check"',
+      '"importance'
     ],
     [
       1,
@@ -925,7 +969,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[1,0,2]',
-      null
+      null,
+      1
     ],
     [
       2,
@@ -937,7 +982,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       3,
@@ -949,7 +995,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["a","b","c","d"]',
       '[2,2,2,2,2]',
-      null
+      null,
+      0
     ],
     [
       4,
@@ -961,7 +1008,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["list_patient-states"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       5,
@@ -973,7 +1021,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       6,
@@ -985,7 +1034,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       7,
@@ -997,7 +1047,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       8,
@@ -1009,7 +1060,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       9,
@@ -1021,7 +1073,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":17}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       10,
@@ -1033,7 +1086,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[{"var":"age","op":"<","val":18}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       11,
@@ -1045,7 +1099,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["left","right","na"]',
       '[2,2,2,2,2]',
-      null
+      null,
+      0
     ],
     [
       12,
@@ -1057,7 +1112,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       13,
@@ -1069,7 +1125,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["list_diseases"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       14,
@@ -1081,7 +1138,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       15,
@@ -1093,7 +1151,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       16,
@@ -1105,7 +1164,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       17,
@@ -1117,7 +1177,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       18,
@@ -1129,7 +1190,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       19,
@@ -1141,7 +1203,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       20,
@@ -1153,7 +1216,8 @@ const checklist_arrays = [
       '{"yes":[19],"no":[],"num":[]}',
       '["list_alergy-meds"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       21,
@@ -1165,7 +1229,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       22,
@@ -1177,7 +1242,8 @@ const checklist_arrays = [
       '{"yes":[21],"no":[],"num":[]}',
       '["list_alergy-aliments"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       23,
@@ -1189,7 +1255,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       24,
@@ -1201,7 +1268,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       25,
@@ -1213,7 +1281,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       26,
@@ -1225,7 +1294,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       27,
@@ -1233,11 +1303,12 @@ const checklist_arrays = [
       -1,
       24,
       null,
-      '"Infirmière de l\'US qui a préparé le patient pour le BO "',
+      '"Infirmièr(e) de l\'US qui a préparé le patient pour le BO "',
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["list_nurses"]',
       '[0,1]',
-      null
+      null,
+      0
     ]
   ],
   [
@@ -1251,7 +1322,8 @@ const checklist_arrays = [
       '"cond"',
       '"check"',
       '"color"',
-      '"pre_check"'
+      '"pre_check"',
+      '"importance'
     ],
     [
       1,
@@ -1263,7 +1335,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[1,0,2]',
-      null
+      null,
+      1
     ],
     [
       2,
@@ -1275,7 +1348,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       3,
@@ -1287,7 +1361,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["a","b","c","d"]',
       '[2,2,2,2,2]',
-      null
+      null,
+      0
     ],
     [
       4,
@@ -1299,7 +1374,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       5,
@@ -1311,7 +1387,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       6,
@@ -1323,7 +1400,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       7,
@@ -1335,7 +1413,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       8,
@@ -1347,7 +1426,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":17}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       9,
@@ -1359,7 +1439,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[{"var":"age","op":"<","val":18}]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       10,
@@ -1371,7 +1452,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["left","right","na"]',
       '[2,2,2,2]',
-      null
+      null,
+      0
     ],
     [
       11,
@@ -1383,7 +1465,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["ok", "not_ok"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       12,
@@ -1395,7 +1478,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[1,0]',
-      null
+      null,
+      0
     ],
     [
       13,
@@ -1407,7 +1491,8 @@ const checklist_arrays = [
       '{"yes":[12],"no":[],"num":[]}',
       '["list_diseases"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       14,
@@ -1419,7 +1504,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       15,
@@ -1431,7 +1517,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       16,
@@ -1443,7 +1530,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       17,
@@ -1455,7 +1543,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       18,
@@ -1467,7 +1556,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       19,
@@ -1479,7 +1569,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[1,0,2]',
-      null
+      null,
+      0
     ],
     [
       20,
@@ -1491,7 +1582,8 @@ const checklist_arrays = [
       '{"yes":[19],"no":[],"num":[]}',
       '["list_alergy-meds"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       21,
@@ -1503,7 +1595,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[1,0,2]',
-      null
+      null,
+      0
     ],
     [
       22,
@@ -1515,7 +1608,8 @@ const checklist_arrays = [
       '{"yes":[21],"no":[],"num":[]}',
       '["list_alergy-aliments"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       23,
@@ -1527,7 +1621,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       24,
@@ -1539,7 +1634,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       25,
@@ -1551,7 +1647,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       26,
@@ -1563,7 +1660,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       27,
@@ -1575,7 +1673,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
+      null,
+      0
     ]
   ],
   [
@@ -1589,7 +1688,8 @@ const checklist_arrays = [
       '"cond"',
       '"check"',
       '"color"',
-      '"pre_check"'
+      '"pre_check"',
+      '"importance'
     ],
     [
       1,
@@ -1601,7 +1701,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1,2]',
-      '{"if":[[{"var":"difficult_intubation","op":"est","val":"vrai"}]],"then":"yes"}'
+      null,
+      0
     ],
     [
       2,
@@ -1613,7 +1714,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       3,
@@ -1625,7 +1727,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       4,
@@ -1637,7 +1740,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       5,
@@ -1649,7 +1753,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       6,
@@ -1661,7 +1766,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["left","right","na"]',
       '[2,2,2,2,2]',
-      null
+      null,
+      0
     ],
     [
       7,
@@ -1673,7 +1779,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[1,0]',
-      null
+      null,
+      0
     ],
     [
       8,
@@ -1685,7 +1792,8 @@ const checklist_arrays = [
       '{"yes":[7],"no":[],"num":[]}',
       '["list_diseases"]',
       '[1,0]',
-      null
+      null,
+      0
     ],
     [
       9,
@@ -1697,7 +1805,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[1,0,2]',
-      null
+      null,
+      0
     ],
     [
       10,
@@ -1709,7 +1818,8 @@ const checklist_arrays = [
       '{"yes":[9],"no":[],"num":[]}',
       '["ok","not_ok"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       11,
@@ -1721,7 +1831,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[0,1,2]',
-      null
+      null,
+      0
     ],
     [
       12,
@@ -1733,7 +1844,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       13,
@@ -1745,7 +1857,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       14,
@@ -1757,7 +1870,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       15,
@@ -1769,7 +1883,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       16,
@@ -1781,7 +1896,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       17,
@@ -1793,7 +1909,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[1,0,2]',
-      null
+      null,
+      0
     ],
     [
       18,
@@ -1805,7 +1922,8 @@ const checklist_arrays = [
       '{"yes":[17],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       19,
@@ -1817,7 +1935,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       20,
@@ -1829,7 +1948,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       21,
@@ -1841,7 +1961,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       22,
@@ -1853,7 +1974,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
+      null,
+      0
     ],
     [
       23,
@@ -1865,7 +1987,8 @@ const checklist_arrays = [
       '{"yes":[],"no":[],"num":[]}',
       '["text"]',
       '[0,1]',
-      null
+      null,
+      0
     ]
   ]
 ]
@@ -1890,14 +2013,33 @@ const patients = [
   {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
   {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
   {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940", "diabetic":"faux", "difficult_intubation":"vrai"  },
+  {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/1960", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 2, "lastname": "Perlot", "firstname": "Claude", "gender": "M", "dateofbirth": "12/16/1975", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 3, "lastname": "Boulet", "firstname": "Arnaud", "gender": "M", "dateofbirth": "03/17/1981", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 4, "lastname": "Charlier", "firstname": "Emile", "gender": "M", "dateofbirth": "09/19/1953", "diabetic":"faux", "difficult_intubation":"vrai" },
+  {"id": 5, "lastname": "Nash", "firstname": "Emilie", "gender": "F", "dateofbirth": "03/30/2015", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940", "diabetic":"faux", "difficult_intubation":"vrai"  },
+  {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/1960", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 2, "lastname": "Perlot", "firstname": "Claude", "gender": "M", "dateofbirth": "12/16/1975", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 3, "lastname": "Boulet", "firstname": "Arnaud", "gender": "M", "dateofbirth": "03/17/1981", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 4, "lastname": "Charlier", "firstname": "Emile", "gender": "M", "dateofbirth": "09/19/1953", "diabetic":"faux", "difficult_intubation":"vrai" },
+  {"id": 5, "lastname": "Nash", "firstname": "Emilie", "gender": "F", "dateofbirth": "03/30/2015", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
+  {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
 ]
 
 const lists = {
   "meds": ["Mc","Lis","Kl","Eft", "Aucun"],
-  "diseases": ["Covid","Grippe","Pneumonie", "Aucune"],
+  "diseases": ["Hépatite","Covid", "HIV", "Tuberculose","Grippe","Pneumonie", "Aucune"],
   "patient-states" : ["Conscient","Inconscient","Dément", "Discommunicant"],
   "alergy-meds" : ["Latex","Peniciline","Insuline", "Ibuprofène", "Aucune"],
-  "alergy-aliments" : ["Gluten","Lactose","Arachides", "Aucune"]
+  "alergy-aliments" : ["Gluten","Lactose","Arachides", "Aucune"],
+  "nurses" : ["Avril Charpentier"," Emilie Lachance","Camille Dupond", "Alix Lefurgey", "Bastien Bellerose", "Jérémy Duchamps",]
 }
 
 const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients", "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires"}

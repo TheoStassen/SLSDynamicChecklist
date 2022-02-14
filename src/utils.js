@@ -163,6 +163,7 @@ function checklist_flat_to_tree_rec(item, array){
       check : JSON.parse(elm[7]),
       color : JSON.parse(elm[8]),
       pre_check : JSON.parse(elm[9]),
+      importance : JSON.parse(elm[10]),
       values:[]
     }
     new_item = checklist_flat_to_tree_rec(new_item, array)

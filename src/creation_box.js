@@ -41,7 +41,8 @@ function CreateBox ({props}) {
 
   let [isAltAnswers, setIsAltAnswers] = useState(false)
 
-  // console.log("main", currentQuestion)
+  console.log("main", currentQuestion)
+  console.log("name", currentName)
 
   /* Make the complete list of questions of the current checklist*/
   let questionList = [];
@@ -187,7 +188,7 @@ function CreateBox ({props}) {
   * (the last question at first level of the tree ) and we put basic elements inside
   */
   function addnewquestion (){
-    let last_id = questionList.length ? questionList[questionList.length-1] : 0
+    let last_id = questionList.length ? questionList.length : 0
     let new_empty_question =
       {
         id: last_id+1,

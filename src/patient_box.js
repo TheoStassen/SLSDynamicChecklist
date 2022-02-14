@@ -32,18 +32,18 @@ function PatientBox ({props}) {
         </div>
         {/*Current patient name*/}
         <div className="col-sm-4 align-items-center ">
-          <div className="iq-card bg-primary text-center  m-0">
+          <div className="card  text-center bg-info text-dark  m-0 rounded">
             {currentPatient.firstname}&nbsp;{currentPatient.lastname}
           </div>
         </div>
         {/*Current patient selection dropdown*/}
-        <div className="col-sm-4 align-items-center ">
+        <div className="col-sm-4 align-items-center">
           <div className="dropdown text-center">
             <button className="btn btn-secondary btn-round dropdown-toggle" type="button" id="dropdownMenuButton1"
                     data-toggle="dropdown" aria-expanded="false">
               Sélectionnez le patient
             </button>
-            <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <ul className="dropdown-menu dropdown-menu-custom" aria-labelledby="dropdownMenuButton1">
               {patientList.map((i, index) => (
                 <li key={index}><label className="dropdown-item " onClick={() => changecurrentpatient(i.id)}>
                   {i.firstname}&nbsp;{i.lastname}</label>
