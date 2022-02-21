@@ -1,5 +1,5 @@
 import SignaturePad from "react-signature-canvas";
-import React from "react";
+import React, {useEffect} from "react";
 
 /*Component for the signature pad
 * -sigpad: object representing the signature pad, fill in by the SignaturePad component
@@ -8,6 +8,10 @@ import React from "react";
 function AppSignature ({props}) {
 
   let {sigpad, setTrimmedCanvasUrl} = props;
+
+  useEffect(() => {
+    reinit_canvas()
+  }, [])
 
   /*Reinitialize the canvas and sigpad*/
   const reinit_canvas = () => {

@@ -961,7 +961,7 @@ const checklist_arrays = [
     ],
     [
       1,
-      '"Intervention urgente"',
+      '"Intervention Urgente"',
       -1,
       0,
       null,
@@ -994,7 +994,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["a","b","c","d"]',
-      '[2,2,2,2,2]',
+      '[0,1,1,1,2]',
       null,
       0
     ],
@@ -1007,7 +1007,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["list_patient-states"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ],
@@ -1097,8 +1097,8 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["left","right","na"]',
-      '[2,2,2,2,2]',
+      '["left","right","idk","na"]',
+      '[2,2,1,2,2]',
       null,
       0
     ],
@@ -1123,13 +1123,26 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["list_diseases"]',
-      '[0,1]',
+      '["yes","no"]',
+      '[1,0,2]',
       null,
       0
     ],
     [
       14,
+      '"Lesquelles ?"',
+      13,
+      0,
+      null,
+      null,
+      '{"yes":[13],"no":[],"num":[]}',
+      '["list_diseases"]',
+      '[1]',
+      null,
+      0
+    ],
+    [
+      15,
       '"Patient(e) à jeun"',
       -1,
       13,
@@ -1142,20 +1155,20 @@ const checklist_arrays = [
       0
     ],
     [
-      15,
+      16,
       '"Vernis à ongle ôté"',
       -1,
       14,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no"]',
       '[0,1]',
       null,
       0
     ],
     [
-      16,
+      17,
       '"A uriné"',
       -1,
       15,
@@ -1168,26 +1181,13 @@ const checklist_arrays = [
       0
     ],
     [
-      17,
+      18,
       '"Proth. dentaire/auditives/lentilles ôtées"',
       -1,
       16,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
-      18,
-      '"Bijoux/piercings ôtés"',
-      -1,
-      17,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no"]',
       '[0,1]',
       null,
@@ -1195,6 +1195,19 @@ const checklist_arrays = [
     ],
     [
       19,
+      '"Bijoux/piercings ôtés"',
+      -1,
+      17,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
+      '["yes","no"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      20,
       '"Médicamenteuses"',
       -1,
       18,
@@ -1202,25 +1215,25 @@ const checklist_arrays = [
       '"Le patient déclare ses allergies"',
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
-      '[0,1,2]',
-      null,
-      0
-    ],
-    [
-      20,
-      '"Lesquelles ?"',
-      19,
-      0,
-      null,
-      null,
-      '{"yes":[19],"no":[],"num":[]}',
-      '["list_alergy-meds"]',
-      '[0,1,2]',
+      '[1,0,2]',
       null,
       0
     ],
     [
       21,
+      '"Lesquelles ?"',
+      20,
+      0,
+      null,
+      null,
+      '{"yes":[20],"no":[],"num":[]}',
+      '["list_alergy-meds"]',
+      '[1]',
+      null,
+      0
+    ],
+    [
+      22,
       '"Alimentaires"',
       -1,
       19,
@@ -1228,25 +1241,25 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
-      '[0,1,2]',
-      null,
-      0
-    ],
-    [
-      22,
-      '"Lesquelles ?"',
-      19,
-      0,
-      null,
-      null,
-      '{"yes":[21],"no":[],"num":[]}',
-      '["list_alergy-aliments"]',
-      '[0,1]',
+      '[1,0,2]',
       null,
       0
     ],
     [
       23,
+      '"Lesquelles ?"',
+      22,
+      0,
+      null,
+      null,
+      '{"yes":[22],"no":[],"num":[]}',
+      '["list_alergy-aliments"]',
+      '[1]',
+      null,
+      0
+    ],
+    [
+      24,
       '"Hygiène du patient correcte"',
       -1,
       20,
@@ -1259,7 +1272,7 @@ const checklist_arrays = [
       0
     ],
     [
-      24,
+      25,
       '"Propreté et intégrité du site opératoire"',
       -1,
       21,
@@ -1272,7 +1285,7 @@ const checklist_arrays = [
       0
     ],
     [
-      25,
+      26,
       '"Dépilation"',
       -1,
       22,
@@ -1285,20 +1298,20 @@ const checklist_arrays = [
       0
     ],
     [
-      26,
+      27,
       '"Présence de bas de contention"',
       -1,
       23,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no","na"]',
       '[0,1,2]',
       null,
       0
     ],
     [
-      27,
+      28,
       '"Nom"',
       -1,
       24,
@@ -1306,7 +1319,7 @@ const checklist_arrays = [
       '"Infirmièr(e) de l\'US qui a préparé le patient pour le BO "',
       '{"yes":[],"no":[],"num":[]}',
       '["list_nurses"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ]
@@ -1360,7 +1373,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["a","b","c","d"]',
-      '[2,2,2,2,2]',
+      '[0,1,1,1,1]',
       null,
       0
     ],
@@ -1450,8 +1463,8 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["left","right","na"]',
-      '[2,2,2,2]',
+      '["left","right", "idk", "na"]',
+      '[2,2,1,2]',
       null,
       0
     ],
@@ -1490,7 +1503,7 @@ const checklist_arrays = [
       null,
       '{"yes":[12],"no":[],"num":[]}',
       '["list_diseases"]',
-      '[0,1]',
+      '[1]',
       null,
       0
     ],
@@ -1514,7 +1527,7 @@ const checklist_arrays = [
       13,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no"]',
       '[0,1]',
       null,
@@ -1540,7 +1553,7 @@ const checklist_arrays = [
       15,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no"]',
       '[0,1]',
       null,
@@ -1553,7 +1566,7 @@ const checklist_arrays = [
       16,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no"]',
       '[0,1]',
       null,
@@ -1581,7 +1594,7 @@ const checklist_arrays = [
       null,
       '{"yes":[19],"no":[],"num":[]}',
       '["list_alergy-meds"]',
-      '[0,1]',
+      '[1]',
       null,
       0
     ],
@@ -1607,7 +1620,7 @@ const checklist_arrays = [
       null,
       '{"yes":[21],"no":[],"num":[]}',
       '["list_alergy-aliments"]',
-      '[0,1]',
+      '[1]',
       null,
       0
     ],
@@ -1657,7 +1670,7 @@ const checklist_arrays = [
       22,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":11}]}',
       '["yes","no","na"]',
       '[0,1,2]',
       null,
@@ -1671,8 +1684,8 @@ const checklist_arrays = [
       null,
       '"Infirmière qui accueille le patient au BO :"',
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
-      '[0,1]',
+      '["list_nurses"]',
+      '[0]',
       null,
       0
     ]
@@ -1699,7 +1712,7 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["date"]',
       '[0,1,2]',
       null,
       0
@@ -1712,14 +1725,14 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["list_room"]',
       '[0,1]',
       null,
       0
     ],
     [
       3,
-      '"Présentation des personnes habituelles"',
+      '"Présentation des personnes inhabituelles"',
       -1,
       2,
       null,
@@ -1784,14 +1797,14 @@ const checklist_arrays = [
     ],
     [
       8,
-      '"Lesquelles"',
+      '"Lesquelles ?"',
       7,
       0,
       null,
       null,
       '{"yes":[7],"no":[],"num":[]}',
       '["list_diseases"]',
-      '[1,0]',
+      '[1]',
       null,
       0
     ],
@@ -1842,7 +1855,7 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["hour"]',
       '[0,1]',
       null,
       0
@@ -1959,7 +1972,7 @@ const checklist_arrays = [
       null,
       '"Anesthésistes"',
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["list_anesthesists"]',
       '[0,1]',
       null,
       0
@@ -1972,7 +1985,7 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["list_anesthesists"]',
       '[0,1]',
       null,
       0
@@ -1985,7 +1998,7 @@ const checklist_arrays = [
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["text"]',
+      '["list_anesthesists"]',
       '[0,1]',
       null,
       0
@@ -1994,11 +2007,11 @@ const checklist_arrays = [
 ]
 
 const checklist_list = [
-  {checklist_id: 0, name: "Principale"},
-  {checklist_id: 1, name: "Seconde"},
-  {checklist_id: 2, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient "},
-  {checklist_id: 3, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient"},
-  {checklist_id: 4, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anésthésiste"}
+  {checklist_id: 2, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Majeure" },
+  {checklist_id: 3, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Majeure" },
+  {checklist_id: 4, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anésthésiste", type: "Chirurgie Majeure" },
+  {checklist_id: 0, name: "Principale", type: "Chirurgie Majeure" },
+  {checklist_id: 1, name: "Seconde", type: "Chirurgie Majeure" },
 ]
 
 
@@ -2013,36 +2026,21 @@ const patients = [
   {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
   {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
   {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940", "diabetic":"faux", "difficult_intubation":"vrai"  },
-  {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/1960", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 2, "lastname": "Perlot", "firstname": "Claude", "gender": "M", "dateofbirth": "12/16/1975", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 3, "lastname": "Boulet", "firstname": "Arnaud", "gender": "M", "dateofbirth": "03/17/1981", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 4, "lastname": "Charlier", "firstname": "Emile", "gender": "M", "dateofbirth": "09/19/1953", "diabetic":"faux", "difficult_intubation":"vrai" },
-  {"id": 5, "lastname": "Nash", "firstname": "Emilie", "gender": "F", "dateofbirth": "03/30/2015", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940", "diabetic":"faux", "difficult_intubation":"vrai"  },
-  {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/1960", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 2, "lastname": "Perlot", "firstname": "Claude", "gender": "M", "dateofbirth": "12/16/1975", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 3, "lastname": "Boulet", "firstname": "Arnaud", "gender": "M", "dateofbirth": "03/17/1981", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 4, "lastname": "Charlier", "firstname": "Emile", "gender": "M", "dateofbirth": "09/19/1953", "diabetic":"faux", "difficult_intubation":"vrai" },
-  {"id": 5, "lastname": "Nash", "firstname": "Emilie", "gender": "F", "dateofbirth": "03/30/2015", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
 ]
 
 const lists = {
   "meds": ["Mc","Lis","Kl","Eft", "Aucun"],
-  "diseases": ["Hépatite","Covid", "HIV", "Tuberculose","Grippe","Pneumonie", "Aucune"],
+  "diseases": ["Hépatite","Covid", "HIV", "Tuberculose","Grippe","Pneumonie", "MRSA", ],
   "patient-states" : ["Conscient","Inconscient","Dément", "Discommunicant"],
-  "alergy-meds" : ["Latex","Peniciline","Insuline", "Ibuprofène", "Aucune"],
-  "alergy-aliments" : ["Gluten","Lactose","Arachides", "Aucune"],
-  "nurses" : ["Avril Charpentier"," Emilie Lachance","Camille Dupond", "Alix Lefurgey", "Bastien Bellerose", "Jérémy Duchamps",]
+  "alergy-meds" : ["Latex","Peniciline","Insuline", "Ibuprofène", ],
+  "alergy-aliments" : ["Gluten","Lactose","Arachides", ],
+  "nurses" : ["Avril Charpentier"," Emilie Lachance","Camille Dupond", "Alix Lefurgey", "Bastien Bellerose", "Jérémy Duchamps",],
+  "anesthesists": ["Jean Dupond", "Carole Marchal", "Louis Libier", "Charles Van Acker"],
+  "room" : ["A","B","C","D"]
 }
 
-const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients", "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires"}
+const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients",
+  "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires", "nurses": "Infirmières", "anesthesists": "Anesthésistes", "room": "Salle"}
 
 const alerts = [
   // {"id":0, "question_id":1, "info": "Réponse précedente problèmatique", "gravity":0},

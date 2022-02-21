@@ -11,7 +11,7 @@ import * as utils from "./utils";
 * */
 function AppNavbar ({props}) {
 
-  let {setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist} = props;
+  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -21,23 +21,38 @@ function AppNavbar ({props}) {
 
   /*Activate the creation mode*/
   const activatecreatemode = () => {
-    setCreationMode(1)
+    setCreationMode(true)
   }
 
   /*Deactivate the creation mode*/
   const deactivatecreatemode = () => {
-    setCreationMode(0)
+    setCreationMode(false)
     setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
+  }
+
+  const changecreationmode = () => {
+    if (creationMode)
+      deactivatecreatemode()
+    else
+      activatecreatemode()
   }
 
   /*Activate the credit mode*/
   const activatecreditmode = () => {
-    setCreditMode(1)
+    setCreditMode(true)
   }
 
   /*Deactivate the creation mode*/
   const deactivatecreditmode = () => {
-    setCreditMode(0)
+    setCreditMode(false)
+  }
+
+  const changecommentmode = () => {
+    setCommentMode(!commentMode)
+  }
+
+  const changedebugmode = () => {
+    setDebugMode(!debugMode)
   }
 
   /*Return the different elements of the navbar*/
@@ -74,8 +89,32 @@ function AppNavbar ({props}) {
                   )): null}
                 </ul>
               </li>
-              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show"  onClick={activatecreatemode}>Activer le mode Création</label>
-              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={deactivatecreatemode}>Désactiver le mode Création</label>
+              <li className="nav-item dropdown">
+                <label className="nav-link dropdown-toggle m-0" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-expanded="false">
+                  Options
+                </label>
+                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li>
+                    <label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show">
+                      <input type="checkbox" checked={creationMode} onClick={changecreationmode}/>
+                      &nbsp; Mode création
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show">
+                      <input type="checkbox" checked={!debugMode} onClick={changedebugmode}/>
+                      &nbsp; Activer le dynamisme
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show">
+                      <input type="checkbox" checked={commentMode} onClick={changecommentmode}/>
+                      &nbsp; Activer les commentaires
+                    </label>
+                  </li>
+                </ul>
+              </li>
               <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={activatecreditmode}>A propos</label>
             </div>
           </div>

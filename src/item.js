@@ -16,7 +16,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
 
 
-  let [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList] = dicts
+  let [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList, debugMode, commentMode] = dicts
 
   // console.log(item)
   // console.log("isDict", isDict)
@@ -63,7 +63,29 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     const input_text = event.target.value;
     result[item.id]={name:item.name,answer:input_text}
     setResult(result)
+    if (item.color[0] === 1){
+      pbresult[item.id] = {name:item.name,answer:input_text}
+      setPbResult(pbresult)
+    }
   };
+
+  const handleOnChangeCurrentDate = () => {
+    let current_date = new Date()
+    let current_date_str = current_date.toISOString().split("T")[0]
+    result[item.id]={name:item.name, answer:current_date_str}
+    setResult(result)
+    console.log(current_date_str)
+    return current_date_str
+  }
+
+  const handleOnChangeCurrentTime = () => {
+    let current_date = new Date()
+    let current_time_str = current_date.toTimeString().split(" ")[0].substring(0,5)
+    result[item.id]={name:item.name, answer:current_time_str}
+    setResult(result)
+    console.log(current_time_str)
+    return current_time_str
+  }
 
   const handleOnChangeList = (selectedOptions) => {
     const input_answer = JSON.parse(JSON.stringify(selectedOptions.selectedValue));
@@ -75,6 +97,14 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     }
     result[item.id]={name:item.name,answer:input_answer}
     setResult(result)
+    if (item.color[0] === 1 && !(selectedOptions.selectedKey.includes("Aucune") || selectedOptions.selectedKey.includes("Aucun") )){
+      pbresult[item.id] = {name:item.name,answer:input_answer}
+      setPbResult(pbresult)
+    }
+    else{
+      delete pbresult[item.id]
+      setPbResult(pbresult)
+    }
   };
 
   /*Function triggered where the user enter a text in a text question. We update the result*/
@@ -123,7 +153,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   let children = null;
   let values = null;
   if (item.values) {
-    values = values_filter_cond(item.values, isDict, numDict, creationMode)
+    values = values_filter_cond(item.values, isDict, numDict, creationMode, debugMode)
     values.forEach(value => !visibleList.includes(value.id) && value.check.length ? visibleList.push(value.id) : null)
   }
 
@@ -178,7 +208,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
           {/*Item name*/}
           <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark bg- "  >
-              {item.comment ? (
+              {item.comment && commentMode ? (
                 <div className="alert alert-light m-0 mt-0 border-0 text-primary my-auto" role="alert">
                   {item.comment}
                 </div>
@@ -197,7 +227,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           <div className="list-group list-group-horizontal ">
             {/*For each possible answer, if in item.check, we put a checkbox*/}
             {item.check.map((answer, index) =>
-              !["text","list"].includes(answer.split("_")[0]) ?
+              !["text","list", "date", "hour"].includes(answer.split("_")[0]) ?
                 <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
                   <input  type="checkbox"
                          aria-label="Checkbox"
@@ -214,12 +244,22 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
               <input className="form-control w-100 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeText}/>
             ) : null }
 
+            {/*If item answers must contain date, put a text input*/}
+            {item.check.includes("date") ? (
+              <input className="form-control w-100 mb-0 bg-white" type = "date" aria-label="text input" defaultValue={handleOnChangeCurrentDate()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+            ) : null }
+
+            {/*If item answers must contain date, put a text input*/}
+            {item.check.includes("hour") ? (
+              <input className="form-control w-100 mb-0 bg-white" type = "time" aria-label="text input" defaultValue={handleOnChangeCurrentTime()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+            ) : null }
+
             {/*If item answers must contain list, put a list dropdown input*/}
             {item.check[0].split("_").includes("list") ? (
               <BootstrapSelect key={item.check[0].split("_")[1]} className=" my-auto "
                                selectStyle ="py-2  btn btn-outline-dark bg-white text-dark "
                                options={create_possible_list_answers(item.check[0].split("_")[1])}
-                               isMultiSelect={true} placeholder="Aucun" onChange={handleOnChangeList} menuSize={10}/>
+                               isMultiSelect={true} placeholder="-" onChange={handleOnChangeList} menuSize={10}/>
             ) : null }
 
             {/*If item answers is list and the answer is Other, put a text*/}

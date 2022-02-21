@@ -17,7 +17,7 @@ function ValidationButton ({visibleList, result, import_csv_result, checklist, s
     for (let i=0; i<visibleListsorted.length;i=i+1){
       if(!result[visibleListsorted[i]]){
         if (is_set) setWarningId(visibleListsorted[i])
-        return "question" + (visibleListsorted[i-1])
+        return i ? "question" + (visibleListsorted[i-1] ) : "title"
       }
     }
     if (is_set) setWarningId(0)

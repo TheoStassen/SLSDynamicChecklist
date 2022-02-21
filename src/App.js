@@ -40,7 +40,7 @@ export default function App() {
   * -result : dict containing the results of the current checklist check-in
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * */
-  let [checklistId, setChecklistId] = useState(0)
+  let [checklistId, setChecklistId] = useState(2)
 
   //On fait l'appel qui va chercher la liste des checklists (constant)
   let [checklistList, setChecklistList] = useState(null)
@@ -56,7 +56,7 @@ export default function App() {
   // Init calls (get checklist list and the initial checklist
   useEffect(() => {
 
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response){
 
         //Must handle incoming data
@@ -71,15 +71,15 @@ export default function App() {
         // setChecklist(checklist)
         console.log("initial get checklist list call and set finished")
       });
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set first checklist
+    axios.get('http://checklists.metoui.be/api/checklists/1') //Random url, just to simulate the fact that we need to make get call before set first checklist
       .then(function(response){
 
       //Must handle incoming data
       console.log("call response", response)
-      console.log(temp_data.checklist_arrays[0])
+      console.log(temp_data.checklist_arrays[2])
 
       //For now we use temp_data
-      const init_checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[0],0)
+      const init_checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[2],0)
 
       setChecklist(init_checklist);
       setCurrentQuestion(init_checklist && init_checklist.values.length ? init_checklist.values[0] : null)
@@ -115,8 +115,10 @@ export default function App() {
   * -creditMode : bool indicates if we are in credit mode
   * -trimmedCanvasUrl : variable containing the canvas url data of the signature
   * -sigpad : variable containing the signature pad information*/
-  let [creationMode, setCreationMode] = useState(0)
-  let [creditMode, setCreditMode] = useState(0)
+  let [creationMode, setCreationMode] = useState(false)
+  let [creditMode, setCreditMode] = useState(false)
+  let [commentMode, setCommentMode] = useState(true)
+  let [debugMode, setDebugMode] = useState(false)
   let [trimmedCanvasUrl, setTrimmedCanvasUrl] = useState(null)
   let sigpad = {}
 
@@ -152,9 +154,10 @@ export default function App() {
     values.forEach(value => value.check.length ? visibleList.push(value.id): null)
   }
 
-  let dicts = [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList ]
+  let dicts = [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList, debugMode, commentMode ]
 
   function reset (){
+    setWarningId(0)
     setResult({})
     setPbResult({})
     let init_dict_ = {}
@@ -176,7 +179,12 @@ export default function App() {
 
       let alert_list = []
       Object.keys(pbresult).forEach((key, index) =>
-        alert_list.push({"id":index, "question_id":key, "info": "Réponse précedente ("+ pbresult[key].name +" -> "+ utils.list_possible_answer_trad[pbresult[key].answer]+  " ) problèmatique", "gravity":0},))
+        alert_list.push(
+          {"id":index, "question_id":key, "info": "Réponse précedente ("
+          + pbresult[key].name +" -> "
+          + (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer)
+          + " ) problématique", "gravity":0},)
+      )
       setAlertList(alert_list)
 
       //For now we use temp_data
@@ -189,7 +197,6 @@ export default function App() {
       setCreationMode(0)
       setChecklistId(checklist_id);
       setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
-
       setCreationMode(current_creation_mode)
       reset()
       console.log("switch checklist get call and set finished")
@@ -209,6 +216,7 @@ export default function App() {
   }
 
 
+
   // console.log("app")
   // console.log("isPreCheckDone", isPreCheckDone)
   // console.log("isDict", isDict)
@@ -225,10 +233,10 @@ export default function App() {
   return (
     <div className="min-vh-100 content-page iq-bg-info">
       <div>
-        {<AppNavbar props = {{setCreationMode, setCreditMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist}}/>}
+        {<AppNavbar props = {{creationMode, setCreationMode, creditMode,  setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode,trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist}}/>}
         {!creditMode ? (
-          <div>
-            <Title checklistList={checklistList} checklistId={checklistId}/>
+          <div id={"title"}>
+            <Title  checklistList={checklistList} checklistId={checklistId} numDict={numDict}/>
             {creationMode ?
               <CreateBox key={checklistId} props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist}} />
               :
@@ -243,7 +251,7 @@ export default function App() {
                 <div >
                   {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"bg-primary " + (index ? "border-dark border-top":"")}/>}
                   <div className={"pb-3 px-3 pt-3 " + (index || i.section_title ? "":" rounded rounded-0-bottom ") + (i.importance ? "iq-bg-danger": "iq-bg-info")}>
-                    <ChecklistItem key={index} init_items={checklist} item={i} dicts={dicts}
+                    <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i} dicts={dicts}
                                    forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
                                    creationMode={creationMode} currentId = {currentQuestion ? currentQuestion.id: null} warningId={warningId} precheckMode={precheckMode}
                                    is_root={true}
@@ -254,7 +262,7 @@ export default function App() {
                 null
               }
             </div>
-            {!creationMode ? <AppSignature props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
+            {!creationMode ? <AppSignature key={checklistId} props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
             {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId}/> : null }
 
 
@@ -278,10 +286,10 @@ export default function App() {
 * (for ex, if item.cond contains {"yes": [1,4]}, we check if isDict["yes"] contains 1 and 4 )
 * + all num conditions
 */
-function values_filter_cond(values, isDict, numDict, creationMode) {
+function values_filter_cond(values, isDict, numDict, creationMode, debugMode) {
   // console.log(values)
   // console.log(isDict)
-  return values.filter( item=>
+  return debugMode ? values : values.filter( item=>
       Object.keys(item.cond).every(
         function(answer){
           return (answer === "num" || !item.cond[answer] || item.cond[answer].every(
