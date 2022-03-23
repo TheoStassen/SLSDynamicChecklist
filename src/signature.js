@@ -3,31 +3,38 @@ import React, {useEffect} from "react";
 
 /*Component for the signature pad
 * -sigpad: object representing the signature pad, fill in by the SignaturePad component
-* -setTrimmedCanvasUrl: the canvas url data of the signature set function
+* -props.setTrimmedCanvasUrl: the canvas url data of the signature set function
 * */
-function AppSignature ({props}) {
+function AppSignature (props) {
 
-  let {sigpad, setTrimmedCanvasUrl} = props;
+  let sigpad = props.sigpad
 
   useEffect(() => {
     reinit_canvas()
   }, [])
 
-  /*Reinitialize the canvas and sigpad*/
+  /*Reinitialize the canvas and props.sigpad*/
   const reinit_canvas = () => {
     sigpad.clear()
-    setTrimmedCanvasUrl(null)
+    props.setTrimmedCanvasUrl(null)
+    if (props.item) {
+      delete props.result[props.item.id]
+      props.setResult(props.result)
+    }
   }
 
   /*Import the current sigpad information into canvas url data*/
   const trim_canvas = () => {
-    var dataUrl = sigpad.getTrimmedCanvas().toDataURL();
-    setTrimmedCanvasUrl(dataUrl);
+    let dataUrl = sigpad.getTrimmedCanvas().toDataURL();
+    props.setTrimmedCanvasUrl(dataUrl);
+    props.result[props.item.id] = {name:props.item.name, answer:dataUrl}
+    props.setResult(props.result)
+    props.forceUpdate()
   }
 
   /*Return the signature elements*/
   return (
-    <div className="container iq-card rounded-0-top border-bottom border-right border-left border-dark shadow">
+    <div className={"container iq-card border-bottom border-right border-left border-dark shadow " + (props.is_end_sign ? "rounded-0-top" : "border-top m-0 mr-3")}>
       <div className="row align-items-center p-0 m-0 h-100">
         {/*Information text*/}
         <div className="col-sm-3 m-0 p-0 text-center text-dark">

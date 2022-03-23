@@ -10,7 +10,7 @@ function check_all_question_answered (visibleList, result){
 
 
 
-function ValidationButton ({visibleList, result, import_csv_result, checklist, setWarningId}) {
+function ValidationButton ({visibleList, result, import_csv_result, checklist, setWarningId, checklistList, setChecklistList, checklistId}) {
 
   function search_question_not_answered (visibleList, result, is_set){
     const visibleListsorted = visibleList.sort(function (elm1,elm2){return elm1>elm2})
@@ -24,9 +24,15 @@ function ValidationButton ({visibleList, result, import_csv_result, checklist, s
     return ""
   }
 
+  function handlevalidation (){
+    import_csv_result()
+    checklistList.filter(elm => elm.checklist_id === checklistId)[0].fill = true
+    setChecklistList(checklistList)
+  }
+
   return (
     <div className="container iq-card  mt-5 text-center p-2 shadow border border-dark">
-      <a onClick={() => search_question_not_answered(visibleList, result, true) === "" ? import_csv_result() : null }
+      <a onClick={() => search_question_not_answered(visibleList, result, true) === "" ? handlevalidation() : null }
          href={"#" + search_question_not_answered(visibleList, result, false)}
          className=""
       >

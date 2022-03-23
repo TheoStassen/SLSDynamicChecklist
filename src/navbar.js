@@ -1,5 +1,6 @@
 import React from "react";
 import * as utils from "./utils";
+import * as temp_data from "./temporary_data";
 
 /* Component of the upper navbar of the webpage
 * -setCreationMode: bool indicating if we are in creation mode set function
@@ -11,7 +12,7 @@ import * as utils from "./utils";
 * */
 function AppNavbar ({props}) {
 
-  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist} = props;
+  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -55,6 +56,21 @@ function AppNavbar ({props}) {
     setDebugMode(!debugMode)
   }
 
+  const gotohome = (main_menu) => {
+    deactivatecreditmode();
+    deactivatecreatemode()
+    setHomeMode(true)
+    if (main_menu){
+      setChecklistList(null)
+      setScanValue(null)
+    }
+  }
+
+  const setdefault = () => {
+    setChecklistList(temp_data.checklist_list[0].checklists)
+    setCurrentPatient(temp_data.checklist_list[0].patient)
+  }
+
   /*Return the different elements of the navbar*/
   return (
     <div className="iq-top-navbar h-auto " >
@@ -62,7 +78,7 @@ function AppNavbar ({props}) {
         <nav className="navbar navbar-expand-lg navbar-light p-0">
           {/*Navbar Title*/}
           <div className="navbar-brand pl-4">
-            <a href="#" onClick={deactivatecreditmode}>
+            <a href="#" onClick={gotohome}>
               <span>SLS</span>
             </a>
           </div>
@@ -74,21 +90,23 @@ function AppNavbar ({props}) {
           {/*/!*Navbar links*!/*/}
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav  p-2 pl-4">
-              <label className="nav-link active m-0" aria-current="page" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={deactivatecreditmode}>Page d'accueil</label>
-              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={import_csv_result}>Importer la checklist</label>
-              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={image_download}>Importer la signature</label>
+              {!checklistList ? <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => setdefault()}>Passer le QRcode</label> : null}
+              {checklistList ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(true)}>Revenir à l'accueil</label> : null}
+              {checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(false)}>Revenir à la sélection des checklists</label> : null}
+              {checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={import_csv_result}>Importer les résultats de la checklist</label> : null}
+              {/*<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={image_download}>Importer la signature</label>*/}
               {/*Navbar checklist selection dropdown link*/}
-              <li className="nav-item dropdown">
-                <label className="nav-link dropdown-toggle m-0" id="navbarDropdown" role="button"
-                   data-toggle="dropdown" aria-expanded="false">
-                  Liste des checklists disponibles
-                </label>
-                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  {checklistList ? checklistList.map((i, index) => (
-                    <li key={index}><label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={function (){swapchecklist(i.checklist_id) } }>{i.name}</label></li>
-                  )): null}
-                </ul>
-              </li>
+              {/*<li className="nav-item dropdown">*/}
+              {/*  <label className="nav-link dropdown-toggle m-0" id="navbarDropdown" role="button"*/}
+              {/*     data-toggle="dropdown" aria-expanded="false">*/}
+              {/*    Liste des checklists disponibles*/}
+              {/*  </label>*/}
+              {/*  <ul className="dropdown-menu" aria-labelledby="navbarDropdown">*/}
+              {/*    {checklistList ? checklistList.map((i, index) => (*/}
+              {/*      <li key={index}><label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={function (){swapchecklist(i.checklist_id) } }>{i.name}</label></li>*/}
+              {/*    )): null}*/}
+              {/*  </ul>*/}
+              {/*</li>*/}
               <li className="nav-item dropdown">
                 <label className="nav-link dropdown-toggle m-0" id="navbarDropdown" role="button"
                        data-toggle="dropdown" aria-expanded="false">

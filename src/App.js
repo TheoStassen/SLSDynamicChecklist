@@ -14,6 +14,9 @@ import {ValidationButton} from "./validation_button";
 import {AlertsBox} from "./alerts_box";
 import {Title} from "./title";
 import {checklist_arrays, checklist_list} from "./temporary_data.js";
+import {Home} from "./home";
+import {CountingTable} from "./couting_table";
+import QrcodeScanner from "./qrcodescanner";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -40,7 +43,10 @@ export default function App() {
   * -result : dict containing the results of the current checklist check-in
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * */
-  let [checklistId, setChecklistId] = useState(2)
+
+  let [homeMode, setHomeMode] = useState(true)
+
+  let [checklistId, setChecklistId] = useState(-1)
 
   //On fait l'appel qui va chercher la liste des checklists (constant)
   let [checklistList, setChecklistList] = useState(null)
@@ -50,57 +56,57 @@ export default function App() {
 
   let [currentQuestion, setCurrentQuestion] = useState(null)
 
-  let [alertList,setAlertList] = useState(null)
+  let [alertList,setAlertList] = useState({})
 
 
   // Init calls (get checklist list and the initial checklist
   useEffect(() => {
+    onNewScanResult = onNewScanResult.bind(this);
 
-    axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
-      .then(function(response){
-
-        //Must handle incoming data
-        console.log("call response", response)
-        console.log(temp_data.checklist_list)
-
-        //For now we use temp_data
-
-        setChecklistList(temp_data.checklist_list);
-        // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
-        // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
-        // setChecklist(checklist)
-        console.log("initial get checklist list call and set finished")
-      });
-    axios.get('http://checklists.metoui.be/api/checklists/1') //Random url, just to simulate the fact that we need to make get call before set first checklist
-      .then(function(response){
-
-      //Must handle incoming data
-      console.log("call response", response)
-      console.log(temp_data.checklist_arrays[2])
-
-      //For now we use temp_data
-      const init_checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[2],0)
-
-      setChecklist(init_checklist);
-      setCurrentQuestion(init_checklist && init_checklist.values.length ? init_checklist.values[0] : null)
-      console.log("initial get first checklist call and set finished")
-    });
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set alert list
-      .then(function(response){
-
-        //Must handle incoming data
-        console.log("call response", response)
-        console.log(temp_data.alerts)
-
-        //For now we use temp_data
-        setAlertList(temp_data.alerts);
-        console.log("initial get alert list call and set finished")
-      });
-    // forceUpdate()
+    // axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    //   .then(function(response){
+    //
+    //     //Must handle incoming data
+    //     console.log("call response", response)
+    //     console.log(temp_data.checklist_list)
+    //
+    //     //For now we use temp_data
+    //
+    //     setChecklistList(temp_data.checklist_list);
+    //     // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
+    //     // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
+    //     // setChecklist(checklist)
+    //     console.log("initial get checklist list call and set finished")
+    //   });
+    // axios.get('http://checklists.metoui.be/api/checklists/1') //Random url, just to simulate the fact that we need to make get call before set first checklist
+    //   .then(function(response){
+    //
+    //   //Must handle incoming data
+    //   console.log("call response", response)
+    //   console.log(temp_data.checklist_arrays[2])
+    //
+    //   //For now we use temp_data
+    //   const init_checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[2],0)
+    //
+    //   setChecklist(init_checklist);
+    //   setCurrentQuestion(init_checklist && init_checklist.values.length ? init_checklist.values[0] : null)
+    //   console.log("initial get first checklist call and set finished")
+    // });
+    // axios.get('#') //Random url, just to simulate the fact that we need to make get call before set alert list
+    //   .then(function(response){
+    //
+    //     //Must handle incoming data
+    //     console.log("call response", response)
+    //     console.log(temp_data.alerts)
+    //
+    //     //For now we use temp_data
+    //     setAlertList(temp_data.alerts);
+    //     console.log("initial get alert list call and set finished")
+    //   });
   }, [])
 
-  let [patientList, ] = useState(temp_data.patients)
-  let [currentPatient, setCurrentPatient] = useState(patientList[0])
+  // let [patientList, ] = useState(temp_data.patients)
+  let [currentPatient, setCurrentPatient] = useState(null)
   let [result, setResult] = useState({})
   let [pbresult, setPbResult] = useState({})
   let [visibleList, setVisibleList] = useState([])
@@ -139,10 +145,27 @@ export default function App() {
   let numDict = {}
   num_values.forEach(function(elm) {numDict[elm.var] = elm.val})
 
-  for (const [key, value] of Object.entries(currentPatient)) {
-    numDict[key] = value
+  if (currentPatient){
+    console.log("enter")
+    for (const [key, value] of Object.entries(currentPatient)) {
+      numDict[key] = value
+    }
+    numDict["age"] = date_to_age(numDict["dateofbirth"])
+
+    // function downloadBase64File(contentBase64, fileName) {
+    //   const linkSource = `data:application/pdf;base64,${contentBase64}`;
+    //   const downloadLink = document.createElement('a');
+    //   document.body.appendChild(downloadLink);
+    //
+    //   downloadLink.href = linkSource;
+    //   downloadLink.target = '_self';
+    //   downloadLink.download = fileName;
+    //   downloadLink.click();
+    //   console.log("downloaded")
+    // }
+    // downloadBase64File(numDict.consent_pdf, "consent.pdf")
   }
-  numDict["age"] = date_to_age(numDict["dateofbirth"])
+
 
 
 
@@ -177,27 +200,40 @@ export default function App() {
       console.log("swap call response", response)
       console.log(temp_data.checklist_arrays[checklist_id])
 
-      let alert_list = []
-      Object.keys(pbresult).forEach((key, index) =>
-        alert_list.push(
-          {"id":index, "question_id":key, "info": "Réponse précedente ("
-          + pbresult[key].name +" -> "
-          + (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer)
-          + " ) problématique", "gravity":0},)
-      )
-      setAlertList(alert_list)
-
       //For now we use temp_data
       const current_creation_mode = creationMode
-      checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[checklist_id],checklist_id)
+      let checklist_array = temp_data.checklist_arrays[checklist_id-1]
+      checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
       checklist.name = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].name
       checklist.person = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].person
+      checklist.counter = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].counter
       setChecklist(checklist)
 
-      setCreationMode(0)
+      let alert_list = alertList
+      Object.keys(alert_list).forEach((key, index) => {
+        const corresponding_questions = checklist_array.filter(elm => elm[1].includes(key))
+        alert_list[key].question_id = corresponding_questions.length ? corresponding_questions[0][0] : -1
+        if (!Object.values(pbresult).filter(elm => elm.name === key).length && Object.values(result).filter(elm => elm.name === key).length){
+          alert_list[key].gravity = 1
+        }
+      })
+      Object.keys(pbresult).forEach((key, index) => {
+        const name = pbresult[key].name
+        const corresponding_questions = checklist_array.filter(elm => elm[1].includes(name))
+        alert_list[name] =
+          {
+            "id": index, "question_id": corresponding_questions.length ? corresponding_questions[0][0] : -1, "checklist_id" : checklistId, "name": name,
+            "answer" : (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer),
+            "gravity": 0
+          }
+      })
+      setAlertList(alert_list)
+
+      setCreationMode(false)
       setChecklistId(checklist_id);
       setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
       setCreationMode(current_creation_mode)
+      setHomeMode(false)
       reset()
       console.log("switch checklist get call and set finished")
     })
@@ -215,63 +251,111 @@ export default function App() {
     csvGenerator.download(true);
   }
 
+  let [scanValue, setScanValue] = useState(null)
+  let [scanValueError, setScanValueError] = useState(null)
+
+  function onNewScanResult(decodedText, decodedResult) {
+    console.log(decodedText, scanValue)
+    if(!scanValue && decodedText) {
+      console.log("write decoded scan", decodedText)
+
+      axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
+        .then(function(response){
+          let corresp_checklist_list = temp_data.checklist_list.filter(elm => elm.patient_id === decodedText)
+          let checklist_list = corresp_checklist_list && corresp_checklist_list.length ? corresp_checklist_list[0].checklists : []
+          setCurrentPatient(corresp_checklist_list && corresp_checklist_list.length ? corresp_checklist_list[0].patient : null)
+
+          console.log("checklist_list", checklist_list)
+          if (checklist_list && checklist_list.length) {
+            console.log("enter if ")
+            // setScanValueError(null)
+            setChecklistList(checklist_list)
+            setScanValue(decodedText)
+          }
+          else {
+            console.log("enter else ")
+            setChecklistList([{}])
+            setScanValueError(decodedText)
+            setChecklistList([])
+          }
+        })
+    }
+  }
+
+  let next_scan_item = values ? values.filter(item => !result[item.id] && item.check.includes("scan")) : null
+  let next_scan_item_id =  next_scan_item && next_scan_item.length ? next_scan_item[0].id : null
 
 
   // console.log("app")
   // console.log("isPreCheckDone", isPreCheckDone)
   // console.log("isDict", isDict)
-  // console.log("result", result)
+  console.log("result", result)
   // console.log(result)
   // console.log(visibleList)
   // console.log(isDict)
   // console.log(isPreCheckDone)
-  console.log(pbresult)
+  console.log("alertList", alertList)
   // console.log(currentQuestion)
+  console.log(checklist)
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
   return (
     <div className="min-vh-100 content-page iq-bg-info">
+
       <div>
-        {<AppNavbar props = {{creationMode, setCreationMode, creditMode,  setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode,trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist}}/>}
-        {!creditMode ? (
-          <div id={"title"}>
-            <Title  checklistList={checklistList} checklistId={checklistId} numDict={numDict}/>
-            {creationMode ?
-              <CreateBox key={checklistId} props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist}} />
-              :
-              <div>
-                <PatientBox props={{patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />
-                <AlertsBox alertList={alertList}/>
-              </div>
-            }
-            <div className={"container p-0 border-bottom border border-dark  shadow rounded rounded-0-bottom "}>
-
-              {values ? values.map((i, index) => (
-                <div >
-                  {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"bg-primary " + (index ? "border-dark border-top":"")}/>}
-                  <div className={"pb-3 px-3 pt-3 " + (index || i.section_title ? "":" rounded rounded-0-bottom ") + (i.importance ? "iq-bg-danger": "iq-bg-info")}>
-                    <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i} dicts={dicts}
-                                   forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
-                                   creationMode={creationMode} currentId = {currentQuestion ? currentQuestion.id: null} warningId={warningId} precheckMode={precheckMode}
-                                   is_root={true}
-                    />
-                  </div>
-                </div>))
-                :
-                null
-              }
-            </div>
-            {!creationMode ? <AppSignature key={checklistId} props = {{sigpad, setTrimmedCanvasUrl}}/> : null}
-            {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId}/> : null }
-
-
-          </div>
-          )
-          :
+        {<AppNavbar props = {{creationMode, setCreationMode, creditMode,  setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode,trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient}}/>}
+        {creditMode ?
           <Credits props={null}/>
+          :
+          <div>
+            {homeMode ?
+              <div>{!(checklistList && checklistList.length)  ?
+                  <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/>
+                  :
+                  <Home checklistList={checklistList} swapchecklist = {swapchecklist} scanValue = {scanValue} currentPatient={currentPatient}/>
+              }</div>
+              :
+              (<div id={"title"}>
+                <Title  checklistList={checklistList} checklistId={checklistId} numDict={numDict} currentPatient={currentPatient}/>
+                {creationMode ?
+                  <CreateBox key={checklistId} props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist}} />
+                  :
+                  <div>
+                    {/*<PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />*/}
+                    {alertList && Object.values(alertList).length ? <AlertsBox alertList={alertList}/> : null}
+                  </div>
+                }
+                {checklist.counter === false ?
+                  <div>
+                    <div className={"container p-0 border-bottom border border-dark  shadow rounded "}>
+                      {values ? values.map((i, index) => (
+                          <div >
+                            {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"bg-primary " + (index ? "border-dark border-top":"")}/>}
+                            <div className={"pb-3 px-3 pt-3 " + (index === values.length-1 ? "rounded rounded-0-top ": null) + (index || i.section_title ? "":" rounded rounded-0-bottom ") + (i.importance ? "iq-bg-danger": "iq-bg-info")}>
+                              <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i} dicts={dicts}
+                                             forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
+                                             creationMode={creationMode} currentId = {currentQuestion ? currentQuestion.id: null} warningId={warningId} precheckMode={precheckMode}
+                                             is_root={true} alertList={alertList} scan_bookmark={next_scan_item_id === i.id}
+                              />
+                            </div>
+                          </div>))
+                        :
+                        null
+                      }
+                    </div>
+                    {/*{!creationMode ? <AppSignature key={checklistId} sigpad={sigpad} setTrimmedCanvasUrl = {setTrimmedCanvasUrl} is_end_sign={true}/> : null}*/}
+                  </div>
+                  :
+                  <CountingTable result={result} setResult={setResult}/>
+                }
+                {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId} checklistList={checklistList} setChecklistList={setChecklistList} checklistId={checklistId}/> : null }
+              </div>)
+            }
+          </div>
         }
       </div>
+
       <div>
         <nav className="navbar">
           <label className="navbar-brand">{null}</label>

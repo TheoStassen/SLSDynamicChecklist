@@ -8,49 +8,16 @@ import * as utils from "./utils";
 * */
 function PatientBox ({props}) {
 
-  let {patientList, currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate} = props
+  let { currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate} = props
 
-  /*Function to change the current patient to the one with patient_id*/
-  const changecurrentpatient = (patient_id) => {
-    const currentPatient = patientList.filter(elm => elm.id === patient_id)[0]
-    setCurrentPatient(currentPatient)
-    setResult({})
-    let init_dict = {}
-    utils.list_possible_answer.forEach(function (answer){init_dict[answer]={0:true}})
-    setIsDict(init_dict)
-    setIsPreCheckDone([])
-    forceUpdate()
-  }
 
   /*Return the patient box elements*/
   return (
-    <div className="container iq-card p-2 py-3 my-0 border border-dark shadow rounded-0-bottom">
-      <div className="row align-items-center m-0">
-        {/*Indication text*/}
-        <div className="col-sm-4 align-items-center text-dark">
-          Patient Actuel :
-        </div>
-        {/*Current patient name*/}
-        <div className="col-sm-4 align-items-center ">
-          <div className="card  text-center bg-info text-dark  m-0 rounded">
-            {currentPatient.firstname}&nbsp;{currentPatient.lastname}
-          </div>
-        </div>
-        {/*Current patient selection dropdown*/}
-        <div className="col-sm-4 align-items-center">
-          <div className="dropdown text-center">
-            <button className="btn btn-secondary btn-round dropdown-toggle" type="button" id="dropdownMenuButton1"
-                    data-toggle="dropdown" aria-expanded="false">
-              Sélectionnez le patient
-            </button>
-            <ul className="dropdown-menu dropdown-menu-custom" aria-labelledby="dropdownMenuButton1">
-              {patientList.map((i, index) => (
-                <li key={index}><label className="dropdown-item " onClick={() => changecurrentpatient(i.id)}>
-                  {i.firstname}&nbsp;{i.lastname}</label>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="container">
+      <div className={"iq-card bg-primary col-sm-6 mx-auto text-center p-2 shadow border border-dark justify-content-center "}>
+        <div className="card-body">
+          <h4 className="card-title text-white m-0">{currentPatient.firstname} {currentPatient.lastname} </h4>
+          <img className={"border border-dark mt-2"} src={currentPatient.photo} width="128" height="128"/>
         </div>
       </div>
     </div>

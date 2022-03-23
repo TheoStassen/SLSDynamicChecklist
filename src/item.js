@@ -2,6 +2,9 @@ import * as utils from "./utils";
 import  * as temp_data from "./temporary_data.js";
 import React, {useState, useReducer} from "react";
 import BootstrapSelect from "react-bootstrap-select-dropdown";
+import QrcodeScanner from "./qrcodescanner";
+import axios from "axios";
+import {AppSignature} from "./signature";
 
 /* Component representing a checklist item (a question).
 - init_items : the parent node of the checklist, used when we need to clean the questions after a answer modification
@@ -10,7 +13,7 @@ import BootstrapSelect from "react-bootstrap-select-dropdown";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root}) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark}) {
 
   // console.log("enter item", item)
 
@@ -25,6 +28,9 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   // console.log("numdict", numDict)
 
   let [isOther, setIsOther] = useState(false)
+
+  let [trimmedCanvasUrl, setTrimmedCanvasUrl] = useState(null)
+  let sigpad = {}
 
   /* Function triggered when the user click on one answer, we update the isDict and results and clean (remove from isDict and results) questions
   * that must not be visible anymore, because of there cond's */
@@ -157,25 +163,45 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     values.forEach(value => !visibleList.includes(value.id) && value.check.length ? visibleList.push(value.id) : null)
   }
 
+  // let show_scan = false
+  // if (scan_bookmark && item.check.includes("scan")){
+  //   show_scan = true
+  //   scan_bookmark = false
+  // }
+
   /*We create the children components of the current item*/
   if (values && values.length) {
     children = (
       <ul className="mb-0">
         {values.map((i, index) => (
-          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} warningId={warningId} is_root={false} />
+          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} warningId={warningId} is_root={false} alertList={alertList} scan_bookmark={scan_bookmark} />
         ))}
       </ul>
     );
   }
 
+  let [scanValue, setScanValue] = useState(null)
+  let [scanValueError, setScanValueError] = useState(null)
+
+  function onNewScanResult(decodedText, decodedResult) {
+    console.log(decodedText, scanValue)
+    if(decodedText) {
+      setScanValue(decodedText)
+      console.log("write decoded scan", decodedText)
+      result[item.id] = {name: item.name, answer: decodedText}
+      setResult(result)
+    }
+  }
 
 
 
+  console.log(item.id, scan_bookmark, scanValue)
   // console.log("Item return", item)
   // console.log("isDict", isDict)
   // console.log("result", result)
   // console.log(result)
   // console.log(visibleList)
+  console.log(numDict)
   //
   // console.log(warningId)
   // console.log(currentId)
@@ -200,7 +226,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
         {/*Item Id*/}
         <div className="col list-group list-group-horizontal m-0 p-0 w-auto">
-          <div className={"list-group-item m-0 p-0 text-center shadow-sm my-auto " + (item.importance ? "bg-danger" : "bg-primary")} >
+          <div className={"list-group-item m-0 p-0 text-center shadow-sm my-auto " + (item.importance || alertList && Object.values(alertList).some(elm => elm.name === item.name) ? "bg-danger" : "bg-primary")} >
             <h5 className="card-body p-auto text-white">
               {item.id}
             </h5>
@@ -209,12 +235,23 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           {/*Item name*/}
           <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark bg- "  >
               {item.comment && commentMode ? (
-                <div className="alert alert-light m-0 mt-0 border-0 text-primary my-auto" role="alert">
-                  {item.comment}
+                <div className="row alert alert-light px-0 m-0 mt-0 border-0 text-primary my-auto text-center align-content-center" role="alert">
+                  <p className={"w-100 m-0"}>{item.comment}</p>
+                  {item.comment.includes("Consentement") ?
+                    <div className={"text-center mx-auto"}>
+                      <button className="btn m-0 p-0 mx-auto " type="button" data-toggle="collapse" data-target="#collapseconsentpdf"
+                              aria-expanded="false" aria-controls="collapseExample">
+                        <div data-icon="T" className="icon"></div>
+                      </button>
+                      <div className="collapse m-0 p-0" id="collapseconsentpdf">
+                        <p className={"col-sm-12 mx-auto mb-0"}> <img src={numDict.consent_pdf} width={"400"}/> </p>
+                      </div>
+                    </div>
+                    : null}
                 </div>
               ) : null}
             <div className="card-body my-auto">
-              {item.name}
+              {item.name.split("_")[0]}
             </div>
             {/*Item comment (above the item name)*/}
           </div>
@@ -227,7 +264,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           <div className="list-group list-group-horizontal ">
             {/*For each possible answer, if in item.check, we put a checkbox*/}
             {item.check.map((answer, index) =>
-              !["text","list", "date", "hour"].includes(answer.split("_")[0]) ?
+              !["text","list", "date", "hour", "scan", "signature", "number"].includes(answer.split("_")[0]) ?
                 <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
                   <input  type="checkbox"
                          aria-label="Checkbox"
@@ -254,6 +291,11 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
               <input className="form-control w-100 mb-0 bg-white" type = "time" aria-label="text input" defaultValue={handleOnChangeCurrentTime()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
             ) : null }
 
+            {/*If item answers must contain date, put a text input*/}
+            {item.check.includes("number") ? (
+              <input className="form-control w-100 mb-0 bg-white" type = "number" aria-label="text input" defaultValue={0} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+            ) : null }
+
             {/*If item answers must contain list, put a list dropdown input*/}
             {item.check[0].split("_").includes("list") ? (
               <BootstrapSelect key={item.check[0].split("_")[1]} className=" my-auto "
@@ -271,6 +313,20 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         </div>
         ) : <div className="col-sm-6"> {null} </div>}
       </div>
+
+      {/*If item answers must contain date, put a text input*/}
+      {item.check.includes("scan") && scan_bookmark  ? (
+        <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center"}>
+          <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={scanValue} scan_bookmark={scan_bookmark}/>
+        </div>
+      ) : null }
+
+      {item.check.includes("signature") ? (
+        <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center"}>
+          <AppSignature sigpad={sigpad} setTrimmedCanvasUrl={setTrimmedCanvasUrl} is_end_sign={false} setResult={setResult} result={result} item={item} forceUpdate={forceUpdate}/>
+        </div>
+      ) : null }
+
       {/*Children of the current item*/}
       {children}
     </div>
