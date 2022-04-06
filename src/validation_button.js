@@ -31,7 +31,7 @@ function ValidationButton ({visibleList, result, import_csv_result, checklist, s
   }
 
   return (
-    <div className="container iq-card  mt-5 text-center p-2 shadow border border-dark">
+    <div className="container custom-container iq-card  mt-5 text-center p-2 mx-auto shadow border border-dark">
       <a onClick={() => search_question_not_answered(visibleList, result, true) === "" ? handlevalidation() : null }
          href={"#" + search_question_not_answered(visibleList, result, false)}
          className=""

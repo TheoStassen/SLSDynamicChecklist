@@ -17,6 +17,7 @@ import {checklist_arrays, checklist_list} from "./temporary_data.js";
 import {Home} from "./home";
 import {CountingTable} from "./couting_table";
 import QrcodeScanner from "./qrcodescanner";
+import {templateSettings} from "lodash/string";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -105,7 +106,7 @@ export default function App() {
     //   });
   }, [])
 
-  // let [patientList, ] = useState(temp_data.patients)
+  let [patientList, ] = useState(temp_data.patients)
   let [currentPatient, setCurrentPatient] = useState(null)
   let [result, setResult] = useState({})
   let [pbresult, setPbResult] = useState({})
@@ -254,31 +255,40 @@ export default function App() {
   let [scanValue, setScanValue] = useState(null)
   let [scanValueError, setScanValueError] = useState(null)
 
+  function switchUser (id) {
+    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
+      .then(function(response) {
+        let corresp_patients = temp_data.patients.filter(elm => elm.id === id)
+        // let checklist_list = corresp_patients && corresp_patients.length ? corresp_patients[0] : []
+        setCurrentPatient(corresp_patients && corresp_patients.length ? corresp_patients[0] : null)
+      })
+  }
+
   function onNewScanResult(decodedText, decodedResult) {
     console.log(decodedText, scanValue)
     if(!scanValue && decodedText) {
       console.log("write decoded scan", decodedText)
 
-      axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
-        .then(function(response){
-          let corresp_checklist_list = temp_data.checklist_list.filter(elm => elm.patient_id === decodedText)
-          let checklist_list = corresp_checklist_list && corresp_checklist_list.length ? corresp_checklist_list[0].checklists : []
-          setCurrentPatient(corresp_checklist_list && corresp_checklist_list.length ? corresp_checklist_list[0].patient : null)
+      if(currentPatient.patient_code === decodedText) {
+        axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
+          .then(function (response) {
 
-          console.log("checklist_list", checklist_list)
-          if (checklist_list && checklist_list.length) {
-            console.log("enter if ")
-            // setScanValueError(null)
-            setChecklistList(checklist_list)
-            setScanValue(decodedText)
-          }
-          else {
-            console.log("enter else ")
-            setChecklistList([{}])
-            setScanValueError(decodedText)
-            setChecklistList([])
-          }
-        })
+            let checklist_list = temp_data.checklist_list.filter(elm => elm.patient_id === decodedText)[0].checklists
+
+            console.log("checklist_list", checklist_list)
+            if (checklist_list && checklist_list.length) {
+              console.log("enter if ")
+              // setScanValueError(null)
+              setChecklistList(checklist_list)
+              // setScanValue(decodedText)
+            }
+          })
+      }
+      else{
+        setChecklistList([{}])
+        setScanValueError(decodedText)
+        setChecklistList([])
+      }
     }
   }
 
@@ -311,7 +321,10 @@ export default function App() {
           <div>
             {homeMode ?
               <div>{!(checklistList && checklistList.length)  ?
-                  <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/>
+                  <div>
+                    <PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate, patientList, switchUser}} />
+                    {currentPatient ? <div className={"px-2 col-sm-6 mx-auto"}> <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/></div> : null}
+                  </div>
                   :
                   <Home checklistList={checklistList} swapchecklist = {swapchecklist} scanValue = {scanValue} currentPatient={currentPatient}/>
               }</div>
@@ -322,7 +335,6 @@ export default function App() {
                   <CreateBox key={checklistId} props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist}} />
                   :
                   <div>
-                    {/*<PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate}} />*/}
                     {alertList && Object.values(alertList).length ? <AlertsBox alertList={alertList}/> : null}
                   </div>
                 }

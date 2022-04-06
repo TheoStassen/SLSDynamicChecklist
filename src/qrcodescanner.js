@@ -47,9 +47,9 @@ function QrcodeScanner (props){
 
 
   return(
-    <div>
+    <div className={"w-100"}>
       {props.scanValue === null ?
-        <div className={" container custom-scanner pt-4 border border-dark rounded bg-white shadow " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
+        <div className={" container custom-scanner pt-4 border border-dark rounded bg-white shadow mx-auto w-100 " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
         :
         <div id={qrcodeRegionId}/>
       }

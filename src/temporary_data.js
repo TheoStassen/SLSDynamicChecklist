@@ -1423,7 +1423,7 @@ const checklist_arrays = [
       '"Consentement du patient"',
       -1,
       7,
-      null,
+      '"Pdf du Consentement"',
       null,
       '{"yes":[],"no":[],"num":[{"var":"age","op":">","val":17}]}',
       '["yes","no"]',
@@ -1436,7 +1436,7 @@ const checklist_arrays = [
       '"Consentement du parent ( <18 ans )"',
       -1,
       8,
-      null,
+      '"Pdf du Consentement"',
       null,
       '{"yes":[],"no":[],"num":[{"var":"age","op":"<","val":18}]}',
       '["yes","no"]',
@@ -1817,7 +1817,7 @@ const checklist_arrays = [
       8,
       null,
       null,
-      '{"yes":[],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
+      '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
       '[1,0,2]',
       null,
@@ -1843,27 +1843,27 @@ const checklist_arrays = [
       1,
       null,
       null,
-      '{"yes":[10],"no":[],"num":[]}',
-      '["number"]',
-      '[1]',
+      '{"yes":[10],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
+      '["yes","no"]',
+      '[0,1,2]',
       null,
       0
     ],
     [
       13,
       '"Cell saver en ordre de marche"',
-      12,
-      0,
+      10,
+      2,
       null,
       null,
-      '{"yes":[10],"no":[],"num":[]}',
-      '["number"]',
-      '[1]',
+      '{"yes":[10],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
+      '["yes","no"]',
+      '[0,1]',
       null,
       0
     ],
     [
-      12,
+      14,
       '"AB Prophyl."',
       -1,
       9,
@@ -1876,15 +1876,15 @@ const checklist_arrays = [
       0
     ],
     [
-      13,
+      15,
       '"Lesquels ?_Antibotiques"',
-      -1,
-      10,
+      14,
+      0,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no","na"]',
-      '["list_antibiotics]',
+      '{"yes":[14],"no":[],"num":[]}',
+      '["list_antibiotics"]',
+      '[0]',
       null,
       0
     ],
@@ -1892,7 +1892,7 @@ const checklist_arrays = [
       16,
       '"Type d\'anésthésie "',
       -1,
-      13,
+      10,
       null,
       '"Anésthesiste"',
       '{"yes":[],"no":[],"num":[]}',
@@ -1902,12 +1902,12 @@ const checklist_arrays = [
       0
     ],
     [
-      16,
+      17,
       '"Matériel d\'anesthésie disponible / ordre de marche"',
       -1,
-      13,
+      11,
       null,
-      '"Anésthesiste"',
+      null,
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
@@ -1915,8 +1915,34 @@ const checklist_arrays = [
       0
     ],
     [
-      17,
+      18,
       '"Respirateur"',
+      -1,
+      12,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      19,
+      '"Oxym. de pouls"',
+      -1,
+      13,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      20,
+      '"Monitoring"',
       -1,
       14,
       null,
@@ -1928,36 +1954,10 @@ const checklist_arrays = [
       0
     ],
     [
-      18,
-      '"Oxym. de pouls"',
-      -1,
-      15,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
-      19,
-      '"Monitoring"',
-      -1,
-      16,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
-      19,
+      21,
       '"Matériel de monitorage invasif disponible (cathé artériel, VVC,…) "',
       -1,
-      16,
+      15,
       null,
       null,
       '{"yes":[],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
@@ -1967,10 +1967,10 @@ const checklist_arrays = [
       0
     ],
     [
-      20,
+      22,
       '"Difficultés airways et/ou intubation"',
       -1,
-      17,
+      16,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -1980,33 +1980,46 @@ const checklist_arrays = [
       0
     ],
     [
-      21,
+      23,
       '"Glydescope ou équivalent présent"',
-      20,
+      22,
       0,
       null,
       null,
-      '{"yes":[20],"no":[],"num":[]}',
+      '{"yes":[22],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
       null,
       0
     ],
     [
-      22,
+      24,
       '"Laryngoscope"',
-      20,
+      22,
       1,
       null,
       null,
-      '{"yes":[20],"no":[],"num":[]}',
+      '{"yes":[22],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
       null,
       0
     ],
     [
-      23,
+      25,
+      '"2ème anésthésiste"',
+      -1,
+      17,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      26,
       '"Matériel pour l\'infirmière circulante disponible et en ordre de marche "',
       -1,
       18,
@@ -2019,34 +2032,8 @@ const checklist_arrays = [
       0
     ],
     [
-      23,
+      27,
       '"Imagerie disponible "',
-      -1,
-      18,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
-      23,
-      '"Matériel implantable disponible et correct "',
-      -1,
-      18,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["yes","no"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
-      24,
-      '"La stérilité du matériel disposable et non disposable a été vérifiée (résultats des indicateurs + vérification date péremption)"',
       -1,
       19,
       null,
@@ -2058,34 +2045,34 @@ const checklist_arrays = [
       0
     ],
     [
-      25,
-      '"Anesthésiste : Scan"',
+      28,
+      '"Matériel implantable disponible et correct "',
       -1,
       20,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["scan"]',
+      '["yes","no"]',
       '[0,1]',
       null,
       0
     ],
     [
-      26,
-      '"Signature"',
+      29,
+      '"La stérilité du matériel disposable et non disposable a été vérifiée (résultats des indicateurs + vérification date péremption)"',
       -1,
       21,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
-      '["signature"]',
+      '["yes","no"]',
       '[0,1]',
       null,
       0
     ],
     [
-      27,
-      '"Assistant Anesthésiste : Scan"',
+      30,
+      '"Anesthésiste : Scan"',
       -1,
       22,
       null,
@@ -2097,10 +2084,36 @@ const checklist_arrays = [
       0
     ],
     [
-      28,
+      31,
       '"Signature"',
       -1,
       23,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["signature"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      32,
+      '"Assistant Anesthésiste : Scan"',
+      -1,
+      24,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["scan"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      33,
+      '"Signature"',
+      -1,
+      25,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -2282,9 +2295,35 @@ const checklist_arrays = [
     ],
     [
       13,
-      '"Documents nécessaires disponibles (RX, Imagerie, CD, ..)"',
+      '"Vérification plaque bistouri"',
       -1,
       10,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null,
+      0
+    ],
+    [
+      14,
+      '"Vérification position patient"',
+      -1,
+      11,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null,
+      0
+    ],
+    [
+      15,
+      '"Documents nécessaires disponibles (RX, Imagerie, CD, ..)"',
+      -1,
+      12,
       null,
       '"Chirurgien"',
       '{"yes":[],"no":[],"num":[]}',
@@ -2294,10 +2333,10 @@ const checklist_arrays = [
       0
     ],
     [
-      14,
+      16,
       '"Particularité de l\'intervention liée à la chirurgie énoncée"',
       -1,
-      11,
+      13,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -2307,10 +2346,10 @@ const checklist_arrays = [
       0
     ],
     [
-      15,
+      17,
       '"Matériel pour le chirurgien et/ou l\'instrumentiste disponible"',
       -1,
-      12,
+      14,
       null,
       null,
       '{"yes":[],"no":[],"num":[]}',
@@ -2320,10 +2359,10 @@ const checklist_arrays = [
       0
     ],
     [
-      16,
+      18,
       '"Vérif. compte initial des compresses"',
       -1,
-      13,
+      15,
       null,
       '"Anésthesiste"',
       '{"yes":[],"no":[],"num":[]}',
@@ -2333,38 +2372,12 @@ const checklist_arrays = [
       0
     ],
     [
-      17,
-      '"Chirurgien : Scan"',
-      -1,
-      14,
-      null,
-      '"Identifications"',
-      '{"yes":[],"no":[],"num":[]}',
-      '["scan"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
-      18,
-      '"Signature"',
-      -1,
-      15,
-      null,
-      null,
-      '{"yes":[],"no":[],"num":[]}',
-      '["signature"]',
-      '[0,1]',
-      null,
-      0
-    ],
-    [
       19,
-      '"Assistant Chirurgien : Scan"',
+      '"Chirurgien : Scan"',
       -1,
       16,
       null,
-      null,
+      '"Identifications"',
       '{"yes":[],"no":[],"num":[]}',
       '["scan"]',
       '[0,1]',
@@ -2380,11 +2393,38 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["signature"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      21,
+      '"Assistant Chirurgien : Scan"',
+      -1,
+      18,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["scan"]',
+      '[0,1]',
+      null,
+      0
+    ],
+    [
+      22,
+      '"Signature"',
+      -1,
+      19,
+      null,
+      null,
+      '{"yes":[],"no":[],"num":[]}',
+      '["signature"]',
       '[1,0,2]',
       null,
       0
     ],
   ],
+  [], // Compte des compresses
   [
     [
       '"id"',
@@ -2401,7 +2441,7 @@ const checklist_arrays = [
     ],
     [
       1,
-      '"Etiquetage correct des différents prélèvements"',
+      '"Prélévements"',
       -1,
       0,
       null,
@@ -2414,6 +2454,32 @@ const checklist_arrays = [
     ],
     [
       2,
+      '"Etiquetés correctement"',
+      1,
+      0,
+      null,
+      null,
+      '{"yes":[1],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null,
+      0
+    ],
+    [
+      3,
+      '"Acheminés correctement"',
+      1,
+      1,
+      null,
+      null,
+      '{"yes":[1],"no":[],"num":[]}',
+      '["yes","no","na"]',
+      '[0,1,2]',
+      null,
+      0
+    ],
+    [
+      4,
       '"Signature"',
       -1,
       1,
@@ -2426,7 +2492,7 @@ const checklist_arrays = [
       0
     ],
     [
-      3,
+      5,
       '"Signalement/notification écrite des dysfonctionnements matériels majeurs au responsable BO présent"',
       -1,
       2,
@@ -2439,7 +2505,7 @@ const checklist_arrays = [
       0
     ],
     [
-      4,
+      6,
       '"Dysfonctionnement/ Disponibilité du matériel implantable (Vis, prothèse, greffe, ...)"',
       -1,
       3,
@@ -2452,7 +2518,7 @@ const checklist_arrays = [
       0
     ],
     [
-      5,
+      7,
       '"Drains, sonde urinaire, tamponnement, méchage, traitements, ..."',
       -1,
       4,
@@ -2465,7 +2531,7 @@ const checklist_arrays = [
       0
     ],
     [
-      6,
+      8,
       '"Infirmière Circulante: Scan"',
       -1,
       5,
@@ -2478,7 +2544,7 @@ const checklist_arrays = [
       0
     ],
     [
-      7,
+      9,
       '"Signature"',
       -1,
       6,
@@ -2491,7 +2557,7 @@ const checklist_arrays = [
       0
     ],
     [
-      8,
+      10,
       '"Infirmière Instrumentiste : Scan"',
       -1,
       7,
@@ -2504,7 +2570,7 @@ const checklist_arrays = [
       0
     ],
     [
-      9,
+      11,
       '"Signature"',
       -1,
       8,
@@ -2516,8 +2582,7 @@ const checklist_arrays = [
       null,
       0
     ],
-  ],
-  [] // Compte des compresses
+  ]
 ]
 
 const checklist_list = [
@@ -2529,38 +2594,36 @@ const checklist_list = [
     checklists: [
       {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Majeure", fill: true, counter:false},
       {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Majeure", fill: true, counter:false },
-      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Majeure", fill: false , counter:false},
-      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Majeure", fill: false, counter:false },
-      {checklist_id: 5, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Majeure", fill: false, counter:false },
-      {checklist_id: 6, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Majeure", fill: false, counter:true },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Majeure", fill: false , counter:false},
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:false },
+
   ]},
   {
     patient_id:"Hello :)",
     patient : {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/2018",
       "diabetic":"vrai", "difficult_intubation":"vrai", photo: temp_photos.photo_2, "consent_pdf":temp_photos.pdf_1,
-      "type":"minor", "intervention_name":"Varice"},
+      "type":"minor", "intervention_name":"Ablation Végétations"},
     checklists: [
       {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Mineure", fill: false, counter:false },
       {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anésthésiste", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 5, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 6, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anesthésiste", type: "Chirurgie Mineure", fill: false, counter:true },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Mineure", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
     ]}
 ]
 
 
 /*List of all patients*/
 const patients = [
-  {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940", "diabetic":"faux", "difficult_intubation":"vrai", "photo": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" },
-  {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/1960", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 2, "lastname": "Perlot", "firstname": "Claude", "gender": "M", "dateofbirth": "12/16/1975", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 3, "lastname": "Boulet", "firstname": "Arnaud", "gender": "M", "dateofbirth": "03/17/1981", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 4, "lastname": "Charlier", "firstname": "Emile", "gender": "M", "dateofbirth": "09/19/1953", "diabetic":"faux", "difficult_intubation":"vrai" },
-  {"id": 5, "lastname": "Nash", "firstname": "Emilie", "gender": "F", "dateofbirth": "03/30/2015", "diabetic":"vrai", "difficult_intubation":"vrai" },
-  {"id": 6, "lastname": "Materne", "firstname": "Marie", "gender": "F", "dateofbirth": "08/23/1982", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 7, "lastname": "Bernard", "firstname": "Virginie", "gender": "F", "dateofbirth": "06/03/1986", "diabetic":"faux", "difficult_intubation":"faux" },
-  {"id": 8, "lastname": "Lemoine", "firstname": "Karine", "gender": "F", "dateofbirth": "01/25/1977", "diabetic":"vrai", "difficult_intubation":"vrai" },
+  {"id": 0, "patient_code":"http://fr.wikipedia.org/", "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940",
+    "diabetic":"faux", "difficult_intubation":"vrai", "photo": temp_photos.photo_1, "consent_pdf":temp_photos.pdf_1,
+    "type":"major", "intervention_name":"PTG"},
+  {"id": 1, "patient_code":"Hello :)", "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/2018",
+    "diabetic":"vrai", "difficult_intubation":"vrai", photo: temp_photos.photo_2, "consent_pdf":temp_photos.pdf_1,
+    "type":"minor", "intervention_name":"Varice"},
 ]
 
 const lists = {
@@ -2577,7 +2640,8 @@ const lists = {
 }
 
 const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients",
-  "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires", "nurses": "Infirmières", "anesthesists": "Anesthésistes", "room": "Salle"}
+  "alergy-meds":"Allergies Médicamenteuses", "alergy-aliments":"Allergies Alimentaires", "nurses": "Infirmières",
+  "anesthesists": "Anesthésistes", "room": "Salle", "antibiotics": "Antibiotiques"}
 
 const alerts = [
 ]

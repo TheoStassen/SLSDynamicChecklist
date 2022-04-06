@@ -244,7 +244,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
                         <div data-icon="T" className="icon"></div>
                       </button>
                       <div className="collapse m-0 p-0" id="collapseconsentpdf">
-                        <p className={"col-sm-12 mx-auto mb-0"}> <img src={numDict.consent_pdf} width={"400"}/> </p>
+                        <p className={"col-sm-12 mx-0 px-0 mb-0"}> <img src={numDict.consent_pdf} width={"280"}/> </p>
                       </div>
                     </div>
                     : null}
@@ -261,62 +261,79 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         {/*Item answers (if any, if not empty col)*/}
         {item.check.length ? (
         <div className="col-sm-auto p-0 pl-3">
-          <div className="list-group list-group-horizontal ">
-            {/*For each possible answer, if in item.check, we put a checkbox*/}
-            {item.check.map((answer, index) =>
-              !["text","list", "date", "hour", "scan", "signature", "number"].includes(answer.split("_")[0]) ?
-                <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
-                  <input  type="checkbox"
-                         aria-label="Checkbox"
-                         checked={isDict[answer] && isDict[answer][item.id] ? 1:0}
-                         onChange={function(event) {handleOnChangeIs(answer);forceUpdate()}}
-                  />
-                  &nbsp;{utils.trad_answer(answer)}
-                </label>
-              : null
-            )}
+          <div className={"row px-3"}>
+            <div className="list-group list-group-horizontal ">
+              {/*For each possible answer, if in item.check, we put a checkbox*/}
+              {item.check.map((answer, index) =>
+                index < 3 && !["text","list", "date", "hour", "scan", "signature", "number"].includes(answer.split("_")[0]) ?
+                  <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
+                    <input  type="checkbox"
+                           aria-label="Checkbox"
+                           checked={isDict[answer] && isDict[answer][item.id] ? 1:0}
+                           onChange={function(event) {handleOnChangeIs(answer);forceUpdate()}}
+                    />
+                    &nbsp;{utils.trad_answer(answer)}
+                  </label>
+                : null
+              )}
+            </div>
 
-            {/*If item answers must contain text, put a text input*/}
-            {item.check.includes("text") ? (
-              <input className="form-control w-100 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeText}/>
-            ) : null }
-
-            {/*If item answers must contain date, put a text input*/}
-            {item.check.includes("date") ? (
-              <input className="form-control w-100 mb-0 bg-white" type = "date" aria-label="text input" defaultValue={handleOnChangeCurrentDate()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
-            ) : null }
-
-            {/*If item answers must contain date, put a text input*/}
-            {item.check.includes("hour") ? (
-              <input className="form-control w-100 mb-0 bg-white" type = "time" aria-label="text input" defaultValue={handleOnChangeCurrentTime()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
-            ) : null }
-
-            {/*If item answers must contain date, put a text input*/}
-            {item.check.includes("number") ? (
-              <input className="form-control w-100 mb-0 bg-white" type = "number" aria-label="text input" defaultValue={0} placeholder="Insérez ici" onChange={handleOnChangeText}/>
-            ) : null }
-
-            {/*If item answers must contain list, put a list dropdown input*/}
-            {item.check[0].split("_").includes("list") ? (
-              <BootstrapSelect key={item.check[0].split("_")[1]} className=" my-auto "
-                               selectStyle ="py-2  btn btn-outline-dark bg-white text-dark "
-                               options={create_possible_list_answers(item.check[0].split("_")[1])}
-                               isMultiSelect={true} placeholder="-" onChange={handleOnChangeList} menuSize={10}/>
-            ) : null }
-
-            {/*If item answers is list and the answer is Other, put a text*/}
-            {isOther ? (
-              <input className="form-control w-100 ml-2 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeListOther}/>
-            ) : null }
-
+            <div className="list-group list-group-horizontal ">
+              {/*For each possible answer, if in item.check, we put a checkbox*/}
+              {item.check.map((answer, index) =>
+                index >= 3 && !["text","list", "date", "hour", "scan", "signature", "number"].includes(answer.split("_")[0]) ?
+                  <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
+                    <input  type="checkbox"
+                            aria-label="Checkbox"
+                            checked={isDict[answer] && isDict[answer][item.id] ? 1:0}
+                            onChange={function(event) {handleOnChangeIs(answer);forceUpdate()}}
+                    />
+                    &nbsp;{utils.trad_answer(answer)}
+                  </label>
+                  : null
+              )}
+            </div>
           </div>
+          {/*If item answers must contain text, put a text input*/}
+          {item.check.includes("text") ? (
+            <input className="form-control w-100 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeText}/>
+          ) : null }
+
+          {/*If item answers must contain date, put a text input*/}
+          {item.check.includes("date") ? (
+            <input className="form-control w-100 mb-0 bg-white" type = "date" aria-label="text input" defaultValue={handleOnChangeCurrentDate()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+          ) : null }
+
+          {/*If item answers must contain date, put a text input*/}
+          {item.check.includes("hour") ? (
+            <input className="form-control w-100 mb-0 bg-white" type = "time" aria-label="text input" defaultValue={handleOnChangeCurrentTime()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+          ) : null }
+
+          {/*If item answers must contain date, put a text input*/}
+          {item.check.includes("number") ? (
+            <input className="form-control w-100 mb-0 bg-white" type = "number" aria-label="text input" defaultValue={0} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+          ) : null }
+
+          {/*If item answers must contain list, put a list dropdown input*/}
+          {item.check[0].split("_").includes("list") ? (
+            <BootstrapSelect key={item.check[0].split("_")[1]} className=" my-auto "
+                             selectStyle ="py-2  btn btn-outline-dark bg-white text-dark "
+                             options={create_possible_list_answers(item.check[0].split("_")[1])}
+                             isMultiSelect={true} placeholder="-" onChange={handleOnChangeList} menuSize={10}/>
+          ) : null }
+
+          {/*If item answers is list and the answer is Other, put a text*/}
+          {isOther ? (
+            <input className="form-control w-100 ml-2 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeListOther}/>
+          ) : null }
+
         </div>
         ) : <div className="col-sm-6"> {null} </div>}
       </div>
 
       {/*If item answers must contain date, put a text input*/}
       {item.check.includes("scan") && scan_bookmark  ? (
-        <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center"}>
+        <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center col-sm-6 mx-auto"}>
           <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={scanValue} scan_bookmark={scan_bookmark}/>
         </div>
       ) : null }

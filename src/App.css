@@ -281,5 +281,20 @@ background-color: #f5f5f5;
 }
 
 .custom-scanner{
-    width: 450px
+    width: auto;
+}
+
+.custom-container{
+    width: auto;
+}
+
+.navbar-toggler{
+    right: 20px !important;
+    top: 18px !important;
+}
+
+.navbar-collapse{
+    position: static;
+    box-shadow: none;
+    -webkit-box-shadow: none;
 }

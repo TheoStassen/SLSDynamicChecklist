@@ -73,9 +73,9 @@ function AppNavbar ({props}) {
 
   /*Return the different elements of the navbar*/
   return (
-    <div className="iq-top-navbar h-auto " >
+    <div className="iq-top-navbar h-auto" >
       <div className="iq-navbar-custom py-2">
-        <nav className="navbar navbar-expand-lg navbar-light p-0">
+        <nav className="navbar navbar-expand-lg navbar-light p-0 ">
           {/*Navbar Title*/}
           <div className="navbar-brand pl-4">
             <a href="#" onClick={gotohome}>
@@ -83,10 +83,11 @@ function AppNavbar ({props}) {
             </a>
           </div>
           {/*/!*Navbar Toggler button*!/*/}
-          <label className="navbar-toggler p-0 m-0" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+          <button className="navbar-toggler p-0" data-toggle="collapse" data-target="#navbarNavAltMarkup"
                   aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
-          </label>
+          </button>
+
           {/*/!*Navbar links*!/*/}
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav  p-2 pl-4">
