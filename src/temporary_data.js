@@ -2592,8 +2592,8 @@ const checklist_list = [
       "diabetic":"faux", "difficult_intubation":"vrai", "photo": temp_photos.photo_1, "consent_pdf":temp_photos.pdf_1,
       "type":"major", "intervention_name":"PTG"},
     checklists: [
-      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Majeure", fill: true, counter:false},
-      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Majeure", fill: true, counter:false },
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Majeure", fill: false, counter:false},
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Majeure", fill: false, counter:false },
       {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Majeure", fill: false , counter:false},
       {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:false },
       {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:true },
@@ -2606,7 +2606,20 @@ const checklist_list = [
       "diabetic":"vrai", "difficult_intubation":"vrai", photo: temp_photos.photo_2, "consent_pdf":temp_photos.pdf_1,
       "type":"minor", "intervention_name":"Ablation Végétations"},
     checklists: [
-      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Mineure", fill: false, counter:false },
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Mineure", fill: true, counter:false },
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Mineure", fill: true, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Mineure", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
+  ]},
+  {
+    patient_id:"http://en.m.wikipedia.org",
+    patient : {"id": 2, "lastname": "Franklin", "firstname": "Rachel", "gender": "F", "dateofbirth": "08/25/1980",
+      "diabetic":"faux", "difficult_intubation":"faux", photo: temp_photos.photo_3, "consent_pdf":temp_photos.pdf_1,
+      "type":"minor", "intervention_name":"Varice"},
+    checklists: [
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Mineure", fill: true, counter:false },
       {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Mineure", fill: false, counter:false },
       {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Mineure", fill: false, counter:false },
       {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
@@ -2623,6 +2636,9 @@ const patients = [
     "type":"major", "intervention_name":"PTG"},
   {"id": 1, "patient_code":"Hello :)", "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/2018",
     "diabetic":"vrai", "difficult_intubation":"vrai", photo: temp_photos.photo_2, "consent_pdf":temp_photos.pdf_1,
+    "type":"minor", "intervention_name":"Ablation Végétations"},
+  {"id": 2, "patient_code":"http://en.m.wikipedia.org", "lastname": "Franklin", "firstname": "Rachel", "gender": "F", "dateofbirth": "08/25/1980",
+    "diabetic":"faux", "difficult_intubation":"faux", photo: temp_photos.photo_3, "consent_pdf":temp_photos.pdf_1,
     "type":"minor", "intervention_name":"Varice"},
 ]
 
