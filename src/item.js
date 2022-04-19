@@ -195,13 +195,13 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
 
 
-  console.log(item.id, scan_bookmark, scanValue)
+  // console.log(item.id, scan_bookmark, scanValue)
   // console.log("Item return", item)
   // console.log("isDict", isDict)
   // console.log("result", result)
   // console.log(result)
   // console.log(visibleList)
-  console.log(numDict)
+  // console.log(numDict)
   //
   // console.log(warningId)
   // console.log(currentId)
@@ -339,7 +339,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
       ) : null }
 
       {item.check.includes("signature") ? (
-        <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center"}>
+        <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center mx-auto"}>
           <AppSignature sigpad={sigpad} setTrimmedCanvasUrl={setTrimmedCanvasUrl} is_end_sign={false} setResult={setResult} result={result} item={item} forceUpdate={forceUpdate}/>
         </div>
       ) : null }

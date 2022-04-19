@@ -34,7 +34,7 @@ function AppSignature (props) {
 
   /*Return the signature elements*/
   return (
-    <div className={"container iq-card border-bottom border-right border-left border-dark shadow " + (props.is_end_sign ? "rounded-0-top" : "border-top m-0 mr-3")}>
+    <div className={"container iq-card border-bottom border-right border-left border-dark shadow mx-auto " + (props.is_end_sign ? "rounded-0-top" : "border-top m-0 mr-3")}>
       <div className="row align-items-center p-0 m-0 h-100">
         {/*Information text*/}
         <div className="col-sm-3 m-0 p-0 text-center text-dark">

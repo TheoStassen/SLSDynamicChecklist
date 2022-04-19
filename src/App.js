@@ -59,26 +59,29 @@ export default function App() {
 
   let [alertList,setAlertList] = useState({})
 
+  let [patientList, setPatientList ] = useState(null)
+
 
   // Init calls (get checklist list and the initial checklist
   useEffect(() => {
     onNewScanResult = onNewScanResult.bind(this);
 
-    // axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
-    //   .then(function(response){
-    //
-    //     //Must handle incoming data
-    //     console.log("call response", response)
-    //     console.log(temp_data.checklist_list)
-    //
-    //     //For now we use temp_data
-    //
-    //     setChecklistList(temp_data.checklist_list);
-    //     // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
-    //     // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
-    //     // setChecklist(checklist)
-    //     console.log("initial get checklist list call and set finished")
-    //   });
+    // ici il faut call la patient list, pas checklist list
+    axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
+      .then(function(response){
+
+        //Must handle incoming data
+        console.log("call response", response)
+        console.log(temp_data.patients)
+
+        //For now we use temp_data
+
+        setPatientList(temp_data.patients);
+        // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
+        // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
+        // setChecklist(checklist)
+        console.log("initial get checklist list call and set finished")
+      });
     // axios.get('http://checklists.metoui.be/api/checklists/1') //Random url, just to simulate the fact that we need to make get call before set first checklist
     //   .then(function(response){
     //
@@ -106,7 +109,7 @@ export default function App() {
     //   });
   }, [])
 
-  let [patientList, ] = useState(temp_data.patients)
+
   let [currentPatient, setCurrentPatient] = useState(null)
   let [result, setResult] = useState({})
   let [pbresult, setPbResult] = useState({})
@@ -194,16 +197,17 @@ export default function App() {
   const swapchecklist = (checklist_id) => {
 
       //On fait l'appel qui va chercher la checklist 'checklistId = x'
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
-    .then(function(response){
+    // axios.get('http://checklists.metoui.be/api/checklists/' + checklist_id) //Random url, just to simulate the fact that we need to make get call before set checklistList
+    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
+      .then(function(response){
 
       //Must handle incoming data
-      console.log("swap call response", response)
-      console.log(temp_data.checklist_arrays[checklist_id])
+      // console.log("swap call response", response.data.data.items)
 
       //For now we use temp_data
       const current_creation_mode = creationMode
       let checklist_array = temp_data.checklist_arrays[checklist_id-1]
+      // let checklist_array = response.data.data.items
       checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
       checklist.name = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].name
       checklist.person = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].person
@@ -221,9 +225,11 @@ export default function App() {
       Object.keys(pbresult).forEach((key, index) => {
         const name = pbresult[key].name
         const corresponding_questions = checklist_array.filter(elm => elm[1].includes(name))
+        console.log(checklist)
         alert_list[name] =
           {
-            "id": index, "question_id": corresponding_questions.length ? corresponding_questions[0][0] : -1, "checklist_id" : checklistId, "name": name,
+            "id": index, "question_id": corresponding_questions.length ? corresponding_questions[0][0] : -1,
+            "checklist_id" : checklistId, "checklist_name" : checklist.name, "name": name,
             "answer" : (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer),
             "gravity": 0
           }
@@ -256,10 +262,10 @@ export default function App() {
   let [scanValueError, setScanValueError] = useState(null)
 
   function switchUser (id) {
+    //Logiquement si on considère qu'à l'ouverture on a récupéré la patient list, il n'y a pas besoin de faire de call ici, on switch just de patient
     axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response) {
-        let corresp_patients = temp_data.patients.filter(elm => elm.id === id)
-        // let checklist_list = corresp_patients && corresp_patients.length ? corresp_patients[0] : []
+        let corresp_patients = patientList.filter(elm => elm.id === id)
         setCurrentPatient(corresp_patients && corresp_patients.length ? corresp_patients[0] : null)
       })
   }
@@ -270,17 +276,14 @@ export default function App() {
       console.log("write decoded scan", decodedText)
 
       if(currentPatient.patient_code === decodedText) {
+        // axios.get('http://checklists.metoui.be/api/checklists/patient/'+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
         axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
           .then(function (response) {
 
             let checklist_list = temp_data.checklist_list.filter(elm => elm.patient_id === decodedText)[0].checklists
 
-            console.log("checklist_list", checklist_list)
             if (checklist_list && checklist_list.length) {
-              console.log("enter if ")
-              // setScanValueError(null)
               setChecklistList(checklist_list)
-              // setScanValue(decodedText)
             }
           })
       }
@@ -299,14 +302,14 @@ export default function App() {
   // console.log("app")
   // console.log("isPreCheckDone", isPreCheckDone)
   // console.log("isDict", isDict)
-  console.log("result", result)
+  // console.log("result", result)
   // console.log(result)
   // console.log(visibleList)
   // console.log(isDict)
   // console.log(isPreCheckDone)
-  console.log("alertList", alertList)
+  // console.log("alertList", alertList)
   // console.log(currentQuestion)
-  console.log(checklist)
+  // console.log(checklist)
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
@@ -322,7 +325,7 @@ export default function App() {
             {homeMode ?
               <div>{!(checklistList && checklistList.length)  ?
                   <div>
-                    <PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, init_dict, forceUpdate, patientList, switchUser}} />
+                    <PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser, setChecklistList}} />
                     {currentPatient ? <div className={"px-2 col-sm-6 mx-auto"}> <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/></div> : null}
                   </div>
                   :

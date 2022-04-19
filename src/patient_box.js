@@ -9,8 +9,15 @@ import * as temp_data from "./temporary_data";
 * */
 function PatientBox ({props}) {
 
-  let { currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser} = props
+  let { currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser, setChecklistList} = props
 
+  function debug_allow_patient() {
+    let checklist_list = temp_data.checklist_list.filter(elm => elm.patient.id === currentPatient.id)[0].checklists
+
+    if (checklist_list && checklist_list.length) {
+      setChecklistList(checklist_list)
+    }
+  }
 
   /*Return the patient box elements*/
   return (
@@ -29,16 +36,19 @@ function PatientBox ({props}) {
                 Sélectionnez le patient
               </button>
               <ul className="dropdown-menu dropdown-menu-custom" aria-labelledby="dropdownMenuButton1">
-                {patientList.map((i, index) => (
+                {patientList ? patientList.map((i, index) => (
                   <li key={index}><label className="dropdown-item " onClick={() => switchUser(i.id)}>
                     {i.firstname}&nbsp;{i.lastname}</label>
                   </li>
-                ))}
+                )) : null}
               </ul>
             </div>
           </div>
           {currentPatient ? <h4 className="card-title text-white mt-4 mb-0">Scannez le QR code correspondant</h4> : null }
           {currentPatient ? <h4 className="card-title text-white"><div data-icon="k" className="icon"></div></h4> : null }
+
+          {currentPatient ? <button className={"btn btn-info btn-round m-2"} onClick={() =>debug_allow_patient()}>Passer Qr Code</button>: null}
+
         </div>
       </div>
     </div>

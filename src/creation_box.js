@@ -307,14 +307,64 @@ function CreateBox ({props}) {
 
   /*Add a checklist (with basic content) to the list of checklist, and switch to this checklist*/
 
+  const updatechecklist = () => {
+    const checklist_id = checklistList.length ? checklistId : 0
+
+    //On ajoute une checklist ici dans la checklist list actuelle
+    const updated_checklist = {
+      id : checklistId,
+      data : utils.checklist_tree_to_flat(checklist).slice(1)
+    }
+
+    // Inform that we want to add a new checklist and receive in response the new checklist list
+    axios.post('http://checklists.metoui.be/api/checklists/'+checklistId+'/update', updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
+      .then(function(response){
+
+        //Must handle incoming data
+
+        console.log(response) // Ici on doit recevoir la liste des patients (avec leurs checklists updated) et set la checklist list
+        //correspondant à l'user actuel, et on doit swapchecklist sur la première
+
+        setChecklist(checklistList)
+
+        swapchecklist(checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
+        console.log("add checklist get call and set finished")
+      });
+  }
+
   const addchecklist = () => {
     const checklist_id = checklistList.length ? checklistList[checklistList.length-1].checklist_id+1 : 0
 
+    //On ajoute une checklist ici dans la checklist list actuelle
+
+    const new_checklist =
+      {
+        name : "Nouvelle Checklist",
+        data: [
+          [
+            1,
+            '"Question vide"',
+            -1,
+            0,
+            null,
+            null,
+            '{"yes":[],"no":[],"num":[]}',
+            '["yes","no"]',
+            '[0,1]',
+            null,
+            0
+          ]
+        ]
+      }
+
     // Inform that we want to add a new checklist and receive in response the new checklist list
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call to add checklist
+    axios.post('http://checklists.metoui.be/api/checklists/add', new_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
     .then(function(response){
 
       //Must handle incoming data
+
+      console.log(response) // Ici on doit recevoir la liste des patients (avec leurs checklists updated) et set la checklist list
+      //correspondant à l'user actuel, et on doit swapchecklist sur la première
 
       setChecklist(checklistList)
 
@@ -328,8 +378,11 @@ function CreateBox ({props}) {
     const checklist_id = checklistList.length ? checklistList[0].checklist_id : 0
 
     // Inform that we want to del a checklist and receive in response the new checklist list
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call to del checklist
+    axios.get('http://checklists.metoui.be/api/checklists/'+checklistId+'/delete') //Random url, just to simulate the fact that we need to make get call to del checklist
     .then(function(response){
+
+      console.log(response) // Ici on doit recevoir la liste des patients (avec leurs checklists updated) et set la checklist list
+      //correspondant à l'user actuel, et on doit swapchecklist sur la première
 
       //Must handle incoming data
       setChecklist(checklistList)
@@ -1030,7 +1083,7 @@ function CreateBox ({props}) {
         </div>
         {/*Button to import in .json the list of checklist*/}
         <div className="col-sm-4 align-items-center text-center">
-          <button className="btn btn-warning  " onClick={() =>  utils.checklist_tree_to_flat(checklist)}>
+          <button className="btn btn-warning  " onClick={() =>  updatechecklist()}>
             Sauvegarder la checklist
           </button>
         </div>
