@@ -113,27 +113,50 @@ function CsvGenerator(dataArray, fileName, separator, addQuotes) {
     };
 }
 
-function checklist_tree_to_flat(checklist_tree ) {
-    let checklist_array = [["id", "name", "parent_id", "position", "comment", "section_title", "cond", "check", "color", "pre_check"]]
-    checklist_array = checklist_tree_to_flat_rec(checklist_tree, checklist_array, 0, 0);
-    console.log(checklist_array)
-    // let csvGenerator = new CsvGenerator(checklist_array, 'my_csv.csv', ";");
-    // csvGenerator.download(true);
-    checklist_to_json(checklist_array)
+// function checklist_tree_to_flat(checklist_tree ) {
+//     let checklist_array = [["id", "name", "parent_id", "position", "comment", "section_title", "cond", "check", "color", "pre_check"]]
+//     checklist_array = checklist_tree_to_flat_rec(checklist_tree, checklist_array, 0, 0);
+//     console.log(checklist_array)
+//     // let csvGenerator = new CsvGenerator(checklist_array, 'my_csv.csv', ";");
+//     // csvGenerator.download(true);
+//     checklist_to_json(checklist_array)
+//
+//     return checklist_array
+// }
+//
+// function checklist_tree_to_flat_rec(item, array, parent_id, position){
+//     if (item.id > 0){
+//       console.log(JSON.stringify(item.cond))
+//       array.push([item.id, item.name, parent_id, position, item.comment, item.section_title, JSON.stringify(item.cond), JSON.stringify(item.check), JSON.stringify(item.color), item.pre_check ? JSON.stringify(item.pre_check) : null])
+//     }
+//     for (let i=0; i<item.values.length; i++){
+//         array = checklist_tree_to_flat_rec(item.values[i], array, item.id, i)
+//     }
+//     return array
+// }
 
-    return checklist_array
+function checklist_tree_to_flat(checklist_tree ) {
+  let checklist_array = [{}]
+  checklist_array = checklist_tree_to_flat_rec(checklist_tree, checklist_array, 0, 0);
+  console.log(checklist_array)
+  // let csvGenerator = new CsvGenerator(checklist_array, 'my_csv.csv', ";");
+  // csvGenerator.download(true);
+  checklist_to_json(checklist_array)
+
+  return checklist_array
 }
 
 function checklist_tree_to_flat_rec(item, array, parent_id, position){
-    if (item.id > 0){
-      console.log(JSON.stringify(item.cond))
-      array.push([item.id, item.name, parent_id, position, item.comment, item.section_title, JSON.stringify(item.cond), JSON.stringify(item.check), JSON.stringify(item.color), item.pre_check ? JSON.stringify(item.pre_check) : null])
-    }
-    for (let i=0; i<item.values.length; i++){
-        array = checklist_tree_to_flat_rec(item.values[i], array, item.id, i)
-    }
-    return array
+  if (item.id > 0){
+    console.log(JSON.stringify(item.cond))
+    array.push({id: item.id, name: item.name, parent_itemId: parent_id, position: position, comment: item.comment, section_title: item.section_title, cond: JSON.stringify(item.cond), check : JSON.stringify(item.check), color: JSON.stringify(item.color), pre_check: item.pre_check ? JSON.stringify(item.pre_check) : null})
+  }
+  for (let i=0; i<item.values.length; i++){
+    array = checklist_tree_to_flat_rec(item.values[i], array, item.id, i)
+  }
+  return array
 }
+
 
 function checklist_flat_to_tree(checklist_array, checklist_id){
   let root_item = {

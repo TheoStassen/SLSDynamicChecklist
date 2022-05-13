@@ -1817,7 +1817,7 @@ const checklist_arrays = [
       8,
       null,
       null,
-      '{"yes":[],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[{"var":"type","op":"=","val":"major"}]}',
       '["yes","no","na"]',
       '[1,0,2]',
       null,
@@ -1825,7 +1825,7 @@ const checklist_arrays = [
     ],
     [
       11,
-      '"Poches de sang..."',
+      '"Poches de sang disponibles"',
       10,
       0,
       null,
@@ -2217,7 +2217,7 @@ const checklist_arrays = [
     ],
     [
       11,
-      '"Poches de sang..."',
+      '"Poches de sang disponibles"',
       10,
       0,
       null,
@@ -2344,7 +2344,7 @@ const checklist_arrays = [
       '"Confirmation orale par le personnel auprès de l\'équipe"',
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no","na"]',
-      '[0,1,2]',
+      '[1,0,2]',
       null,
       0
     ],

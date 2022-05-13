@@ -18,7 +18,7 @@ import axios from "axios";
 * */
 function CreateBox ({props}) {
 
-  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist} = props
+  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, currentQuestion, setCurrentQuestion, reset} = props
 
   /* State variables used only in creation mode
   * -currentQuestion : the question currently into creation/modification
@@ -28,21 +28,57 @@ function CreateBox ({props}) {
   * -tempPreChech : the precheck condition values (var, op, val) and then value of the current precheck the user is going to add
   */
 
-
-  let [currentParentQuestion, setCurrentParentQuestion] = useState(checklist)
-  let [currentName, setCurrentName] = useState(checklist && checklist.values.length ? checklist.values[0].name : " " )
-  let [currentComment, setCurrentComment] = useState(checklist && checklist.values[0].comment ? checklist.values[0].comment : null)
-  let [currentSectionTitle, setCurrentSectionTitle] = useState(checklist && checklist.values[0].section_title ? checklist.values[0].section_title : null)
+  let [currentParentQuestion, setCurrentParentQuestion] = useState(null)
+  let [currentName, setCurrentName] = useState(null)
+  let [currentComment, setCurrentComment] = useState(null)
+  let [currentSectionTitle, setCurrentSectionTitle] = useState(null)
 
   let [tempNums, setTempNums] = useState({})
-  let [tempPreCheck, setTempPreCheck] = useState({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
+  let [tempPreCheck, setTempPreCheck] = useState(null)
 
   let [pairIndicator, setPairIndicator] = useState(0)
 
   let [isAltAnswers, setIsAltAnswers] = useState(false)
 
+  const swapchecklist = (checklist_list, checklist_id) => {
+    let checklist_array = temp_data.checklist_arrays[checklist_id-1] // Il faudra un get ici aussi
+    // let checklist_array = response.data.data.items
+    checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
+    checklist.name = checklist_list.filter(elm => elm.checklist_id === checklist_id)[0].name
+    checklist.person = checklist_list.filter(elm => elm.checklist_id === checklist_id)[0].person
+    checklist.counter = checklist_list.filter(elm => elm.checklist_id === checklist_id)[0].counter
+    setChecklist(checklist)
+    setChecklistId(checklist_id)
+    setCurrentQuestion(checklist.values[0])
+    reset()
+    setCurrentParentQuestion(checklist)
+    setCurrentName(checklist.values[0].name)
+    setCurrentComment(checklist.values[0].comment)
+    setCurrentSectionTitle(checklist.values[0].section_title ? checklist.values[0].section_title : null)
+    setTempPreCheck({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
+
+  }
+
+
+  useEffect(() => {
+    // ici il faut call la patient list, pas checklist list
+    axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
+      .then(function(response) {
+        console.log(response)
+        let checklist_list = temp_data.checklist_list[0].checklists
+        let checklist_id = checklist_list[0].checklist_id
+
+        if (checklist_list && checklist_list.length) {
+          setChecklistList(checklist_list, checklist_list)
+          swapchecklist(checklist_list, checklist_id)
+        }
+      })
+  }, [])
+
   console.log("main", currentQuestion)
   console.log("name", currentName)
+
+
 
   /* Make the complete list of questions of the current checklist*/
   let questionList = [];
@@ -235,11 +271,21 @@ function CreateBox ({props}) {
     }
   }
 
+  const modifychecklistname = (event) => {
+    setChecklist({...checklist, name:event.target.value})
+  }
+
+  const modifychecklistdescription = (event) => {
+    setChecklist({...checklist, description:event.target.value})
+  }
+
   /*Modify the current name*/
   const modifyname = (event) => {
     currentName = event.target.value
     setCurrentName(currentName)
   }
+
+
 
   /*Update the current question name*/
   const updatename = () => {
@@ -313,21 +359,17 @@ function CreateBox ({props}) {
     //On ajoute une checklist ici dans la checklist list actuelle
     const updated_checklist = {
       id : checklistId,
-      data : utils.checklist_tree_to_flat(checklist).slice(1)
+      data : utils.checklist_tree_to_flat(checklist).slice(1) //todo : remove slice
     }
 
+    console.log(updated_checklist)
+
     // Inform that we want to add a new checklist and receive in response the new checklist list
-    axios.post('http://checklists.metoui.be/api/checklists/'+checklistId+'/update', updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
+    axios.post('http://checklists.metoui.be/api/checklists/'+checklistId, updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
       .then(function(response){
 
         //Must handle incoming data
-
-        console.log(response) // Ici on doit recevoir la liste des patients (avec leurs checklists updated) et set la checklist list
-        //correspondant à l'user actuel, et on doit swapchecklist sur la première
-
-        setChecklist(checklistList)
-
-        swapchecklist(checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
+        swapchecklist(checklistList, checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
         console.log("add checklist get call and set finished")
       });
   }
@@ -358,17 +400,12 @@ function CreateBox ({props}) {
       }
 
     // Inform that we want to add a new checklist and receive in response the new checklist list
-    axios.post('http://checklists.metoui.be/api/checklists/add', new_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
+    axios.put('http://checklists.metoui.be/api/checklists', new_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
     .then(function(response){
 
       //Must handle incoming data
 
-      console.log(response) // Ici on doit recevoir la liste des patients (avec leurs checklists updated) et set la checklist list
-      //correspondant à l'user actuel, et on doit swapchecklist sur la première
-
-      setChecklist(checklistList)
-
-      swapchecklist(checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
+      swapchecklist(checklistList, checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
       console.log("add checklist get call and set finished")
     });
   }
@@ -378,16 +415,10 @@ function CreateBox ({props}) {
     const checklist_id = checklistList.length ? checklistList[0].checklist_id : 0
 
     // Inform that we want to del a checklist and receive in response the new checklist list
-    axios.get('http://checklists.metoui.be/api/checklists/'+checklistId+'/delete') //Random url, just to simulate the fact that we need to make get call to del checklist
+    axios.delete('http://checklists.metoui.be/api/checklists/'+checklistId) //Random url, just to simulate the fact that we need to make get call to del checklist
     .then(function(response){
 
-      console.log(response) // Ici on doit recevoir la liste des patients (avec leurs checklists updated) et set la checklist list
-      //correspondant à l'user actuel, et on doit swapchecklist sur la première
-
-      //Must handle incoming data
-      setChecklist(checklistList)
-
-      swapchecklist(checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
+      swapchecklist(checklistList, checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
       console.log("remove checklist get call and set finished")
     });
   }
@@ -562,7 +593,7 @@ function CreateBox ({props}) {
 
   /*Return the create box, with all it elements*/
   return (
-    <div className="container iq-card pt-2 border border-dark shadow">
+    <div>{checklist && tempPreCheck ? <div className="container iq-card pt-2 mb-4 border border-dark shadow">
 
       {/*Title text*/}
       <div className="iq-card bg-primary text-center mb-2">
@@ -587,7 +618,7 @@ function CreateBox ({props}) {
               <li><label className="dropdown-item " onClick={function(event){ addchecklist(); forceUpdate()}}>Nouvelle checklist</label></li>
               {/*Select an existing checklist*/}
               {checklistList.map((i, index) => (
-                <li key={index}><label className="dropdown-item " onClick={function (){swapchecklist(i.checklist_id)}}>
+                <li key={index}><label className="dropdown-item " onClick={function (){swapchecklist(checklistList, i.checklist_id)}}>
                   Checklist {i.name}</label>
                 </li>
               ))}
@@ -597,7 +628,7 @@ function CreateBox ({props}) {
         {/*Checklist show*/}
         <div className="col align-items-center p-2">
           <div className="iq-card card-light text-dark text-center shadow-sm mb-0 ">
-            Checklist n°{checklistId}
+            Checklist {checklist.name}
           </div>
         </div>
         {/*Question show*/}
@@ -628,6 +659,31 @@ function CreateBox ({props}) {
       </div>
 
       {currentQuestion ? ( <div key={currentQuestion.id}>
+
+        {/*Checklist Name selection*/}
+        <div className="row align-items-center p-2 m-0 border-bottom">
+          {/*Information text*/}
+          <div className="col-sm-4 align-items-center text-dark ">
+            Nom de la checklist :
+          </div>
+          {/*Question name text input */}
+          <div className="col-sm-8 align-items-center">
+            <input key={checklistId} className="form-control w-100 mb-0" type = "text " aria-label="text input" value={checklist.name} onChange={modifychecklistname}/>
+          </div>
+        </div>
+
+        {/*Checklist Description selection*/}
+        <div className="row align-items-center p-2 m-0 border-bottom border-dark">
+          {/*Information text*/}
+          <div className="col-sm-4 align-items-center text-dark ">
+            Description de la checklist :
+          </div>
+          {/*Question name text input */}
+          <div className="col-sm-8 align-items-center">
+            <input key={checklistId} className="form-control w-100 mb-0" type = "text " aria-label="text input" value={checklist.description ? checklist.description : ""} onChange={modifychecklistdescription}/>
+          </div>
+        </div>
+
         {/*Question Name selection*/}
         <div className="row align-items-center p-2 m-0 border-bottom">
           {/*Information text*/}
@@ -1095,6 +1151,7 @@ function CreateBox ({props}) {
         </div>
       </div>
     </div>
+    :null}</div>
     )
 }
 

@@ -18,6 +18,7 @@ import {Home} from "./home";
 import {CountingTable} from "./couting_table";
 import QrcodeScanner from "./qrcodescanner";
 import {templateSettings} from "lodash/string";
+import {UserBox} from "./user_box";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -61,13 +62,15 @@ export default function App() {
 
   let [patientList, setPatientList ] = useState(null)
 
+  let [userCode, setUserCode] = useState(null)
+
 
   // Init calls (get checklist list and the initial checklist
   useEffect(() => {
     onNewScanResult = onNewScanResult.bind(this);
 
     // ici il faut call la patient list, pas checklist list
-    axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response){
 
         //Must handle incoming data
@@ -77,36 +80,8 @@ export default function App() {
         //For now we use temp_data
 
         setPatientList(temp_data.patients);
-        // checklist.name = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].name
-        // checklist.person = temp_data.checklist_list.filter(elm => elm.checklist_id === 0)[0].person
-        // setChecklist(checklist)
         console.log("initial get checklist list call and set finished")
       });
-    // axios.get('http://checklists.metoui.be/api/checklists/1') //Random url, just to simulate the fact that we need to make get call before set first checklist
-    //   .then(function(response){
-    //
-    //   //Must handle incoming data
-    //   console.log("call response", response)
-    //   console.log(temp_data.checklist_arrays[2])
-    //
-    //   //For now we use temp_data
-    //   const init_checklist = utils.checklist_flat_to_tree(temp_data.checklist_arrays[2],0)
-    //
-    //   setChecklist(init_checklist);
-    //   setCurrentQuestion(init_checklist && init_checklist.values.length ? init_checklist.values[0] : null)
-    //   console.log("initial get first checklist call and set finished")
-    // });
-    // axios.get('#') //Random url, just to simulate the fact that we need to make get call before set alert list
-    //   .then(function(response){
-    //
-    //     //Must handle incoming data
-    //     console.log("call response", response)
-    //     console.log(temp_data.alerts)
-    //
-    //     //For now we use temp_data
-    //     setAlertList(temp_data.alerts);
-    //     console.log("initial get alert list call and set finished")
-    //   });
   }, [])
 
 
@@ -229,7 +204,7 @@ export default function App() {
         alert_list[name] =
           {
             "id": index, "question_id": corresponding_questions.length ? corresponding_questions[0][0] : -1,
-            "checklist_id" : checklistId, "checklist_name" : checklist.name, "name": name,
+            "checklist_id" : checklistId, "checklist_name" : pbresult[key].checklist_name, "name": name,
             "answer" : (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer),
             "gravity": 0
           }
@@ -249,13 +224,18 @@ export default function App() {
   }
 
     /*Create a table containing results and export it as .csv file*/
-  function import_csv_result () {
-    let result_table = [["id", "name", "answer"]]
+  function import_result () {
+    let result_table = [["id", "name", "answer", "is_problematic"]]
     for (const [key, value] of Object.entries(result)){
-      result_table.push([key, value.name, value.answer])
+      result_table.push([key, value.name, value.answer, pbresult[key] ? "yes" : "no"])
     }
-    let csvGenerator = new utils.CsvGenerator(result_table, 'my_csv.csv');
-    csvGenerator.download(true);
+    let final_result = {checklist_id: checklistId, checklist_name: checklist.name, result_table : result_table}
+    axios.post('#', final_result  )
+      .then(function (){
+        let csvGenerator = new utils.CsvGenerator(result_table, 'my_csv.csv');
+        csvGenerator.download(true);
+      })
+
   }
 
   let [scanValue, setScanValue] = useState(null)
@@ -263,34 +243,39 @@ export default function App() {
 
   function switchUser (id) {
     //Logiquement si on considère qu'à l'ouverture on a récupéré la patient list, il n'y a pas besoin de faire de call ici, on switch just de patient
-    axios.get('https://api.npms.io/v2/search?q=react') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response) {
         let corresp_patients = patientList.filter(elm => elm.id === id)
         setCurrentPatient(corresp_patients && corresp_patients.length ? corresp_patients[0] : null)
       })
   }
 
-  function onNewScanResult(decodedText, decodedResult) {
+  function onNewScanResult(decodedText) {
     console.log(decodedText, scanValue)
-    if(!scanValue && decodedText) {
-      console.log("write decoded scan", decodedText)
+    if (!userCode){
+      setUserCode(decodedText)
+    }
+    else{
+      if(!scanValue && decodedText) {
+        console.log("write decoded scan", decodedText)
 
-      if(currentPatient.patient_code === decodedText) {
-        // axios.get('http://checklists.metoui.be/api/checklists/patient/'+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
-        axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
-          .then(function (response) {
+        if (currentPatient.patient_code === decodedText) {
+          // Premier call pour demander les différents parcours du patient, puis on sélectionne le dernier parcours de la liste,
+          // et on fait un deuxième call demandant la liste des checklists correspondant à ce parcours.
+          // axios.get('http://checklists.metoui.be/api/checklists/patient/'+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
+          axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
+            .then(function (response) {
 
-            let checklist_list = temp_data.checklist_list.filter(elm => elm.patient_id === decodedText)[0].checklists
-
-            if (checklist_list && checklist_list.length) {
-              setChecklistList(checklist_list)
-            }
-          })
-      }
-      else{
-        setChecklistList([{}])
-        setScanValueError(decodedText)
-        setChecklistList([])
+              let checklist_list = temp_data.checklist_list.filter(elm => elm.patient_id === decodedText)[0].checklists
+              if (checklist_list && checklist_list.length) {
+                setChecklistList(checklist_list)
+              }
+            })
+        } else {
+          setChecklistList([{}])
+          setScanValueError(decodedText)
+          setChecklistList([])
+        }
       }
     }
   }
@@ -309,7 +294,7 @@ export default function App() {
   // console.log(isPreCheckDone)
   // console.log("alertList", alertList)
   // console.log(currentQuestion)
-  // console.log(checklist)
+  console.log(checklist)
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
   */
@@ -317,56 +302,68 @@ export default function App() {
     <div className="min-vh-100 content-page iq-bg-info">
 
       <div>
-        {<AppNavbar props = {{creationMode, setCreationMode, creditMode,  setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode,trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient}}/>}
+        {<AppNavbar props = {{creationMode, setCreationMode, creditMode,  setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode,trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient}}/>}
         {creditMode ?
           <Credits props={null}/>
           :
           <div>
-            {homeMode ?
+            {creationMode ?
+            <CreateBox props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, currentQuestion, setCurrentQuestion, reset}} />
+            : null}
+            <div>{homeMode ?
               <div>{!(checklistList && checklistList.length)  ?
                   <div>
-                    <PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser, setChecklistList}} />
-                    {currentPatient ? <div className={"px-2 col-sm-6 mx-auto"}> <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/></div> : null}
+                    {!userCode ?
+                      <div>
+                        <UserBox props={{onNewScanResult}} />
+                        <div className={"px-2 col-sm-6 mx-auto"}> <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/></div>
+                      </div>
+                      :
+                      <div>
+                        <PatientBox props={{currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser, setChecklistList}} />
+                        {currentPatient ? <div className={"px-2 col-sm-6 mx-auto"}> <QrcodeScanner fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={null}/></div> : null}
+                      </div>
+                    }
                   </div>
                   :
                   <Home checklistList={checklistList} swapchecklist = {swapchecklist} scanValue = {scanValue} currentPatient={currentPatient}/>
               }</div>
               :
               (<div id={"title"}>
-                <Title  checklistList={checklistList} checklistId={checklistId} numDict={numDict} currentPatient={currentPatient}/>
-                {creationMode ?
-                  <CreateBox key={checklistId} props={{checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, setResult, setIsDict, init_dict, setIsPreCheckDone, currentQuestion, setCurrentQuestion, swapchecklist}} />
-                  :
-                  <div>
-                    {alertList && Object.values(alertList).length ? <AlertsBox alertList={alertList}/> : null}
-                  </div>
-                }
-                {checklist.counter === false ?
-                  <div>
+                {!creationMode ? <Title  checklistList={checklistList} checklistId={checklistId} numDict={numDict} currentPatient={currentPatient}/> : null}
+                {!creationMode ? <div>{alertList && Object.values(alertList).length ? <AlertsBox alertList={alertList}/> : null}</div> : null}
+
+                {checklist ? <div>
+                  {checklist.counter === false ?
                     <div className={"container p-0 border-bottom border border-dark  shadow rounded "}>
                       {values ? values.map((i, index) => (
-                          <div >
-                            {i.section_title ? <SectionTitle section_title={i.section_title} index={index} /> :<div className={"bg-primary " + (index ? "border-dark border-top":"")}/>}
-                            <div className={"pb-3 px-3 pt-3 " + (index === values.length-1 ? "rounded rounded-0-top ": null) + (index || i.section_title ? "":" rounded rounded-0-bottom ") + (i.importance ? "iq-bg-danger": "iq-bg-info")}>
-                              <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i} dicts={dicts}
-                                             forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond}
-                                             creationMode={creationMode} currentId = {currentQuestion ? currentQuestion.id: null} warningId={warningId} precheckMode={precheckMode}
-                                             is_root={true} alertList={alertList} scan_bookmark={next_scan_item_id === i.id}
+                          <div>
+                            {i.section_title ? <SectionTitle section_title={i.section_title} index={index}/> :
+                              <div className={"bg-primary " + (index ? "border-dark border-top" : "")}/>}
+                            <div
+                              className={"pb-3 px-3 pt-3 " + (index === values.length - 1 ? "rounded rounded-0-top " : null) + (index || i.section_title ? "" : " rounded rounded-0-bottom ") + (i.importance ? "iq-bg-danger" : "iq-bg-info")}>
+                              <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i}
+                                             dicts={dicts}
+                                             forceUpdate={forceUpdate} values_filter_cond={values_filter_cond}
+                                             creationMode={creationMode}
+                                             currentId={currentQuestion ? currentQuestion.id : null}
+                                             warningId={warningId} precheckMode={precheckMode}
+                                             is_root={true} alertList={alertList}
+                                             scan_bookmark={next_scan_item_id === i.id}
+                                             checklist_name = {checklist.name}
                               />
                             </div>
                           </div>))
                         :
-                        null
-                      }
+                        null}
                     </div>
-                    {/*{!creationMode ? <AppSignature key={checklistId} sigpad={sigpad} setTrimmedCanvasUrl = {setTrimmedCanvasUrl} is_end_sign={true}/> : null}*/}
-                  </div>
-                  :
-                  <CountingTable result={result} setResult={setResult}/>
-                }
-                {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_csv_result = {import_csv_result} checklist={checklist} setWarningId={setWarningId} checklistList={checklistList} setChecklistList={setChecklistList} checklistId={checklistId}/> : null }
+                    :
+                    <CountingTable result={result} setResult={setResult}/>
+                  }</div> : null }
+
+                {!creationMode ? <ValidationButton visibleList={visibleList} result={result} import_result = {import_result} checklist={checklist} setWarningId={setWarningId} checklistList={checklistList} setChecklistList={setChecklistList} checklistId={checklistId}/> : null }
               </div>)
-            }
+            }</div>
           </div>
         }
       </div>

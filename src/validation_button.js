@@ -10,7 +10,7 @@ function check_all_question_answered (visibleList, result){
 
 
 
-function ValidationButton ({visibleList, result, import_csv_result, checklist, setWarningId, checklistList, setChecklistList, checklistId}) {
+function ValidationButton ({visibleList, result, import_result, checklist, setWarningId, checklistList, setChecklistList, checklistId}) {
 
   function search_question_not_answered (visibleList, result, is_set){
     const visibleListsorted = visibleList.sort(function (elm1,elm2){return elm1>elm2})
@@ -25,7 +25,8 @@ function ValidationButton ({visibleList, result, import_csv_result, checklist, s
   }
 
   function handlevalidation (){
-    import_csv_result()
+
+    import_result()
     checklistList.filter(elm => elm.checklist_id === checklistId)[0].fill = true
     setChecklistList(checklistList)
   }

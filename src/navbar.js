@@ -32,10 +32,14 @@ function AppNavbar ({props}) {
   }
 
   const changecreationmode = () => {
-    if (creationMode)
+    if (creationMode) {
       deactivatecreatemode()
-    else
+      gotohome(true)
+    }
+    else{
       activatecreatemode()
+      setHomeMode(false)
+    }
   }
 
   /*Activate the credit mode*/
@@ -91,10 +95,13 @@ function AppNavbar ({props}) {
           {/*/!*Navbar links*!/*/}
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav  p-2 pl-4">
-              {!checklistList ? <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => setdefault()}>Passer le QRcode</label> : null}
+              {!creationMode && !checklistList ? <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => setdefault()}>Passer le QRcode</label> : null}
               {checklistList ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(true)}>Revenir à l'accueil</label> : null}
-              {checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(false)}>Revenir à la sélection des checklists</label> : null}
+              {!creationMode && checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(false)}>Revenir à la sélection des checklists</label> : null}
               {checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={import_csv_result}>Importer les résultats de la checklist</label> : null}
+              {!creationMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => changecreationmode()}>Activer Mode Création</label> : null}
+              {creationMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => changecreationmode()}>Désactiver Mode Création</label> : null}
+
               {/*<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={image_download}>Importer la signature</label>*/}
               {/*Navbar checklist selection dropdown link*/}
               {/*<li className="nav-item dropdown">*/}
@@ -114,12 +121,6 @@ function AppNavbar ({props}) {
                   Options
                 </label>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li>
-                    <label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show">
-                      <input type="checkbox" checked={creationMode} onClick={changecreationmode}/>
-                      &nbsp; Mode création
-                    </label>
-                  </li>
                   <li>
                     <label className="dropdown-item m-0" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <input type="checkbox" checked={!debugMode} onClick={changedebugmode}/>

@@ -13,7 +13,7 @@ import {AppSignature} from "./signature";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark}) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark, checklist_name}) {
 
   // console.log("enter item", item)
 
@@ -46,7 +46,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
       result[item.id]={name:item.name,answer:answer}
       delete pbresult[item.id]
       if (item.color[item.check.indexOf(answer)] === 1)
-        pbresult[item.id] = {name:item.name,answer:answer}
+        pbresult[item.id] = {name:item.name,answer:answer,checklist_name:checklist_name}
 
       clean_children_rec(init_items, init_items, item.id,isDict, setIsDict, result, pbresult, list_other_answer)
     }
@@ -67,7 +67,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /*Function triggered where the user enter a text in a text question. We update the result*/
   const handleOnChangeText = (event) => {
     const input_text = event.target.value;
-    result[item.id]={name:item.name,answer:input_text}
+    result[item.id]={name:item.name,answer:input_text,checklist_name:checklist_name}
     setResult(result)
     if (item.color[0] === 1){
       pbresult[item.id] = {name:item.name,answer:input_text}
@@ -78,7 +78,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   const handleOnChangeCurrentDate = () => {
     let current_date = new Date()
     let current_date_str = current_date.toISOString().split("T")[0]
-    result[item.id]={name:item.name, answer:current_date_str}
+    result[item.id]={name:item.name, answer:current_date_str,checklist_name:checklist_name}
     setResult(result)
     console.log(current_date_str)
     return current_date_str
@@ -87,7 +87,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   const handleOnChangeCurrentTime = () => {
     let current_date = new Date()
     let current_time_str = current_date.toTimeString().split(" ")[0].substring(0,5)
-    result[item.id]={name:item.name, answer:current_time_str}
+    result[item.id]={name:item.name, answer:current_time_str,checklist_name:checklist_name}
     setResult(result)
     console.log(current_time_str)
     return current_time_str
@@ -104,7 +104,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     result[item.id]={name:item.name,answer:input_answer}
     setResult(result)
     if (item.color[0] === 1 && !(selectedOptions.selectedKey.includes("Aucune") || selectedOptions.selectedKey.includes("Aucun") )){
-      pbresult[item.id] = {name:item.name,answer:input_answer}
+      pbresult[item.id] = {name:item.name,answer:input_answer,checklist_name:checklist_name}
       setPbResult(pbresult)
     }
     else{
@@ -174,7 +174,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     children = (
       <ul className="mb-0">
         {values.map((i, index) => (
-          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} warningId={warningId} is_root={false} alertList={alertList} scan_bookmark={scan_bookmark} />
+          <ChecklistItem  key={index} init_items={init_items} item={i} dicts={dicts} forceUpdate = {forceUpdate} values_filter_cond={values_filter_cond} creationMode={creationMode} currentId={currentId} warningId={warningId} is_root={false} alertList={alertList} scan_bookmark={scan_bookmark} checklist_name={checklist_name} />
         ))}
       </ul>
     );

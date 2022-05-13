@@ -1,5 +1,5 @@
 import { Html5QrcodeScanner } from "html5-qrcode";
-import React, {useEffect, useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 
 const qrcodeRegionId = "html5qr-code-full-region";
 
@@ -7,6 +7,11 @@ function QrcodeScanner (props){
 
 
   useEffect(() => {
+
+    var input = document.getElementById('input1');
+    input.focus();
+    input.select();
+
     // Creates the configuration object for Html5QrcodeScanner.
     function createConfig(props) {
       let config = {};
@@ -45,16 +50,32 @@ function QrcodeScanner (props){
     });}
   });
 
+  let [codeValue, setCodeValue] = useState("")
+
+  function handleChange (event) {
+    console.log(event)
+    setCodeValue(event.target.value)
+  }
 
   return(
-    <div className={"w-100"}>
+    <div className={"w-100"}>-
+
       {props.scanValue === null ?
-        <div className={" container custom-scanner pt-4 border border-dark rounded bg-white shadow mx-auto w-100 " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
+        <div className={" container custom-scanner pt-4 border border-dark rounded rounded-0-bottom bg-white mx-auto w-100 " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
         :
         <div id={qrcodeRegionId}/>
       }
+
+      <input id={"input1"} type="text" className={"form-control w-100 mb-0 bg-white rounded-0-top border-dark border-top-0 " + (props.scanValueError ? "rounded-0": null)}
+             value={codeValue}
+             onChange={handleChange}
+             onKeyPress={event => {if(event.key === 'Enter') props.qrCodeSuccessCallback(codeValue) }}/>
+
+
+
+
       {props.scanValue !== null ?
-        <div className={"container custom-scanner card rounded bg-success mx-auto text-center p-2 shadow border border-dark justify-content-center "}>
+        <div className={"container custom-scanner card rounded bg-success mx-auto text-center p-2 border border-dark justify-content-center "}>
           <div className="card-body m-0 p-0">
             <h5 className="card-title text-dark m-0">Code "{props.scanValue}" enregistré</h5>
           </div>
@@ -62,7 +83,7 @@ function QrcodeScanner (props){
         : null}
 
       {props.scanValueError !== null ?
-        <div className={"container custom-scanner card rounded rounded-0-top bg-warning mx-auto text-center p-2 shadow border border-dark justify-content-center "}>
+        <div className={"container custom-scanner card rounded rounded-0-top bg-warning mx-auto text-center p-2  border border-dark justify-content-center "}>
           <div className="card-body m-0 p-0">
             <h5 className="card-title text-dark m-0">Erreur : le code "{props.scanValueError}" ne correspond pas </h5>
           </div>
