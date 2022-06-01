@@ -313,14 +313,16 @@ export default function App() {
   function onNewScanResult(decodedText) {
     console.log(decodedText, scanValue)
     if (!userCode){
-      const current_users = userList.filter(elm => elm.user_code === decodedText)
-      if (current_users.length){
-        setUserCode(decodedText)
-        setCurrentUser(current_users[0])
-      }
-      else{
-        setScanValueError(decodedText)
-      }
+      console.log("enter user")
+      // const current_users = userList.filter(elm => elm.user_code === decodedText)
+      //
+      // if (current_users.length){
+      setUserCode(decodedText)
+      setCurrentUser(userList ? userList[0]: {"id":0, user_code:"1234567", lastname: "Jonas", firstname: "Michel", role: "Assistant Anést." })
+      // }
+      // else{
+      //   setScanValueError(decodedText)
+      // }
     }
     else{
       if(!scanValue && decodedText) {
@@ -368,7 +370,7 @@ export default function App() {
   // console.log(isPreCheckDone)
   // console.log("alertList", alertList)
   // console.log(currentQuestion)
-  console.log("patient_list", patientList)
+  console.log("userList", userList)
   console.log(checklist)
   /* Return the different components, depending of the mode.
   * We define also the background and a hidden bottom navbar to avoid problems with the background limits
