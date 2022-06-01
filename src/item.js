@@ -75,6 +75,18 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     }
   };
 
+  /*Function triggered where the user enter a text in a text question. We update the result*/
+  const handleOnChangedDefaultText = (event) => {
+    const input_text = event;
+    result[item.id]={name:item.name,answer:input_text,checklist_name:checklist_name}
+    setResult(result)
+    if (item.color[0] === 1){
+      pbresult[item.id] = {name:item.name,answer:input_text}
+      setPbResult(pbresult)
+    }
+    return input_text
+  };
+
   const handleOnChangeCurrentDate = () => {
     let current_date = new Date()
     let current_date_str = current_date.toISOString().split("T")[0]
@@ -132,6 +144,10 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         "value": answer,
       })
     })
+    // list_possible_answers.push({
+    //   "labelKey" : "supp",
+    //   "value": "Fermer",
+    // })
     list_possible_answers.push({"labelKey": "other", "value": "Autre"})
     return list_possible_answers
   }
@@ -311,7 +327,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
           {/*If item answers must contain date, put a text input*/}
           {item.check.includes("number") ? (
-            <input className="form-control w-100 mb-0 bg-white" type = "number" aria-label="text input" defaultValue={0} placeholder="Insérez ici" onChange={handleOnChangeText}/>
+            <input className="form-control w-100 mb-0 bg-white" type = "number" aria-label="text input" defaultValue={handleOnChangedDefaultText("0")} placeholder="Insérez ici" onChange={handleOnChangeText}/>
           ) : null }
 
           {/*If item answers must contain list, put a list dropdown input*/}
@@ -334,7 +350,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
       {/*If item answers must contain date, put a text input*/}
       {item.check.includes("scan") && scan_bookmark  ? (
         <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center col-sm-6 mx-auto"}>
-          <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={scanValue} scan_bookmark={scan_bookmark}/>
+          <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={scanValue} scan_bookmark={scan_bookmark} is_home={false}/>
         </div>
       ) : null }
 

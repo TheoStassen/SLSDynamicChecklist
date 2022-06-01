@@ -302,3 +302,7 @@ background-color: #f5f5f5;
     box-shadow: none;
     -webkit-box-shadow: none;
 }
+
+.modal{
+    display: block
+}

@@ -13,7 +13,8 @@ function Home ({checklistList, swapchecklist, scanValue, currentPatient}) {
       <div className={"iq-card bg-primary col-sm-6 mx-auto text-center p-2 shadow border border-dark justify-content-center "}>
         <div className="card-body">
           <h3 className="card-title text-white m-0">Patient(e) : {currentPatient.firstname} {currentPatient.lastname} </h3>
-          <h4 className="card-text m-0">Code : {scanValue ? scanValue : "-"}</h4>
+          <h4 className="card-title text-dark m-0">{currentPatient.dateofbirth}</h4>
+          {/*<h4 className="card-text m-0">Code : {scanValue ? scanValue : "-"}</h4>*/}
           <img className={"border border-dark mt-2"} src={currentPatient.photo} width="128" height="128"/>
         </div>
       </div>

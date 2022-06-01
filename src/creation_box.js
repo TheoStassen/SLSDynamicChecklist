@@ -62,10 +62,11 @@ function CreateBox ({props}) {
 
   useEffect(() => {
     // ici il faut call la patient list, pas checklist list
-    axios.get('http://checklists.metoui.be/api/checklists') //Random url, just to simulate the fact that we need to make get call before set checklistList
+    // axios.get('http://checklists.metoui.be/api/checklists')
+    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response) {
         console.log(response)
-        let checklist_list = temp_data.checklist_list[0].checklists
+        let checklist_list = temp_data.paths[0].checklists
         let checklist_id = checklist_list[0].checklist_id
 
         if (checklist_list && checklist_list.length) {
@@ -365,7 +366,7 @@ function CreateBox ({props}) {
     console.log(updated_checklist)
 
     // Inform that we want to add a new checklist and receive in response the new checklist list
-    axios.post('http://checklists.metoui.be/api/checklists/'+checklistId, updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
+    axios.put('http://checklists.metoui.be/api/checklists/'+checklistId, updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
       .then(function(response){
 
         //Must handle incoming data
@@ -400,7 +401,7 @@ function CreateBox ({props}) {
       }
 
     // Inform that we want to add a new checklist and receive in response the new checklist list
-    axios.put('http://checklists.metoui.be/api/checklists', new_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
+    axios.post('http://checklists.metoui.be/api/checklists', new_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
     .then(function(response){
 
       //Must handle incoming data
@@ -680,7 +681,7 @@ function CreateBox ({props}) {
           </div>
           {/*Question name text input */}
           <div className="col-sm-8 align-items-center">
-            <input key={checklistId} className="form-control w-100 mb-0" type = "text " aria-label="text input" value={checklist.description ? checklist.description : ""} onChange={modifychecklistdescription}/>
+            <textarea className="form-control form-control-custom textarea" rows="2"  value={checklist.description ? checklist.description : ""} onChange={modifychecklistdescription}/>
           </div>
         </div>
 

@@ -1,6 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import * as utils from "./utils";
+import Modal from 'react-bootstrap/Modal'
 import * as temp_data from "./temporary_data";
+import {Button} from "react-bootstrap";
+import axios from "axios";
 
 /* Component of the upper navbar of the webpage
 * -setCreationMode: bool indicating if we are in creation mode set function
@@ -12,7 +15,7 @@ import * as temp_data from "./temporary_data";
 * */
 function AppNavbar ({props}) {
 
-  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient} = props;
+  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -64,15 +67,30 @@ function AppNavbar ({props}) {
     deactivatecreditmode();
     deactivatecreatemode()
     setHomeMode(true)
+    setScanValueError(null)
     if (main_menu){
       setChecklistList(null)
       setScanValue(null)
+      setCurrentPatient(null)
+      setUserCode(null)
     }
   }
 
-  const setdefault = () => {
-    setChecklistList(temp_data.checklist_list[0].checklists)
-    setCurrentPatient(temp_data.checklist_list[0].patient)
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const [problemName, setProblemName] = useState("")
+  const [problemDescription, setProblemDescription] = useState("")
+
+  const handleName = (event) => setProblemName(event.target.value);
+  const handleDescription = (event) => setProblemDescription(event.target.value);
+  const handleSave = () => {
+    setShow(false);
+    axios.post('#', {name:problemName, description:problemDescription}) //Random url, just to simulate the fact that we need to make get call to add checklist
+      .then(function(response){
+      })
   }
 
   /*Return the different elements of the navbar*/
@@ -82,7 +100,7 @@ function AppNavbar ({props}) {
         <nav className="navbar navbar-expand-lg navbar-light p-0 ">
           {/*Navbar Title*/}
           <div className="navbar-brand pl-4">
-            <a href="#" onClick={gotohome}>
+            <a href="#" onClick={() => gotohome(true)}>
               <span>SLS</span>
             </a>
           </div>
@@ -95,12 +113,12 @@ function AppNavbar ({props}) {
           {/*/!*Navbar links*!/*/}
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav  p-2 pl-4">
-              {!creationMode && !checklistList ? <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => setdefault()}>Passer le QRcode</label> : null}
-              {checklistList ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(true)}>Revenir à l'accueil</label> : null}
-              {!creationMode && checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(false)}>Revenir à la sélection des checklists</label> : null}
-              {checklistList && !homeMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={import_csv_result}>Importer les résultats de la checklist</label> : null}
-              {!creationMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => changecreationmode()}>Activer Mode Création</label> : null}
-              {creationMode ?<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => changecreationmode()}>Désactiver Mode Création</label> : null}
+              {/*{!creationMode && !checklistList ? <label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => setdefault()}>Passer le QRcode</label> : null}*/}
+              {checklistList ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(true)}>Revenir à l'accueil</label> : null}
+              {!creationMode && checklistList && !homeMode ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(false)}>Revenir à la sélection des checklists</label> : null}
+              {checklistList && !homeMode ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={import_csv_result}>Importer les résultats de la checklist</label> : null}
+              {!creationMode ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => changecreationmode()}>Activer Mode Création</label> : null}
+              {creationMode ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => changecreationmode()}>Désactiver Mode Création</label> : null}
 
               {/*<label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={image_download}>Importer la signature</label>*/}
               {/*Navbar checklist selection dropdown link*/}
@@ -115,7 +133,7 @@ function AppNavbar ({props}) {
               {/*    )): null}*/}
               {/*  </ul>*/}
               {/*</li>*/}
-              <li className="nav-item dropdown">
+              <li className="nav-item dropdown my-auto">
                 <label className="nav-link dropdown-toggle m-0" id="navbarDropdown" role="button"
                        data-toggle="dropdown" aria-expanded="false">
                   Options
@@ -135,7 +153,35 @@ function AppNavbar ({props}) {
                   </li>
                 </ul>
               </li>
-              <label className="nav-link m-0" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={activatecreditmode}>A propos</label>
+              <label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={activatecreditmode}>A propos</label>
+
+              <div className="nav-link m-0">
+                <>
+                  <Button variant="warning" onClick={handleShow}>
+                    Signaler évènement
+                  </Button>
+
+                  <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton variant="white">
+                      <Modal.Title>Signalement d'évènements indésirables</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Intitulé du problème
+                      <input  className="form-control w-100 mb-0" type = "text " aria-label="text input" value={problemName} onChange={handleName}/>
+                      Description du problème
+                      <textarea className="form-control form-control-custom textarea" rows="4" value={problemDescription} onChange={handleDescription}/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleClose}>
+                        Fermer
+                      </Button>
+                      <Button variant="primary" onClick={handleSave}>
+                        Sauvegarder
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                </>
+              </div>
             </div>
           </div>
         </nav>

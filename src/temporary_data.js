@@ -1,8 +1,6 @@
 /* Data that will be obtain by call to backend
 * */
 
-import * as temp_photos from "./temp_photos"
-
 /*Initial checklist list*/
 const checklist_trees = [
   {
@@ -2597,68 +2595,186 @@ const checklist_arrays = [
       null,
       0
     ],
+    [
+      13,
+      '"Y a-t-il eu un/des problème lors du parcours patient ?"',
+      -1,
+      12,
+      null,
+      null,
+      '{"yes":[0],"no":[],"num":[]}',
+      '["yes","no"]',
+      '[1,0]',
+      null,
+      0
+    ],
+    [
+      14,
+      '"Lesquels ?_Problèmes_trajet "',
+      13,
+      0,
+      null,
+      null,
+      '{"yes":[13],"no":[],"num":[]}',
+      '["list_problems"]',
+      '[0]',
+      null,
+      0
+    ],
   ]
 ]
 
-const checklist_list = [
+const path_list = [
   {
-    patient_id:"http://fr.wikipedia.org/",
-    patient : {"id": 0, "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940",
-      "diabetic":"faux", "difficult_intubation":"vrai", "photo": temp_photos.photo_1, "consent_pdf":temp_photos.pdf_1,
-      "type":"major", "intervention_name":"PTG"},
-    checklists: [
-      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Majeure", fill: false, counter:false},
-      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Majeure", fill: false, counter:false },
-      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Majeure", fill: false , counter:false},
-      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:false },
-      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:true },
-      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Majeure", fill: false, counter:false },
-      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", type: "Chirurgie Majeure", fill: false, counter:false },
-  ]},
+    path_id: 0,
+    patient_id: 0,
+    date : "01/01/2022",
+  },
   {
-    patient_id:"Hello :)",
-    patient : {"id": 1, "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/2018",
-      "diabetic":"vrai", "difficult_intubation":"vrai", photo: temp_photos.photo_2, "consent_pdf":temp_photos.pdf_1,
-      "type":"minor", "intervention_name":"Ablation Végétations"},
+    path_id: 1,
+    patient_id:1,
+    date : "01/01/2022",
+  },
+  {
+    path_id: 2,
+    patient_id:2,
+    date : "01/01/2022",
+  },
+  {
+    path_id: 3,
+    patient_id:3,
+    date : "01/01/2022",
+  },
+  {
+    path_id: 4,
+    patient_id:4,
+    date : "01/01/2022",
+  },
+  {
+    path_id: 5,
+    patient_id:5,
+    date : "01/01/2022",
+  }
+]
+
+const paths = {
+  0: {
+    path_id: 0,
+    patient_id: 0,
+    date : "01/01/2022",
     checklists: [
-      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Mineure", fill: true, counter:false },
-      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Mineure", fill: true, counter:false },
-      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:true },
-      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", type: "Chirurgie Majeure", fill: false, counter:false },
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", fill: false, counter:false},
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false , counter:false},
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+    ]},
+  1: {
+    path_id: 1,
+    patient_id:1,
+    date : "01/01/2022",
+    checklists: [
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: true, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
 
     ]},
-  {
-    patient_id:"http://en.m.wikipedia.org",
-    patient : {"id": 2, "lastname": "Franklin", "firstname": "Rachel", "gender": "F", "dateofbirth": "08/25/1980",
-      "diabetic":"faux", "difficult_intubation":"faux", photo: temp_photos.photo_3, "consent_pdf":temp_photos.pdf_1,
-      "type":"minor", "intervention_name":"Varice"},
+  2: {
+    path_id: 2,
+    patient_id:2,
+    date : "01/01/2022",
     checklists: [
-      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", type: "Chirurgie Mineure", fill: true, counter:false },
-      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:true },
-      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", type: "Chirurgie Mineure", fill: false, counter:false },
-      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", type: "Chirurgie Majeure", fill: false, counter:false },
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+    ]},
+  3: {
+    path_id: 3,
+    patient_id:3,
+    date : "01/01/2022",
+    checklists: [
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+    ]},
+  4: {
+    path_id: 4,
+    patient_id:4,
+    date : "01/01/2022",
+    checklists: [
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+    ]},
+  5: {
+    path_id: 5,
+    patient_id:5,
+    date : "01/01/2022",
+    checklists: [
+      {checklist_id: 1, name: "Unité de soin", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
+      {checklist_id: 2, name: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
+      {checklist_id: 3, name: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
+      {checklist_id: 4, name: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 5, name: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
+      {checklist_id: 6, name: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
+      {checklist_id: 7, name: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
     ]}
+}
+
+const user_list = [
+  {"id":0, user_code:"1234567", lastname: "Jonas", firstname: "Michel", role: "Assistant Anést." },
+  {"id":1, user_code:"7654321", lastname: "Van Acker", firstname: "Denise", role: "Infirmière US" }
 ]
 
+
+const patient_list = [
+  {"id": 0, "patient_code":"12345678", "lastname": "Dubois", "firstname": "Germaine", },
+  {"id": 1, "patient_code":"65464684", "lastname": "Vandamme", "firstname": "Gilbert", },
+  {"id": 2, "patient_code":"54875149", "lastname": "Franklin", "firstname": "Rachel", },
+  {"id": 3, "patient_code":"56892134", "lastname": "Leroy", "firstname": "Michel", },
+  {"id": 4, "patient_code":"96587412", "lastname": "Girard", "firstname": "Alexandra", },
+  {"id": 5, "patient_code":"78451236", "lastname": "Van den Broucke", "firstname": "Kevin", },
+]
 
 /*List of all patients*/
-const patients = [
-  {"id": 0, "patient_code":"http://fr.wikipedia.org/", "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940",
-    "diabetic":"faux", "difficult_intubation":"vrai", "photo": temp_photos.photo_1, "consent_pdf":temp_photos.pdf_1,
+const patients = {
+  0: {"id": 0, "patient_code":"12345678", "lastname": "Dubois", "firstname": "Germaine", "gender": "F", "dateofbirth": "02/11/1940",
+    optional_data: {"diabetic":"faux", "difficult_intubation":"vrai"}, photo: "/my-app/photos/photo1.jpg", "consent_pdf":"/my-app/photos/pdf1.png",
     "type":"major", "intervention_name":"PTG"},
-  {"id": 1, "patient_code":"Hello :)", "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/2018",
-    "diabetic":"vrai", "difficult_intubation":"vrai", photo: temp_photos.photo_2, "consent_pdf":temp_photos.pdf_1,
+  1: {"id": 1, "patient_code":"65464684", "lastname": "Vandamme", "firstname": "Gilbert", "gender": "M", "dateofbirth": "08/25/2018",
+    optional_data: {"diabetic":"vrai", "difficult_intubation":"vrai"}, photo: "/my-app/photos/photo2.jpg", "consent_pdf":"/my-app/photos/pdf1.png",
     "type":"minor", "intervention_name":"Ablation Végétations"},
-  {"id": 2, "patient_code":"http://en.m.wikipedia.org", "lastname": "Franklin", "firstname": "Rachel", "gender": "F", "dateofbirth": "08/25/1980",
-    "diabetic":"faux", "difficult_intubation":"faux", photo: temp_photos.photo_3, "consent_pdf":temp_photos.pdf_1,
+  2: {"id": 2, "patient_code":"54875149", "lastname": "Franklin", "firstname": "Rachel", "gender": "F", "dateofbirth": "08/25/1980",
+    optional_data: {"diabetic":"faux", "difficult_intubation":"faux"}, photo: "/my-app/photos/photo3.jpg", "consent_pdf":"/my-app/photos/pdf1.png",
     "type":"minor", "intervention_name":"Varice"},
-]
+  3: {"id": 3, "patient_code":"56892134", "lastname": "Leroy", "firstname": "Michel", "gender": "M", "dateofbirth": "02/11/1950",
+    optional_data: {"diabetic":"vrai", "difficult_intubation":"vrai"}, photo: "/my-app/photos/photo4.jpg", "consent_pdf":"/my-app/photos/pdf1.png",
+    "type":"major", "intervention_name":"PTG"},
+  4: {"id": 4, "patient_code":"96587412", "lastname": "Girard", "firstname": "Alexandra", "gender": "M", "dateofbirth": "08/25/1990",
+    optional_data: {"diabetic":"faux", "difficult_intubation":"faux"}, photo: "/my-app/photos/photo5.jpg", "consent_pdf":"/my-app/photos/pdf1.png",
+    "type":"minor", "intervention_name":"Ablation Végétations"},
+  5: {"id": 5, "patient_code":"78451236", "lastname": "Van den Broucke", "firstname": "Kevin", "gender": "M", "dateofbirth": "08/25/1970",
+    optional_data: {"diabetic":"faux", "difficult_intubation":"faux"}, photo: "/my-app/photos/photo6.jpg", "consent_pdf":"/my-app/photos/pdf1.png",
+    "type":"minor", "intervention_name":"Varice"},
+}
 
 const lists = {
   "meds": ["Mc","Lis","Kl","Eft", "Aucun"],
@@ -2670,7 +2786,8 @@ const lists = {
   "anesthesists": ["Jean Dupond", "Carole Marchal", "Louis Libier", "Charles Van Acker"],
   "room" : ["N1","N2","N3","N4","N5","N6","U1","U2","U3","U4","U5","U6","U7","U8","U9","U10","I1","I2","I3","I4"],
   "antibiotics" : ["Cefazoline","Zinacef","Flagyl"],
-  "anesthesia" : ["AG", "AG + épidurale", "épidurale" , "rachi", "bloc" ]
+  "anesthesia" : ["AG", "AG + épidurale", "épidurale" , "rachi", "bloc" ],
+  "problems" : ["Retard arrivée patient", "Retard membre(s) équipe", "Absence membre équipe", "Problème matériel", "Oubli Matériel", "Complication anésthésie", "Complication chirurgie"]
 }
 
 const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-states":"Etats Patients",
@@ -2680,4 +2797,4 @@ const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-state
 const alerts = [
 ]
 
-export {checklist_trees, checklist_arrays, checklist_list, patients, lists, lists_trad, alerts}
+export {checklist_trees, checklist_arrays, path_list, paths, patient_list, patients, user_list, lists, lists_trad, alerts}

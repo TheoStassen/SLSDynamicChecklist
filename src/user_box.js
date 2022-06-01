@@ -13,14 +13,14 @@ function UserBox ({props}) {
   let {onNewScanResult} = props
 
   function debug_allow_user() {
-    onNewScanResult("aucun")
+    onNewScanResult("7654321")
   }
 
 
   /*Return the patient box elements*/
   return (
     <div className="container p-2">
-      <div className={"iq-card bg-primary col-sm-6 mx-auto p-2 text-center shadow border border-dark justify-content-center "}>
+      <div className={"iq-card bg-primary col-sm-12 mx-auto p-2 text-center shadow border border-dark justify-content-center "}>
         <div className="card-body">
           <h3 className="card-title text-white m-0"> Identification de l'utilisateur </h3>
 

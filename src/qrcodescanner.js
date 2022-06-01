@@ -8,9 +8,12 @@ function QrcodeScanner (props){
 
   useEffect(() => {
 
-    var input = document.getElementById('input1');
-    input.focus();
-    input.select();
+    if (props.is_home){
+      const input = document.getElementById('input1');
+      input.focus();
+      input.select();
+    }
+
 
     // Creates the configuration object for Html5QrcodeScanner.
     function createConfig(props) {
@@ -48,7 +51,7 @@ function QrcodeScanner (props){
       html5QrcodeScanner.clear().catch(error => {
       console.error("Failed to clear html5QrcodeScanner. ", error);
     });}
-  });
+  },[]);
 
   let [codeValue, setCodeValue] = useState("")
 
@@ -58,7 +61,7 @@ function QrcodeScanner (props){
   }
 
   return(
-    <div className={"w-100"}>-
+    <div className={"col-sm-12 mx-auto p-0"}>-
 
       {props.scanValue === null ?
         <div className={" container custom-scanner pt-4 border border-dark rounded rounded-0-bottom bg-white mx-auto w-100 " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
