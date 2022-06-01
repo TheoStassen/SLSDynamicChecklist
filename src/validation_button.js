@@ -57,11 +57,10 @@ function ValidationButton ({visibleList, result, import_result, checklist, setWa
       <>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton variant="white">
-            <Modal.Title>La checklist a bien été validée</Modal.Title>
+            <Modal.Title>La checklist est validée</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Intitulé du problème
-            Description du problème
+            Les résultats sont transmis au dossier patient
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
