@@ -9,16 +9,17 @@ import * as temp_data from "./temporary_data";
 * */
 function PatientBox ({props}) {
 
-  let { currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser, setChecklistList, setPathId} = props
+  let { currentPatient, setCurrentPatient, setIsDict, setResult, setIsPreCheckDone, forceUpdate, patientList, switchUser, setChecklistList, setPathId, onNewScanResult, is_local, numDict} = props
 
   function debug_allow_patient() {
-    let checklist_list = temp_data.paths[currentPatient.id].checklists
-    const path_id = temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id
-
-    if (checklist_list && checklist_list.length) {
-      setChecklistList(checklist_list)
-      setPathId(path_id)
-    }
+    onNewScanResult(temp_data.patients[currentPatient.id].patient_code)
+    // let checklist_list = temp_data.paths[currentPatient.id].checklists
+    // const path_id = temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id
+    //
+    // if (checklist_list && checklist_list.length) {
+    //   setChecklistList(checklist_list)
+    //   setPathId(path_id)
+    // }
   }
 
   /*Return the patient box elements*/
@@ -28,7 +29,8 @@ function PatientBox ({props}) {
         <div className="card-body">
           {currentPatient ? <h3 className="card-title text-white m-0">Patient(e) : {currentPatient.firstname} {currentPatient.lastname} </h3> : null}
           {currentPatient ? <h4 className="card-title text-dark m-0">{currentPatient.dateofbirth}</h4> : null}
-          {currentPatient ? <img className={"border border-dark mt-2 mb-4"} src={currentPatient.photo} width="128" height="128" alt={"Photo"}/> : null }
+          {currentPatient ? <h4 className="card-text text-white m-0"> {numDict.intervention_name}</h4> : null}
+          {currentPatient ? <img className={"border border-dark mt-2 mb-4"} src={is_local ? currentPatient.photo : "http://checklists.metoui.be/storage/"+currentPatient.photo} width="128" height="128" alt={"Photo"}/> : null }
 
           {!currentPatient ? <h3 className="card-title text-white">Liste des patients du jour</h3> : null }
 

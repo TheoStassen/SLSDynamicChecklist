@@ -9,8 +9,8 @@ const list_possible_answer_trad = {"yes":"Oui","no":"Non","idk":"?","ok":"OK","n
   "normal":"Normal", "anormal":"Anormal", "na": "N.A.", "left": "Gauche", "right": "Droite",
   "a":"A", "b":"B", "c":"C", "d":"D", "text":"Texte", "list":"Liste", "date":"Date", "hour":"Hour", "scan":"Scan", "signature":"Signature", "bilateral": "Bilatéral", "number"  :"Nombre"}
 
-const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender"]
-const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre"}
+const list_possible_num_var = ["diabetic","age","yearofbirth","difficult_intubation", "gender", "xarelto", "insulin"]
+const list_possible_num_var_trad = {"diabetic":"Diabétique","age":"Âge","yearofbirth":"Année de naissance","difficult_intubation":"Intubation Difficile", "gender":"Genre", "xarelto":"Patient sous Xarelto", "insulin":"Patient sous Insuline"}
 
 const list_possible_op = ["<",">","="]
 
@@ -26,6 +26,12 @@ const trad_num_var = (num_var) => {
 
 /*List of possible options (answers), used in the multiselect component to choose the question answers*/
 
+
+function date_to_age (date){
+  let result = date.split("/")
+  let current_year = new Date()
+  return current_year.getFullYear() - result[2]
+}
 
 /*Function that make the operation of type "is val1 op val2 ?' with op the operator in string input*/
 const simple_operation = (val1, string_op, val2) => {
@@ -211,7 +217,7 @@ function checklist_flat_to_tree_rec(item, array){
 //   let child_array = array.filter(elm => elm.parent_itemId === item.id)
 //   child_array.sort(function(a, b){return a.position - b.position})
 //   // console.log(array)
-//   console.log(child_array)
+//   // console.log(child_array)
 //   if (!child_array.length){
 //     return item
 //   }
@@ -224,7 +230,7 @@ function checklist_flat_to_tree_rec(item, array){
 //       comment : elm.comment,
 //       section_title : elm.section_title,
 //       cond :  JSON.parse(elm.cond),
-//       check : elm.check[1] === "[" ? JSON.parse(elm.check): [elm.check],
+//       check : JSON.parse(elm.check),
 //       color : JSON.parse(elm.color),
 //       pre_check : JSON.parse(elm.pre_check),
 //       importance : JSON.parse(elm.importance),
@@ -232,9 +238,10 @@ function checklist_flat_to_tree_rec(item, array){
 //     }
 //     new_item = checklist_flat_to_tree_rec(new_item, array)
 //     item.values.push(new_item)
+//     console.log("new item", new_item)
 //   }
 //   return item
 // }
 
 
-export {list_possible_answer_trad, list_possible_answer, list_possible_num_var_trad, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, CsvGenerator, simple_operation, checklist_to_json, checklist_tree_to_flat, checklist_flat_to_tree}
+export {list_possible_answer_trad, list_possible_answer, list_possible_num_var_trad, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, date_to_age, CsvGenerator, simple_operation, checklist_to_json, checklist_tree_to_flat, checklist_flat_to_tree}

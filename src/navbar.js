@@ -15,7 +15,7 @@ import axios from "axios";
 * */
 function AppNavbar ({props}) {
 
-  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError} = props;
+  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError, setCurrentUser} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -73,24 +73,69 @@ function AppNavbar ({props}) {
       setScanValue(null)
       setCurrentPatient(null)
       setUserCode(null)
+      setCurrentUser(null)
     }
   }
 
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {setProblemName([]) ; setProblemDescription(null) ; setShow(false)};
   const handleShow = () => setShow(true);
 
-  const [problemName, setProblemName] = useState("")
+  const [problemName, setProblemName] = useState([])
   const [problemDescription, setProblemDescription] = useState("")
 
-  const handleName = (event) => setProblemName(event.target.value);
+  const handleName = (name, index) => { console.log("index", index); problemName.splice(index);problemName.push(name); console.log(problemName); setProblemName(problemName); forceUpdate()};
   const handleDescription = (event) => setProblemDescription(event.target.value);
   const handleSave = () => {
-    setShow(false);
+    setShow(false); setProblemName(null) ; setProblemDescription(null) ;
     axios.post('#', {name:problemName, description:problemDescription}) //Random url, just to simulate the fact that we need to make get call to add checklist
       .then(function(response){
       })
+  }
+
+  let indesirable_events =
+    {
+      "Patient":
+        {
+          "Arrivée Tardive": null,
+          "Mauvaise Préparation":
+                {
+                  "Prothèses en place": null,
+                  "Bijoux, piercings, .. en place": null,
+                  "N'a pas uriné": null,
+                  "Préparation cutanée incorrecte": null
+                }
+        },
+      "Brancardage": {"Patient pas prêt": null},
+      "Dossier": {"Pas de consentement": null, "Pas de prenarcose": null}
+    }
+
+  const indesirable_event_dropdowns = (indesirable_event_dict, index) => {
+    console.log(indesirable_event_dict)
+    if (!indesirable_event_dict) { return null}
+    return (
+    <div>
+      <div className={"row my-2"}>
+        <div className="col-sm-6 dropdown text-center m-0 my-2">
+          <button className="btn btn-info dropdown-toggle  " type="button" id={"dropdownMenuButton"+index}
+                  data-toggle="dropdown" aria-expanded="false">
+            Sélectionnez le problème
+          </button>
+          <ul className="dropdown-menu" aria-labelledby={"dropdownMenuButton"+index}>
+            {Object.keys(indesirable_event_dict).map((i, nb) => (
+              <li key={nb}><label className="dropdown-item " onClick={() => handleName(i, index)}>{i}</label></li>
+            ))}
+          </ul>
+        </div>
+        {problemName && problemName[index] ?
+          <div className={"col-sm-5 iq-card iq-bg-secondary w-100 text-center my-auto border border-dark "}>
+            {problemName[index]}
+          </div> : null}
+      </div>
+    {indesirable_event_dropdowns(indesirable_event_dict[problemName[index]], index+1)}
+    </div>
+    )
   }
 
   /*Return the different elements of the navbar*/
@@ -166,8 +211,12 @@ function AppNavbar ({props}) {
                       <Modal.Title>Signalement d'évènements indésirables</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                      Intitulé du problème
-                      <input  className="form-control w-100 mb-0" type = "text " aria-label="text input" value={problemName} onChange={handleName}/>
+                      Type de problème
+                      <div className={""}>
+                        {indesirable_event_dropdowns(indesirable_events, 0)}
+                      </div>
+                      {/*Intitulé du problème*/}
+                      {/*<input  className="form-control w-100 mb-0" type = "text " aria-label="text input" value={problemName} onChange={handleName}/>*/}
                       Description du problème
                       <textarea className="form-control form-control-custom textarea" rows="4" value={problemDescription} onChange={handleDescription}/>
                     </Modal.Body>

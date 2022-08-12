@@ -188,6 +188,11 @@ background-color: #f5f5f5;
     position: relative;
 }
 
+.hk--custom--select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn){
+    width: auto !important;
+    min-width: 230px;
+}
+
 .dropdown-menu {
     top: 100%;
     width: max-content;

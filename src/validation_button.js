@@ -13,9 +13,11 @@ function check_all_question_answered (visibleList, result){
 
 
 
-function ValidationButton ({visibleList, result, import_result, checklist, setWarningId, checklistList, setChecklistList, checklistId}) {
+function ValidationButton ({visibleList, result, import_result, checklist, setWarningId, checklistList, setChecklistList, checklistId, forceValidationMode}) {
 
   function search_question_not_answered (visibleList, result, is_set){
+    if (forceValidationMode)
+      return ""
     const visibleListsorted = visibleList.sort(function (elm1,elm2){return elm1>elm2})
     for (let i=0; i<visibleListsorted.length;i=i+1){
       if(!result[visibleListsorted[i]]){

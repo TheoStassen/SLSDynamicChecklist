@@ -66,7 +66,7 @@ function CreateBox ({props}) {
     axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
       .then(function(response) {
         console.log(response)
-        let checklist_list = temp_data.paths[0].checklists
+        let checklist_list = temp_data.paths[1].checklists
         let checklist_id = checklist_list[0].checklist_id
 
         if (checklist_list && checklist_list.length) {

@@ -1,6 +1,6 @@
 import * as utils from "./utils";
 import  * as temp_data from "./temporary_data.js";
-import React, {useState, useReducer} from "react";
+import React, {useState, useReducer, useEffect} from "react";
 import BootstrapSelect from "react-bootstrap-select-dropdown";
 import QrcodeScanner from "./qrcodescanner";
 import axios from "axios";
@@ -13,7 +13,7 @@ import {AppSignature} from "./signature";
 - forceUpdate : function that force the reload of component if necessary
 - values_filter_cond : function that filter the values by keeping only the values that validates all conditions
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark, checklist_name}) {
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark, checklist_name, is_local}) {
 
   // console.log("enter item", item)
 
@@ -31,6 +31,19 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
   let [trimmedCanvasUrl, setTrimmedCanvasUrl] = useState(null)
   let sigpad = {}
+
+  let [scanValue, setScanValue] = useState(null)
+  let [scanValueError, setScanValueError] = useState(null)
+
+
+  useEffect(() => {
+    if (item.check.includes("scan") && scan_bookmark && scanValue && !result[item.id]){
+      console.log(result)
+      const current_result = result
+      current_result[item.id] = {name: item.name, answer: scanValue}
+      setResult(current_result)
+    }
+  })
 
   /* Function triggered when the user click on one answer, we update the isDict and results and clean (remove from isDict and results) questions
   * that must not be visible anymore, because of there cond's */
@@ -129,7 +142,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   const handleOnChangeListOther = (event) => {
     const input_text = event.target.value;
     let input_answer = result[item.id].answer
-    input_answer.pop() // With the first letter typed, remove the "other" field, when you continue to type, remove the previous word and add the new
+    if (isOther) input_answer.pop() // With the first letter typed, remove the "other" field, when you continue to type, remove the previous word and add the new
     input_answer.push(input_text)
     result[item.id]={name:item.name,answer:input_answer}
     setResult(result)
@@ -196,17 +209,15 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     );
   }
 
-  let [scanValue, setScanValue] = useState(null)
-  let [scanValueError, setScanValueError] = useState(null)
-
   function onNewScanResult(decodedText, decodedResult) {
-    console.log(decodedText, scanValue)
-    if(decodedText) {
-      setScanValue(decodedText)
-      console.log("write decoded scan", decodedText)
-      result[item.id] = {name: item.name, answer: decodedText}
-      setResult(result)
-    }
+    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
+      .then(function (response) {
+        if(decodedText) {
+          setScanValue(decodedText)
+          console.log("write decoded scan", decodedText, result)
+        }
+      })
+    console.log("scan result", decodedText, scanValue)
   }
 
 
@@ -250,9 +261,13 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
           {/*Item name*/}
           <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark bg- "  >
-              {item.comment && commentMode ? (
+              {item.comment && commentMode && (item.comment.split("_").length === 1 || item.comment.split("_").length > 1 && numDict[item.comment.split("_")[1]]) ? (
                 <div className="row alert alert-light px-0 m-0 mt-0 border-0 text-primary my-auto text-center align-content-center" role="alert">
-                  <p className={"w-100 m-0"}>{item.comment}</p>
+                  {item.comment.split("_").length > 1 ?
+                    <p className={"w-100 m-0"}>{item.comment.split("_")[0] + numDict[item.comment.split("_")[1]]}</p>
+                    :
+                    <p className={"w-100 m-0"}>{item.comment}</p>
+                  }
                   {item.comment.includes("Consentement") ?
                     <div className={"text-center mx-auto"}>
                       <button className="btn m-0 p-0 mx-auto " type="button" data-toggle="collapse" data-target="#collapseconsentpdf"
@@ -260,7 +275,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
                         <div data-icon="T" className="icon"></div>
                       </button>
                       <div className="collapse m-0 p-0" id="collapseconsentpdf">
-                        <p className={"col-sm-12 mx-0 px-0 mb-0"}> <img src={numDict.consent_pdf} width={"280"}/> </p>
+                        <p className={"col-sm-12 mx-0 px-0 mb-0"}> <img src={is_local ? numDict.consent_pdf : "http://checklists.metoui.be/storage/" + numDict.consent_pdf} width={"280"}/> </p>
                       </div>
                     </div>
                     : null}
@@ -339,8 +354,8 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           ) : null }
 
           {/*If item answers is list and the answer is Other, put a text*/}
-          {isOther ? (
-            <input className="form-control w-100 ml-2 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeListOther}/>
+          {isOther || item.check.includes("list_problems") ? (
+            <input className="form-control w-100 mb-0 bg-white" type = "text " aria-label="text input" placeholder={isOther ? "Insérez ici" : "Décrivez"} onChange={handleOnChangeListOther}/>
           ) : null }
 
         </div>
@@ -348,7 +363,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
       </div>
 
       {/*If item answers must contain date, put a text input*/}
-      {item.check.includes("scan") && scan_bookmark  ? (
+      {item.check.includes("scan") && scan_bookmark && !scanValue ? (
         <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center col-sm-6 mx-auto"}>
           <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={scanValue} scan_bookmark={scan_bookmark} is_home={false}/>
         </div>
