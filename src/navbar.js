@@ -15,7 +15,7 @@ import axios from "axios";
 * */
 function AppNavbar ({props}) {
 
-  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError, setCurrentUser} = props;
+  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError, setCurrentUser,setUserValidated} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -68,6 +68,7 @@ function AppNavbar ({props}) {
     deactivatecreatemode()
     setHomeMode(true)
     setScanValueError(null)
+    setUserValidated(false)
     if (main_menu){
       setChecklistList(null)
       setScanValue(null)
@@ -118,7 +119,7 @@ function AppNavbar ({props}) {
     <div>
       <div className={"row my-2"}>
         <div className="col-sm-6 dropdown text-center m-0 my-2">
-          <button className="btn btn-info dropdown-toggle  " type="button" id={"dropdownMenuButton"+index}
+          <button className="btn btn-primary dropdown-toggle  " type="button" id={"dropdownMenuButton"+index}
                   data-toggle="dropdown" aria-expanded="false">
             Sélectionnez le problème
           </button>
@@ -129,7 +130,7 @@ function AppNavbar ({props}) {
           </ul>
         </div>
         {problemName && problemName[index] ?
-          <div className={"col-sm-5 iq-card iq-bg-secondary w-100 text-center my-auto border border-dark "}>
+          <div className={"col-sm-5 iq-card iq-bg-secondary w-100 text-center my-auto border shadow-sm "}>
             {problemName[index]}
           </div> : null}
       </div>
@@ -140,13 +141,13 @@ function AppNavbar ({props}) {
 
   /*Return the different elements of the navbar*/
   return (
-    <div className="iq-top-navbar h-auto" >
+    <div className="iq-top-navbar h-auto border" >
       <div className="iq-navbar-custom py-2">
         <nav className="navbar navbar-expand-lg navbar-light p-0 ">
           {/*Navbar Title*/}
-          <div className="navbar-brand pl-4">
+          <div className="navbar-brand pl-4 custom-logo">
             <a href="#" onClick={() => gotohome(true)}>
-              <span>SLS</span>
+              <span><img className={"w-100"} src={"my-app/photos/logo_dynalist_v2.png"}/></span>
             </a>
           </div>
           {/*/!*Navbar Toggler button*!/*/}
@@ -157,7 +158,7 @@ function AppNavbar ({props}) {
 
           {/*/!*Navbar links*!/*/}
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div className="navbar-nav  p-2 pl-4">
+            <div className="navbar-nav  p-2 pl-2">
               {/*{!creationMode && !checklistList ? <label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => setdefault()}>Passer le QRcode</label> : null}*/}
               {checklistList ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(true)}>Revenir à l'accueil</label> : null}
               {!creationMode && checklistList && !homeMode ?<label className="nav-link m-0 my-auto" data-toggle="collapse" data-target=".navbar-collapse.show" onClick={() => gotohome(false)}>Revenir à la sélection des checklists</label> : null}
@@ -207,8 +208,8 @@ function AppNavbar ({props}) {
                   </Button>
 
                   <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton variant="white">
-                      <Modal.Title>Signalement d'évènements indésirables</Modal.Title>
+                    <Modal.Header className={""} closeButton variant="white">
+                      <Modal.Title className={"text-dark"}>Signalement d'évènements indésirables</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       Type de problème
@@ -220,7 +221,7 @@ function AppNavbar ({props}) {
                       Description du problème
                       <textarea className="form-control form-control-custom textarea" rows="4" value={problemDescription} onChange={handleDescription}/>
                     </Modal.Body>
-                    <Modal.Footer>
+                    <Modal.Footer className={""}>
                       <Button variant="secondary" onClick={handleClose}>
                         Fermer
                       </Button>

@@ -15,13 +15,13 @@ import axios from "axios";
 * -checklistId : id of the current checklist (state variables)
 * -setChecklistId : id of the current checklist set function
 * -forceUpdate: function that force the reload of component if necessary
+* -currentQuestion : id of the question currently in modific
 * */
 function CreateBox ({props}) {
 
   let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, currentQuestion, setCurrentQuestion, reset} = props
 
   /* State variables used only in creation mode
-  * -currentQuestion : the question currently into creation/modification
   * -currentParentQuestion : the question that is parent of the current question
   * -currentName : the current name
   * -tempNums : the numerical condition values (var, op and val) of the current condition the user is going to add
@@ -44,9 +44,9 @@ function CreateBox ({props}) {
     let checklist_array = temp_data.checklist_arrays[checklist_id-1] // Il faudra un get ici aussi
     // let checklist_array = response.data.data.items
     checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
-    checklist.name = checklist_list.filter(elm => elm.checklist_id === checklist_id)[0].name
-    checklist.person = checklist_list.filter(elm => elm.checklist_id === checklist_id)[0].person
-    checklist.counter = checklist_list.filter(elm => elm.checklist_id === checklist_id)[0].counter
+    checklist.name = checklist_list.filter(elm => elm.id === checklist_id)[0].name
+    checklist.person = checklist_list.filter(elm => elm.id === checklist_id)[0].person
+    checklist.counter = checklist_list.filter(elm => elm.id === checklist_id)[0].counter
     setChecklist(checklist)
     setChecklistId(checklist_id)
     setCurrentQuestion(checklist.values[0])
@@ -67,7 +67,7 @@ function CreateBox ({props}) {
       .then(function(response) {
         console.log(response)
         let checklist_list = temp_data.paths[1].checklists
-        let checklist_id = checklist_list[0].checklist_id
+        let checklist_id = checklist_list[0].id
 
         if (checklist_list && checklist_list.length) {
           setChecklistList(checklist_list, checklist_list)
@@ -376,7 +376,7 @@ function CreateBox ({props}) {
   }
 
   const addchecklist = () => {
-    const checklist_id = checklistList.length ? checklistList[checklistList.length-1].checklist_id+1 : 0
+    const checklist_id = checklistList.length ? checklistList[checklistList.length-1].id+1 : 0
 
     //On ajoute une checklist ici dans la checklist list actuelle
 
@@ -413,7 +413,7 @@ function CreateBox ({props}) {
 
   /*Remove the current checklist from the list of checklist and take the first checklist still available as current checklist*/
   const removechecklist = () => {
-    const checklist_id = checklistList.length ? checklistList[0].checklist_id : 0
+    const checklist_id = checklistList.length ? checklistList[0].id : 0
 
     // Inform that we want to del a checklist and receive in response the new checklist list
     axios.delete('http://checklists.metoui.be/api/checklists/'+checklistId) //Random url, just to simulate the fact that we need to make get call to del checklist
@@ -594,14 +594,14 @@ function CreateBox ({props}) {
 
   /*Return the create box, with all it elements*/
   return (
-    <div>{checklist && tempPreCheck ? <div className="container iq-card pt-2 mb-4 border border-dark shadow">
+    <div>{checklist && tempPreCheck ? <div className="container iq-card bg-white pt-2 mt-4 mb-4 border shadow-sm">
 
       {/*Title text*/}
-      <div className="iq-card bg-primary text-center mb-2">
-        <div className="card-body">
-          <h4 className="card-title text-white">Mode Création </h4>
-          <p className="card-text  m-0">Vous pouvez ajouter, supprimer, modifier des checklists et des questions ici.</p>
-          <p className="card-text ">La checklist modifiée s'affiche en dessous.</p>
+      <div className="iq-card bg-white text-center border border-dark mb-2">
+        <div className="card-body col-sm-6 mx-auto my-2 ">
+          <h4 className="card-title text-dark">Mode Création </h4>
+          <p className="card-text text-primary  m-0">Vous pouvez ajouter, supprimer, modifier des checklists et des questions ici.</p>
+          <p className="card-text text-primary ">La checklist modifiée s'affiche en dessous.</p>
         </div>
       </div>
 
@@ -619,7 +619,7 @@ function CreateBox ({props}) {
               <li><label className="dropdown-item " onClick={function(event){ addchecklist(); forceUpdate()}}>Nouvelle checklist</label></li>
               {/*Select an existing checklist*/}
               {checklistList.map((i, index) => (
-                <li key={index}><label className="dropdown-item " onClick={function (){swapchecklist(checklistList, i.checklist_id)}}>
+                <li key={index}><label className="dropdown-item " onClick={function (){swapchecklist(checklistList, i.id)}}>
                   Checklist {i.name}</label>
                 </li>
               ))}

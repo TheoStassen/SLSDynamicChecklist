@@ -262,7 +262,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
           {/*Item name*/}
           <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark bg- "  >
               {item.comment && commentMode && (item.comment.split("_").length === 1 || item.comment.split("_").length > 1 && numDict[item.comment.split("_")[1]]) ? (
-                <div className="row alert alert-light px-0 m-0 mt-0 border-0 text-primary my-auto text-center align-content-center" role="alert">
+                <div className="row alert iq-bg-secondary px-0 m-0 mt-0 border-0 text-primary my-auto text-center align-content-center" role="alert">
                   {item.comment.split("_").length > 1 ?
                     <p className={"w-100 m-0"}>{item.comment.split("_")[0] + numDict[item.comment.split("_")[1]]}</p>
                     :

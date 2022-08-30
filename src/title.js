@@ -9,16 +9,16 @@ function Title ({checklistList, checklistId, numDict, currentPatient, forceValid
   const checklist = checklistList ? checklistList.filter(elm => elm.checklist_id === checklistId)[0] : null
   return (
     <div className={"container"}>
-      <div className="iq-card bg-primary  mt-4 text-center p-2 shadow border border-dark">
+      <div className="iq-card bg-white  mt-4 text-center p-2 shadow-sm border">
         <div className="card-body">
-          <h3 className="card-title text-white">{checklist ? "Checklist " + checklist.name: null} </h3>
-          <h4 className="card-title text-white m-0">{currentPatient.firstname} {currentPatient.lastname} </h4>
-          <h4 className="card-title text-dark m-0">{currentPatient.dateofbirth}</h4>
+          <h3 className="card-title text-dark">{checklist ? "Checklist " + checklist.name: null} </h3>
+          <h4 className="card-title text-primary m-0">{currentPatient.firstname} {currentPatient.lastname} </h4>
+          <h4 className="card-title text-secondary m-0">{currentPatient.dateofbirth}</h4>
           <img className={"border border-dark my-2"} src={is_local ? currentPatient.photo : "http://checklists.metoui.be/storage/"+currentPatient.photo} width="128" height="128"/>
 
-          <h4 className="card-text text-white m-0">{checklist ?  "Checklist " + (currentPatient.type === "major" ? "Majeure" : "Mineure" ) + (numDict.age < 19 ? " Enfant" : " Adulte") : null}</h4>
-          <h4 className="card-text text-white m-0">{checklist ? numDict.intervention_name : null}</h4>
-          <h4 className="card-text text-dark m-0">{checklist ? checklist.person : null}</h4>
+          <h4 className="card-text text-dark m-0">{checklist ?  "Checklist " + (currentPatient.type === "major" ? "Majeure" : "Mineure" ) + (numDict.age < 19 ? " Enfant" : " Adulte") : null}</h4>
+          <h4 className="card-text text-primary m-0">{checklist ? numDict.intervention_name : null}</h4>
+          <h4 className="card-text text-secondary m-0">{checklist ? checklist.person : null}</h4>
         </div>
       </div>
       {/*<div className={"iq-card iq-bg-secondary p-0 mx-auto text-center shadow border border-dark justify-content-center "}>*/}

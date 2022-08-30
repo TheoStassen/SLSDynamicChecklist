@@ -13,6 +13,7 @@ import {ValidationButton} from "./validation_button";
 import {AlertsBox} from "./alerts_box";
 import {Title} from "./title";
 import {Home} from "./home";
+import * as calls from "./calls";
 import {CountingTable} from "./couting_table";
 import QrcodeScanner from "./qrcodescanner";
 import {UserBox} from "./user_box";
@@ -83,6 +84,7 @@ export default function App() {
   let [debugMode, setDebugMode] = useState(false)
   let [forceValidationMode, setForceValidationMode] = useState(false)
   let [precheckMode, setPrecheckMode] = useState(true)
+  let [userValidated, setUserValidated] = useState(false)
 
   /* Signature component variables
   * -trimmedCanvasUrl : variable containing the canvas url data of the signature
@@ -112,7 +114,6 @@ export default function App() {
   * */
   let numDict = {}
   if (currentPatient){
-    console.log("enter")
     for (const [key, value] of Object.entries(currentPatient)) {
       if (typeof value === "object"){
         for (const [key_, value_] of Object.entries(value)){
@@ -123,48 +124,21 @@ export default function App() {
         numDict[key] = value
       }
     }
-    console.log(currentPatient)
     numDict["age"] = utils.date_to_age(numDict["dateofbirth"])
   }
+
 
   /* Initialization function, activated only when the App component is created, at site opening,
   * -> Get the different lists needed at start (users, patients)
   * */
   useEffect(() => {
     onNewScanResult = onNewScanResult.bind(this);
-
-
-    /*Get user list from database*/
-    // axios.get('http://checklists.metoui.be/api/users')
-    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
-      .then(function(response){
-
-        //Must handle incoming data
-        console.log("user list call response", response)
-        console.log("user list call temp", temp_data.user_list)
-        const user_list = temp_data.user_list// temporary
-        setUserList(user_list);
-        console.log("initial get user list call and set finished")
-      });
-
-    /*Get patient list from database*/
-    axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/patients')
-    // axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
-      .then(function(response){
-
-        //Must handle incoming data
-        console.log("patient call response", response.data)
-        console.log("patient call temp", temp_data.patient_list)
-
-        // const patient_list = temp_data.patient_list // temporary
-        const patient_list = is_local ? temp_data.patient_list : response.data
-
-        setPatientList(patient_list);
-        console.log("initial get patient list call and set finished")
-      });
+    calls.getusers(is_local, setUserList)
+    calls.getpatients(is_local, setPatientList)
   }, [])
 
   useEffect(() => {
+    // If the user code has been scanned but no user is set, we must check the user list and set user or set error
     if (userCode && !currentUser){
       const current_users = userList.filter(elm => elm.user_code === userCode)
 
@@ -177,7 +151,6 @@ export default function App() {
       }
     }
   })
-
 
   /******* Main functions declaration ********/
 
@@ -198,92 +171,7 @@ export default function App() {
   * */
   const swapchecklist = (checklist_id) => {
 
-    // Get the checklist from database
-    axios.get(is_local ? "#" : "http://checklists.metoui.be/api/checklists/"+checklist_id) //Random url, just to simulate the fact that we need to make get call before set checklistList
-      .then(function(response){
-
-      // console.log("checklist swap call response", response ? response.data.data.items: null)
-      // console.log("checklist swap call response", response.data.data.items)
-      console.log("checklist swap call temp", temp_data.checklist_arrays[checklist_id-1])
-
-      const current_creation_mode = creationMode // we use this variable to reset the creation mode after switching
-      let checklist_array = is_local ? temp_data.checklist_arrays[checklist_id-1] : response.data.data.items
-      // let checklist_array = response.data.data.items
-
-      // Transform the checklist array to checklist tree and add info from checklist list
-      checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
-      checklist.name = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].name
-      checklist.person = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].person
-      checklist.counter = checklistList.filter(elm => elm.checklist_id === checklist_id)[0].counter
-      setChecklist(checklist)
-
-      /**** Alert gestion section, will be replaced by a get call when the db will handle alert gestion*/
-
-      // Filter alert list to keep only alerts of checklist that precede the current checklist
-      let alert_list =  Object.keys(alertList).reduce(function (filtered, key ) {
-        if (alertList[key].checklist_id < checklist_id) filtered[key] = alertList[key]
-        return filtered
-      }, {});
-
-      // Update the gravity of the alerts (if there was an problematic response on a certain question and not anymore)
-      Object.keys(alert_list).forEach((key, index) => {
-        const corresponding_questions = checklist_array.filter(elm => elm[1].includes(key))
-        alert_list[key].question_id = corresponding_questions.length ? corresponding_questions[0][0] : -1
-        if (!Object.values(pbresult).filter(elm => elm.name === key).length && Object.values(result).filter(elm => elm.name === key).length){
-          alert_list[key].gravity = 1
-        }
-      })
-
-      //  Add new alerts corresponding ti the checklist we are about to left
-      if (checklist_id >= checklistId) Object.keys(pbresult).forEach((key, index) => {
-        const name = pbresult[key].name
-        const corresponding_questions = checklist_array.filter(elm => elm[1].includes(name))
-        console.log(checklist)
-        alert_list[name] =
-          {
-            "id": index, "question_id": corresponding_questions.length ? corresponding_questions[0][0] : -1,
-            "checklist_id" : checklistId, "checklist_name" : pbresult[key].checklist_name, "name": name,
-            "answer" : (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer),
-            "gravity": 0
-          }
-      })
-      setAlertList(alert_list)
-
-
-      // const alert_list = []
-      // axios.get('http://checklists.metoui.be/api/alerts/'+pathId) //Random url, just to simulate the fact that we need to make get call before set checklistList
-      //   .then(function(response){
-      //
-      //     console.log("get alerts response", response)
-      //
-      //     const alert_checklists = response.checklists
-      //     alert_checklists.forEach(checklist =>
-      //       checklist.items.forEach(item =>
-      //         alert_list.push({
-      //           "question_id": item.item_id,
-      //           "checklist_id" : checklist.checklist_id,
-      //           "checklist_name" : checklist.checklist_title,
-      //           "name": item.item_title,
-      //           "answer" : item.answer,
-      //           "gravity": item.gravity
-      //         })
-      //       )
-      //     )
-      //     setAlertList(alert_list)
-      //   })
-
-      // Now that checklist has been selected, we set variables related to checklist to default value
-
-      setCreationMode(false)
-      setChecklistId(checklist_id);
-      setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
-      setCreationMode(current_creation_mode)
-      setHomeMode(false)
-      reset()
-
-      console.log("switch checklist get call and set finished")
-    })
-
+    calls.getchecklist(is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset )
     return checklist
   }
 
@@ -300,65 +188,47 @@ export default function App() {
       result_table.push({item_id:key, name:value.name, answer:value.answer, is_pb: !!pbresult[key]})
     }
     let final_result = {checklist_id: checklistId, journey_id:pathId, user_id:currentUser.id, patient_id:currentPatient.id, answers : result_table}
-    axios.post(is_local ? '#' : 'http://checklists.metoui.be/api/evaluations', final_result  )
-      .then(function (response){
-        console.log("evalutiaon post response", response)
-        let csvGenerator = new utils.CsvGenerator(result_table_csv, 'my_csv.csv');
-        csvGenerator.download(true);
-      })
+
+    calls.postevaluation(is_local,final_result)
+    let csvGenerator = new utils.CsvGenerator(result_table_csv, 'my_csv.csv');
+    csvGenerator.download(true);
 
   }
 
   /* Function that switch current patient the patient with id
   * */
   function switchPatient (id) {
-    axios.get(is_local ? '#': 'http://checklists.metoui.be/api/patients/'+id)
-      .then(function(response) {
-        console.log("get patient at id response", response.data)
-        console.log("get patient at id temp", temp_data.patients[id])
-        let corresp_patients = is_local ? temp_data.patients[id] : response.data // temporary
-        // let corresp_patients = response.data
-        setCurrentPatient(corresp_patients ? corresp_patients : null)
-        setScanValueError(null)
-      })
+    calls.getpatient(is_local,id,setCurrentPatient,setScanValueError())
+  }
+
+  /* Function that switch current user to the user with id
+* */
+  function switchUser (id) {
+    calls.getuser(is_local, id, setCurrentUser, setScanValueError)
   }
 
   /* Function triggered after the scan of a user/patient code
   * */
   function onNewScanResult(decodedText) {
     console.log(decodedText, scanValue)
-    if (!userCode){
-      setUserCode(decodedText)
+    if (!userValidated){
+      console.log("entered scan result", decodedText, currentUser.user_code)
+      if (currentUser.user_code === decodedText){
+        setUserValidated(true)
+      }
+      else{
+        setScanValueError(decodedText)
+      }
     }
     else{
-      if(!scanValue && decodedText) {
-        console.log("write decoded scan", decodedText)
+      console.log("write decoded scan", decodedText)
 
-        if (currentPatient.patient_code === decodedText) {
-          // First call to ask the journey id corrsesponding to the last journey of the current patient
-          axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/journeys?patient_id='+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
-            .then(function (response) {
-
-              console.log("get journey id for the patient id temp", temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id)
-              const path_id = is_local ? temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id : response.data.data[0].id
-              setPathId(path_id)
-
-              // Second call to get the different information, especially the list of checklist, corresponding to the journey
-              axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/journeys/'+path_id)
-                .then(function (response) {
-                  console.log("get journey corresponding to journey id response", response.data.checklists)
-                  console.log("get journey corresponding to journey id temp", temp_data.paths[path_id].checklists)
-                  let checklist_list = is_local ? temp_data.paths[path_id].checklists : response.data.checklists
-                  if (checklist_list && checklist_list.length) {
-                    setChecklistList(checklist_list)
-                  }
-                })
-            })
-        } else {
-          setChecklistList([{}])
-          setScanValueError(decodedText)
-          setChecklistList([])
-        }
+      if (currentPatient.patient_code === decodedText) {
+        calls.getjourney(is_local, currentPatient, setPathId,setChecklistList)
+      } else {
+        setChecklistList([{}])
+        setScanValueError(decodedText)
+        setChecklistList([])
       }
     }
   }
@@ -388,11 +258,30 @@ export default function App() {
 
   /* Return the different components.
   * We define also the background and a hidden bottom navbar to avoid problems with the background vertical limits
+  * Content (in term of components) :
+  * - Navbar
+  * ~ Credits (if credit mode)
+  * ~ Main page :
+  *   ~ Creation box (if create mode)
+  *   ~ Menu sections (if home mode) :
+  *     ~ User / Patient selection (if no checklist list already set) :
+  *       ~ User selection and scanner (if no user already set)
+  *       ~ Patient selection (if user already set) :
+  *         ~ Patient scanner (if patient selected)
+  *     ~ Home section, showing the list of checklists (if checklist list already set)
+  *   ~ Main Checklist section (if not home mode) :
+  *     ~ Title section, presenting checklist (if not create mode)
+  *     ~ Alert section (if not create mode)
+  *     ~ Checklist content section (if checklist variable set) :
+  *       ~ Normal Checklist (if checklist.counter false)
+  *         - Checklist Items
+  *       ~ Counter Checklist (if checklist.counter true)
+  *     ~ Validation section (if not create mode)
   */
   return (
     <div>
       <AppSidebar/>
-      <div className="min-vh-100 content-page iq-bg-info">
+      <div className="min-vh-100 content-page bg-color-custom">
         <div>
           {<AppNavbar props = {{
             creationMode,
@@ -419,7 +308,8 @@ export default function App() {
             setCurrentPatient,
             setUserCode,
             setScanValueError,
-            setCurrentUser
+            setCurrentUser,
+            setUserValidated
           }}/>}
           {creditMode ?
             <Credits props={null}/>
@@ -441,18 +331,26 @@ export default function App() {
                 : null}
               <div>{homeMode ?
                 <div>{!(checklistList && checklistList.length)  ?
-                  <div>{!currentUser ?
+                  <div>{!userValidated ?
                       <div>
-                        <UserBox props={{onNewScanResult}} />
-                        <div className={"container p-2"}>
-                          <QrcodeScanner fps={10}
-                                         qrbox={250}
-                                         disableFlip={false}
-                                         qrCodeSuccessCallback={onNewScanResult}
-                                         scanValueError={scanValueError}
-                                         scanValue={null}
-                                         is_home={true}/>
-                        </div>
+                        <UserBox props={{
+                          userList,
+                          onNewScanResult,
+                          switchUser,
+                          currentUser,
+                          is_local,
+                          setUserList
+                        }} />
+                        {currentUser ?
+                          <div key={currentUser.id} className={"container p-2"}>
+                            <QrcodeScanner fps={10}
+                                           qrbox={250}
+                                           disableFlip={false}
+                                           qrCodeSuccessCallback={onNewScanResult}
+                                           scanValueError={scanValueError}
+                                           scanValue={null}
+                                           is_home={true}/>
+                          </div> : null}
                       </div>
                       :
                       <div>
@@ -464,12 +362,13 @@ export default function App() {
                           setIsPreCheckDone,
                           forceUpdate,
                           patientList,
-                          switchUser: switchPatient,
+                          switchPatient: switchPatient,
                           setChecklistList,
                           setPathId,
                           onNewScanResult,
                           is_local,
-                          numDict
+                          numDict,
+                          setPatientList
                         }} />
                         {currentPatient ?
                           <div key={currentPatient.id} className={"container p-2"}>
@@ -505,17 +404,17 @@ export default function App() {
 
                   {checklist ? <div>
                     {checklist.counter === false ?
-                      <div className={"container p-0 border-bottom border border-dark  shadow rounded "}>
+                      <div className={"container p-0 border-bottom border shadow-sm rounded "}>
                         {values ? values.map((i, index) => (
                             <div>
                               {i.section_title ? <SectionTitle section_title={i.section_title} index={index}/> :
-                                <div className={"bg-primary " + (index ? "border-dark border-top" : "")}/>}
+                                <div className={"bg-primary " + (index ? " border-top" : "")}/>}
                               <div
                                 className=
                                   {"pb-3 px-3 pt-3 " +
                                   (index === values.length - 1 ? "rounded rounded-0-top " : null) +
                                   (index || i.section_title ? "" : " rounded rounded-0-bottom ") +
-                                  (i.importance ? "iq-bg-danger" : "iq-bg-info")}>
+                                  (i.importance ? " iq-bg-danger" : " bg-color-custom")}>
                                 <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i}
                                                dicts={dicts}
                                                forceUpdate={forceUpdate} values_filter_cond={values_filter_cond}

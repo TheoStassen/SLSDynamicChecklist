@@ -64,12 +64,12 @@ function QrcodeScanner (props){
     <div className={"col-sm-12 mx-auto p-0"}>-
 
       {props.scanValue === null ?
-        <div className={" container custom-scanner pt-4 border border-dark rounded rounded-0-bottom bg-white mx-auto w-100 " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
+        <div className={" container custom-scanner pt-4 rounded rounded-0-bottom bg-white mx-auto w-100 border border-left border-right border-top " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
         :
         <div id={qrcodeRegionId}/>
       }
 
-      <input id={"input1"} type="text" className={"form-control w-100 mb-0 bg-white rounded-0-top border-dark border-top-0 " + (props.scanValueError ? "rounded-0": null)}
+      <input id={"input1"} type="text" className={"form-control w-100 mb-0 bg-white rounded-0-top border border-top-0 shadow-sm " + (props.scanValueError ? "rounded-0": null)}
              value={codeValue}
              onChange={handleChange}
              onKeyPress={event => {if(event.key === 'Enter') props.qrCodeSuccessCallback(codeValue) }}/>
@@ -78,7 +78,7 @@ function QrcodeScanner (props){
 
 
       {props.scanValue !== null ?
-        <div className={"container custom-scanner card rounded bg-success mx-auto text-center p-2 border border-dark justify-content-center "}>
+        <div className={"container custom-scanner card rounded bg-success mx-auto text-center p-2 border shadow-sm justify-content-center "}>
           <div className="card-body m-0 p-0">
             <h5 className="card-title text-dark m-0">Code "{props.scanValue}" enregistré</h5>
           </div>
@@ -86,7 +86,7 @@ function QrcodeScanner (props){
         : null}
 
       {props.scanValueError !== null ?
-        <div className={"container custom-scanner card rounded rounded-0-top bg-warning mx-auto text-center p-2  border border-dark justify-content-center "}>
+        <div className={"container custom-scanner card rounded rounded-0-top bg-warning mx-auto text-center p-2  border shadow-sm justify-content-center "}>
           <div className="card-body m-0 p-0">
             <h5 className="card-title text-dark m-0">Erreur : le code "{props.scanValueError}" ne correspond pas </h5>
           </div>

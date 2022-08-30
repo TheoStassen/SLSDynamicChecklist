@@ -38,7 +38,7 @@
 }
 
 .bg-color-custom{
-    background-color: #f5f5f5;
+    background-color: #eff7f8;
 
 }
 
@@ -250,6 +250,8 @@ background-color: #f5f5f5;
     border-color: black;
 }
 
+
+
 .border-danger {
     border-width: 4px !important;
 }
@@ -310,4 +312,24 @@ background-color: #f5f5f5;
 
 .modal{
     display: block
+}
+
+.custom-logo{
+    max-width: 250px;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background: linear-gradient(to right, rgba(13, 181, 200, 1) 0%, rgba(8, 155, 171, 1) 100%) !important;;
+    border-color: #007bff;
+}
+
+.btn-outline-primary:hover{
+    background: linear-gradient(to right, rgba(13, 181, 200, 1) 0%, rgba(8, 155, 171, 1) 100%) !important;;
+}
+
+.custom-shadow-bottom{
+    box-shadow: 0 8px 12px -12px gray;
 }
