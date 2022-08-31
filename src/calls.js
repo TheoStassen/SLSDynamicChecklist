@@ -1,11 +1,11 @@
 import axios from "axios";
-import * as temp_data from "./temporary_data";
-import * as utils from "./utils";
+import * as temp_data from "./utils/temporary_data";
+import * as utils from "./utils/utils";
 
 const getusers = (is_local, setUserList) => {
   /*Get user list from database*/
   // axios.get('http://checklists.metoui.be/api/users')
-  axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/users')
+  axios.get(true ? '#' : 'http://checklists.metoui.be/api/users')
     .then(function(response){
 
       //Must handle incoming data
@@ -19,11 +19,11 @@ const getusers = (is_local, setUserList) => {
 }
 
 const getuser = (is_local, id, setCurrentUser, setScanValueError) => {
-  axios.get(is_local ? '#': 'http://checklists.metoui.be/api/users/'+id)
+  axios.get(true ? '#': 'http://checklists.metoui.be/api/users/'+id)
     .then(function(response) {
       console.log("get user at id response", response.data)
       console.log("get user at id temp", temp_data.users[id])
-      let corresp_users = is_local ? temp_data.users[id] : response.data // temporary
+      let corresp_users = true ? temp_data.users[id] : response.data // temporary
       // let corresp_patients = response.data
       setCurrentUser(corresp_users ? corresp_users : null)
       setScanValueError(null)
@@ -32,7 +32,7 @@ const getuser = (is_local, id, setCurrentUser, setScanValueError) => {
 
 const getpatients = (is_local, setPatientList) => {
   /*Get patient list from database*/
-  axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/patients')
+  axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/patient')
     .then(function(response){
 
       //Must handle incoming data
@@ -48,7 +48,7 @@ const getpatients = (is_local, setPatientList) => {
 }
 
 const getpatient = (is_local, id, setCurrentPatient, setScanValueError) => {
-  axios.get(is_local ? '#': 'http://checklists.metoui.be/api/patients/'+id)
+  axios.get(is_local ? '#': 'http://checklists.metoui.be/api/patient/'+id)
     .then(function(response) {
       console.log("get patient at id response", response.data)
       console.log("get patient at id temp", temp_data.patients[id])
@@ -61,7 +61,7 @@ const getpatient = (is_local, id, setCurrentPatient, setScanValueError) => {
 
 const getchecklist = (is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset ) => {
   // Get the checklist from database
-  axios.get(is_local ? "#" : "http://checklists.metoui.be/api/checklists/"+ checklist_id)
+  axios.get(is_local ? "#" : "http://checklists.metoui.be/api/checklist/"+ checklist_id)
     .then(function(response){
 
       console.log("checklist swap call response", response)
@@ -146,9 +146,60 @@ const getchecklist = (is_local, checklist_id, creationMode, checklist, setCheckl
     })
 }
 
+const getchecklists = (is_local, checklist, setChecklist,
+                       setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
+                       setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck, setChecklistList ) => {
+  axios.get(is_local ? '#' : "http://checklists.metoui.be/api/checklist") //Random url, just to simulate the fact that we need to make get call before set checklistList
+    .then(function(response) {
+      console.log(response)
+      let checklist_list = is_local ? temp_data.paths[1].checklists : response.data
+      let checklist_id = checklist_list[0].id
+
+
+      if (checklist_list && checklist_list.length) {
+        setChecklistList(checklist_list, checklist_list)
+        getchecklist_creation_mode(is_local, checklist_id, checklist, setChecklist, checklist_list,
+          setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
+          setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck)
+      }
+    })
+}
+
+const getchecklist_creation_mode = (is_local, checklist_id, checklist, setChecklist, checklistList,
+                                    setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
+                                    setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck ) => {
+  // Get the checklist from database
+  axios.get(is_local ? "#" : "http://checklists.metoui.be/api/checklist/"+ checklist_id)
+    .then(function(response){
+
+      let checklist_array = is_local ? temp_data.checklist_arrays[checklist_id-1] : response.data.data.items
+      console.log("get checklist creation mode", checklist_array)
+
+      // Transform the checklist array to checklist tree and add info from checklist list
+      checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
+      let checklist_info = checklistList.filter(elm => elm.id === checklist_id)[0]
+
+      console.log( checklist, checklist_info)
+      checklist.name = checklist_info.name
+      checklist.person = checklist_info.person
+      checklist.counter = checklist_info.counter
+      setChecklist(checklist)
+      setChecklistId(checklist_id)
+      setCurrentQuestion(checklist.values[0])
+      reset()
+      setCurrentParentQuestion(checklist)
+      setCurrentName(checklist.values[0].name)
+      setCurrentComment(checklist.values[0].comment)
+      setCurrentSectionTitle(checklist.values[0].section_title ? checklist.values[0].section_title : null)
+      setTempPreCheck({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
+
+      console.log("switch checklist get call and set finished")
+    })
+}
+
 const getjourney = (is_local, currentPatient, setPathId,setChecklistList) => {
   // First call to ask the journey id corrsesponding to the last journey of the current patient
-  axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/journeys?patient_id='+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
+  axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/journey?patient_id='+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
     .then(function (response) {
 
       console.log("get journey id for the patient id respone", response.data.data ? response.data.data[0].id: null)
@@ -157,7 +208,7 @@ const getjourney = (is_local, currentPatient, setPathId,setChecklistList) => {
       setPathId(path_id)
       console.log('http://checklists.metoui.be/api/journeys/'+path_id)
       // Second call to get the different information, especially the list of checklist, corresponding to the journey
-      axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/journeys/'+path_id)
+      axios.get(is_local ? '#' : 'http://checklists.metoui.be/api/journey/'+path_id)
         .then(function (response) {
           console.log("get journey corresponding to journey id response", response.data.data ? response.data.data.checklists : null)
           console.log("get journey corresponding to journey id temp", temp_data.paths[path_id].checklists)
@@ -170,10 +221,10 @@ const getjourney = (is_local, currentPatient, setPathId,setChecklistList) => {
 }
 
 const postevaluation = (is_local, final_result) => {
-  axios.post(is_local ? '#' : 'http://checklists.metoui.be/api/evaluations', final_result  )
+  axios.post(is_local ? '#' : 'http://checklists.metoui.be/api/evaluation', final_result  )
     .then(function (response){
       console.log("evalutiaon post response", response)
     })
 }
 
-export {getusers, getuser, getpatients, getpatient, getchecklist, getjourney, postevaluation}
+export {getusers, getuser, getpatients, getpatient, getchecklist, getchecklists, getchecklist_creation_mode, getjourney, postevaluation}

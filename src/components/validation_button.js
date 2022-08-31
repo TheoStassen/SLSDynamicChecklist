@@ -1,5 +1,5 @@
 import React from "react";
-import * as utils from "./utils";
+import * as utils from "../utils/utils";
 import {bindReporter} from "web-vitals/dist/modules/lib/bindReporter";
 import {Button} from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";

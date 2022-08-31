@@ -1,6 +1,6 @@
 import React from "react";
-import * as utils from "./utils";
-import * as temp_data from "./temporary_data";
+import * as utils from "../utils/utils";
+import * as temp_data from "../utils/temporary_data";
 
 /*Component for the selection of the current patient
 * -patientList : list of all patients

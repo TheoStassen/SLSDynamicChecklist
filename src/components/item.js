@@ -1,5 +1,5 @@
-import * as utils from "./utils";
-import  * as temp_data from "./temporary_data.js";
+import * as utils from "../utils/utils";
+import  * as temp_data from "../utils/temporary_data.js";
 import React, {useState, useReducer, useEffect} from "react";
 import BootstrapSelect from "react-bootstrap-select-dropdown";
 import QrcodeScanner from "./qrcodescanner";

@@ -1,22 +1,22 @@
 import React, {useEffect, useReducer, useState} from "react";
 import axios from "axios";
-import "./App.css";
-import * as temp_data from "./temporary_data.js";
-import * as utils from "./utils.js";
-import {AppNavbar} from "./navbar.js";
-import {CreateBox} from "./creation_box.js"
-import {Credits} from "./credits.js"
-import {PatientBox} from "./patient_box.js"
-import {ChecklistItem} from "./item.js"
-import {SectionTitle} from "./section_title.js";
-import {ValidationButton} from "./validation_button";
-import {AlertsBox} from "./alerts_box";
-import {Title} from "./title";
-import {Home} from "./home";
+import "./styles/App.css";
+import * as temp_data from "./utils/temporary_data.js";
+import * as utils from "./utils/utils.js";
+import {AppNavbar} from "./components/navbar.js";
+import {CreateBox} from "./components/creation_box.js"
+import {Credits} from "./components/credits.js"
+import {PatientBox} from "./components/patient_box.js"
+import {ChecklistItem} from "./components/item.js"
+import {SectionTitle} from "./components/section_title.js";
+import {ValidationButton} from "./components/validation_button";
+import {AlertsBox} from "./components/alerts_box";
+import {Title} from "./components/title";
+import {Home} from "./components/home";
 import * as calls from "./calls";
-import {CountingTable} from "./couting_table";
-import QrcodeScanner from "./qrcodescanner";
-import {UserBox} from "./user_box";
+import {CountingTable} from "./components/couting_table";
+import QrcodeScanner from "./components/qrcodescanner";
+import {UserBox} from "./components/user_box";
 import {AppSidebar} from "./sidebar";
 
 /*Main Function
@@ -29,7 +29,7 @@ export default function App() {
 
   /******* Variables declaration and initialization ********/
 
-  const is_local = true
+  const is_local = false
 
   /*Function needed (at the moment), to force the components to update when needed*/
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -198,7 +198,7 @@ export default function App() {
   /* Function that switch current patient the patient with id
   * */
   function switchPatient (id) {
-    calls.getpatient(is_local,id,setCurrentPatient,setScanValueError())
+    calls.getpatient(is_local,id,setCurrentPatient,setScanValueError)
   }
 
   /* Function that switch current user to the user with id
@@ -326,7 +326,8 @@ export default function App() {
                   forceUpdate,
                   currentQuestion,
                   setCurrentQuestion,
-                  reset
+                  reset,
+                  is_local
                 }} />
                 : null}
               <div>{homeMode ?

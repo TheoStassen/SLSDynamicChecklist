@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as mathjs from 'mathjs';
 import ReactDataSheet from 'react-datasheet';
 // Be sure to include styles at some point, probably during your bootstrapping
-import './react-datasheet.css';
+import '../styles/react-datasheet.css';
 import {result} from "lodash/object";
 
 export class CountingTable extends React.Component {

@@ -1,5 +1,5 @@
 import React from "react";
-import * as utils from "./utils";
+import * as utils from "../utils/utils";
 
 function SectionTitle ({section_title, index}) {
 

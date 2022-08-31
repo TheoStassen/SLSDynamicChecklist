@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import * as utils from "./utils";
+import * as utils from "../utils/utils";
 import Modal from 'react-bootstrap/Modal'
-import * as temp_data from "./temporary_data";
+import * as temp_data from "../utils/temporary_data";
 import {Button} from "react-bootstrap";
 import axios from "axios";
 

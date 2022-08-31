@@ -1,8 +1,8 @@
 import React, {useEffect} from "react";
-import * as utils from "./utils";
-import * as temp_data from "./temporary_data";
+import * as utils from "../utils/utils";
+import * as temp_data from "../utils/temporary_data";
 import axios from "axios";
-import * as calls from "./calls";
+import * as calls from "../calls";
 
 /*Component for the selection of the current patient
 * -patientList : list of all patients

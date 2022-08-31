@@ -1,10 +1,11 @@
 import BootstrapSelect from "react-bootstrap-select-dropdown";
-import * as utils from "./utils";
+import * as utils from "../utils/utils";
 import React, {useEffect, useState} from "react";
-import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, checklist_to_json,} from "./utils";
-import * as temp from "./temporary_data";
-import * as temp_data from "./temporary_data";
+import {list_possible_answer, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, checklist_to_json,} from "../utils/utils";
+import * as temp from "../utils/temporary_data";
+import * as temp_data from "../utils/temporary_data";
 import axios from "axios";
+import * as calls from "../calls"
 
 /* Component for the creation mode box
 * -checklist: current checklist (state variable)
@@ -19,7 +20,7 @@ import axios from "axios";
 * */
 function CreateBox ({props}) {
 
-  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, currentQuestion, setCurrentQuestion, reset} = props
+  let {checklist, setChecklist, checklistList, setChecklistList, checklistId, setChecklistId, forceUpdate, currentQuestion, setCurrentQuestion, reset, is_local} = props
 
   /* State variables used only in creation mode
   * -currentParentQuestion : the question that is parent of the current question
@@ -41,39 +42,16 @@ function CreateBox ({props}) {
   let [isAltAnswers, setIsAltAnswers] = useState(false)
 
   const swapchecklist = (checklist_list, checklist_id) => {
-    let checklist_array = temp_data.checklist_arrays[checklist_id-1] // Il faudra un get ici aussi
-    // let checklist_array = response.data.data.items
-    checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
-    checklist.name = checklist_list.filter(elm => elm.id === checklist_id)[0].name
-    checklist.person = checklist_list.filter(elm => elm.id === checklist_id)[0].person
-    checklist.counter = checklist_list.filter(elm => elm.id === checklist_id)[0].counter
-    setChecklist(checklist)
-    setChecklistId(checklist_id)
-    setCurrentQuestion(checklist.values[0])
-    reset()
-    setCurrentParentQuestion(checklist)
-    setCurrentName(checklist.values[0].name)
-    setCurrentComment(checklist.values[0].comment)
-    setCurrentSectionTitle(checklist.values[0].section_title ? checklist.values[0].section_title : null)
-    setTempPreCheck({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
-
+    calls.getchecklist_creation_mode(is_local, checklist_id, checklist, setChecklist, checklist_list,
+      setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
+      setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck)
   }
 
 
   useEffect(() => {
-    // ici il faut call la patient list, pas checklist list
-    // axios.get('http://checklists.metoui.be/api/checklists')
-    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
-      .then(function(response) {
-        console.log(response)
-        let checklist_list = temp_data.paths[1].checklists
-        let checklist_id = checklist_list[0].id
-
-        if (checklist_list && checklist_list.length) {
-          setChecklistList(checklist_list, checklist_list)
-          swapchecklist(checklist_list, checklist_id)
-        }
-      })
+    calls.getchecklists(is_local, checklist, setChecklist,
+      setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
+      setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck, setChecklistList)
   }, [])
 
   console.log("main", currentQuestion)
