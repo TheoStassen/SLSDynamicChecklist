@@ -6,6 +6,7 @@ import * as temp from "../utils/temporary_data";
 import * as temp_data from "../utils/temporary_data";
 import axios from "axios";
 import * as calls from "../calls"
+import {putchecklist} from "../calls";
 
 /* Component for the creation mode box
 * -checklist: current checklist (state variable)
@@ -343,14 +344,7 @@ function CreateBox ({props}) {
 
     console.log(updated_checklist)
 
-    // Inform that we want to add a new checklist and receive in response the new checklist list
-    axios.put('http://checklists.metoui.be/api/checklists/'+checklistId, updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
-      .then(function(response){
-
-        //Must handle incoming data
-        swapchecklist(checklistList, checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
-        console.log("add checklist get call and set finished")
-      });
+    calls.putchecklist(swapchecklist, checklistList, checklist_id,updated_checklist)
   }
 
   const addchecklist = () => {

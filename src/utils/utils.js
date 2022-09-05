@@ -164,45 +164,6 @@ function checklist_tree_to_flat_rec(item, array, parent_id, position){
 }
 
 
-function checklist_flat_to_tree(checklist_array, checklist_id){
-  let root_item = {
-    checklist_id:checklist_id,
-    id:-1,
-    num_values:[],
-    values:[]
-  }
-  return checklist_flat_to_tree_rec(root_item, checklist_array)
-}
-
-function checklist_flat_to_tree_rec(item, array){
-  let child_array = array.filter(elm => elm[2] === item.id)
-  child_array.sort(function(a, b){return a[3] - b[3]})
-  // console.log(array)
-  // console.log(child_array)
-  if (!child_array.length){
-    return item
-  }
-  for (let i=0; i< child_array.length; i++){
-    const elm = child_array[i]
-    let new_item = {
-      id: elm[0],
-      name : JSON.parse(elm[1]),
-      comment : JSON.parse(elm[4]),
-      section_title : JSON.parse(elm[5]),
-      cond : JSON.parse(elm[6]),
-      check : JSON.parse(elm[7]),
-      color : JSON.parse(elm[8]),
-      pre_check : JSON.parse(elm[9]),
-      importance : JSON.parse(elm[10]),
-      values:[]
-    }
-    new_item = checklist_flat_to_tree_rec(new_item, array)
-    item.values.push(new_item)
-  }
-  return item
-}
-
-
 // function checklist_flat_to_tree(checklist_array, checklist_id){
 //   let root_item = {
 //     checklist_id:checklist_id,
@@ -214,8 +175,8 @@ function checklist_flat_to_tree_rec(item, array){
 // }
 //
 // function checklist_flat_to_tree_rec(item, array){
-//   let child_array = array.filter(elm => elm.parent_itemId === item.id)
-//   child_array.sort(function(a, b){return a.position - b.position})
+//   let child_array = array.filter(elm => elm[2] === item.id)
+//   child_array.sort(function(a, b){return a[3] - b[3]})
 //   // console.log(array)
 //   // console.log(child_array)
 //   if (!child_array.length){
@@ -223,25 +184,64 @@ function checklist_flat_to_tree_rec(item, array){
 //   }
 //   for (let i=0; i< child_array.length; i++){
 //     const elm = child_array[i]
-//     console.log(elm)
 //     let new_item = {
-//       id: elm.itemId,
-//       name : elm.name,
-//       comment : elm.comment,
-//       section_title : elm.section_title,
-//       cond :  JSON.parse(elm.cond),
-//       check : JSON.parse(elm.check),
-//       color : JSON.parse(elm.color),
-//       pre_check : JSON.parse(elm.pre_check),
-//       importance : JSON.parse(elm.importance),
+//       id: elm[0],
+//       name : JSON.parse(elm[1]),
+//       comment : JSON.parse(elm[4]),
+//       section_title : JSON.parse(elm[5]),
+//       cond : JSON.parse(elm[6]),
+//       check : JSON.parse(elm[7]),
+//       color : JSON.parse(elm[8]),
+//       pre_check : JSON.parse(elm[9]),
+//       importance : JSON.parse(elm[10]),
 //       values:[]
 //     }
 //     new_item = checklist_flat_to_tree_rec(new_item, array)
 //     item.values.push(new_item)
-//     console.log("new item", new_item)
 //   }
 //   return item
 // }
+
+
+function checklist_flat_to_tree(checklist_array, checklist_id){
+  let root_item = {
+    checklist_id:checklist_id,
+    id:-1,
+    num_values:[],
+    values:[]
+  }
+  return checklist_flat_to_tree_rec(root_item, checklist_array)
+}
+
+function checklist_flat_to_tree_rec(item, array){
+  let child_array = array.filter(elm => elm.parent_itemId === item.id)
+  child_array.sort(function(a, b){return a.position - b.position})
+  // console.log(array)
+  // console.log(child_array)
+  if (!child_array.length){
+    return item
+  }
+  for (let i=0; i< child_array.length; i++){
+    const elm = child_array[i]
+    console.log(elm)
+    let new_item = {
+      id: elm.itemId,
+      name : elm.name,
+      comment : elm.comment,
+      section_title : elm.section_title,
+      cond :  JSON.parse(elm.cond),
+      check : JSON.parse(elm.check),
+      color : JSON.parse(elm.color),
+      pre_check : JSON.parse(elm.pre_check),
+      importance : JSON.parse(elm.importance),
+      values:[]
+    }
+    new_item = checklist_flat_to_tree_rec(new_item, array)
+    item.values.push(new_item)
+    console.log("new item", new_item)
+  }
+  return item
+}
 
 
 export {list_possible_answer_trad, list_possible_answer, list_possible_num_var_trad, list_possible_num_var, list_possible_op, trad_answer, trad_num_var, date_to_age, CsvGenerator, simple_operation, checklist_to_json, checklist_tree_to_flat, checklist_flat_to_tree}

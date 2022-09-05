@@ -17,6 +17,10 @@ function UserBox ({props}) {
     onNewScanResult(temp_data.users[currentUser.id].user_code)
   }
 
+  useEffect(() =>{
+    calls.getusers(is_local, setUserList)
+  }, [])
+
 
   /*Return the patient box elements*/
   return (

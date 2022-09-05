@@ -44,7 +44,7 @@ function Home ({checklistList, swapchecklist, scanValue, currentPatient, is_loca
         {checklistList.map( (checklist, index) => (
           <div className={"list-group-item shadow-sm " + (list_length < 3 ? "col-sm-3 ":"col-sm-6 mx-auto list-group-item-rounded ") + (checklist.fill ? "iq-bg-success":"iq-bg-danger")}>
             <h4>Checklist n° {checklist.id}</h4>
-            <p>{checklist.name}</p>
+            <p>{checklist.title}</p>
             <button className=" btn btn-primary m-2" type="button" onClick={function (){if (check_if_fillable(checklist.id)) swapchecklist(checklist.id) }}>
             Remplir
             </button>

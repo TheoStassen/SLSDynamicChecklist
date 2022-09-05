@@ -17,7 +17,6 @@ import * as calls from "./calls";
 import {CountingTable} from "./components/couting_table";
 import QrcodeScanner from "./components/qrcodescanner";
 import {UserBox} from "./components/user_box";
-import {AppSidebar} from "./sidebar";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -50,6 +49,8 @@ export default function App() {
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * -warningId : id of the first question of the current checklist not filled after validation button has been pushed
   * */
+  let [loginInfo, setLoginInfo] = useState({username : "user1", password : "password1"})
+  let [isLogin, setIsLogin] = useState(false)
   let [userList, setUserList ] = useState(null)
   let [userCode, setUserCode] = useState(null)
   let [currentUser, setCurrentUser] = useState(null)
@@ -133,24 +134,10 @@ export default function App() {
   * */
   useEffect(() => {
     onNewScanResult = onNewScanResult.bind(this);
-    calls.getusers(is_local, setUserList)
-    calls.getpatients(is_local, setPatientList)
+
+    calls.postconnection(is_local,loginInfo,setLoginInfo, setIsLogin)
   }, [])
 
-  useEffect(() => {
-    // If the user code has been scanned but no user is set, we must check the user list and set user or set error
-    if (userCode && !currentUser){
-      const current_users = userList.filter(elm => elm.user_code === userCode)
-
-      if (current_users.length){
-        setCurrentUser(userList ? current_users[0]: {"id":0, user_code:"1234567", lastname: "Jonas", firstname: "Michel", role: "Assistant Anést." })
-      }
-      else{
-        setScanValueError(userCode)
-        setUserCode(null)
-      }
-    }
-  })
 
   /******* Main functions declaration ********/
 
@@ -185,7 +172,7 @@ export default function App() {
     }
     let result_table = []
     for (const [key, value] of Object.entries(result)){
-      result_table.push({item_id:key, name:value.name, answer:value.answer, is_pb: !!pbresult[key]})
+      result_table.push({item_id:key, name:value.name, answer:JSON.stringify(value.answer), is_pb: !!pbresult[key]})
     }
     let final_result = {checklist_id: checklistId, journey_id:pathId, user_id:currentUser.id, patient_id:currentPatient.id, answers : result_table}
 
@@ -212,17 +199,13 @@ export default function App() {
   function onNewScanResult(decodedText) {
     console.log(decodedText, scanValue)
     if (!userValidated){
-      console.log("entered scan result", decodedText, currentUser.user_code)
       if (currentUser.user_code === decodedText){
         setUserValidated(true)
-      }
-      else{
+      } else{
         setScanValueError(decodedText)
       }
     }
     else{
-      console.log("write decoded scan", decodedText)
-
       if (currentPatient.patient_code === decodedText) {
         calls.getjourney(is_local, currentPatient, setPathId,setChecklistList)
       } else {
@@ -279,8 +262,7 @@ export default function App() {
   *     ~ Validation section (if not create mode)
   */
   return (
-    <div>
-      <AppSidebar/>
+    <div>{isLogin ? (<div>
       <div className="min-vh-100 content-page bg-color-custom">
         <div>
           {<AppNavbar props = {{
@@ -404,7 +386,7 @@ export default function App() {
                   </div> : null}
 
                   {checklist ? <div>
-                    {checklist.counter === false ?
+                    {false === false ?
                       <div className={"container p-0 border-bottom border shadow-sm rounded "}>
                         {values ? values.map((i, index) => (
                             <div>
@@ -457,8 +439,7 @@ export default function App() {
           </nav>
         </div>
       </div>
-    </div>
-
+    </div>) : null} </div>
   );
 }
 

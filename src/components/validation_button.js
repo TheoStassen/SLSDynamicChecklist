@@ -38,7 +38,7 @@ function ValidationButton ({visibleList, result, import_result, checklist, setWa
   function handlevalidation (){
 
     import_result()
-    checklistList.filter(elm => elm.checklist_id === checklistId)[0].fill = true
+    checklistList.filter(elm => elm.id === checklistId)[0].fill = true
     setChecklistList(checklistList)
     handleShow()
     console.log("handle validation end")

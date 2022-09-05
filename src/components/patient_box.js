@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import * as utils from "../utils/utils";
 import * as temp_data from "../utils/temporary_data";
 import * as calls from "../calls";
@@ -22,6 +22,10 @@ function PatientBox ({props}) {
     //   setPathId(path_id)
     // }
   }
+
+  useEffect(()=> {
+    calls.getpatients(is_local, setPatientList)
+  }, [])
 
   /*Return the patient box elements*/
   return (
