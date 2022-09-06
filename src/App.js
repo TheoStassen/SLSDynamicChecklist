@@ -49,7 +49,7 @@ export default function App() {
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * -warningId : id of the first question of the current checklist not filled after validation button has been pushed
   * */
-  let [loginInfo, setLoginInfo] = useState({username : "user1", password : "password1"})
+  let [loginInfo, setLoginInfo] = useState({username : "samimetoui@gmail.com", password : "Test123."})
   let [isLogin, setIsLogin] = useState(false)
   let [userList, setUserList ] = useState(null)
   let [userCode, setUserCode] = useState(null)

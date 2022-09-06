@@ -14,7 +14,8 @@ export default class ApiService {
       headers: {
         Authorization: `Bearer ${JSON.parse(
           window.localStorage.getItem("token")
-        )}`
+        )}`,
+
       }
     });
   }
