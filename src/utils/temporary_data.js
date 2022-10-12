@@ -415,7 +415,7 @@ const checklist_arrays = [
       -1,
       0,
       null,
-      '"Infirmière de l\'unité de soin qui prépare le patient"',
+      '"Infirmière BO qui accueille le patient"',
       '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
@@ -836,7 +836,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["hour"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ],
@@ -849,7 +849,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["list_room"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ],
@@ -1005,7 +1005,7 @@ const checklist_arrays = [
       '"Anésthesiste"',
       '{"yes":[],"no":[],"num":[]}',
       '["list_anesthesia"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ],
@@ -1215,7 +1215,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["hour"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ],
@@ -1299,7 +1299,7 @@ const checklist_arrays = [
     ],
     [
       9,
-      '"Lesquelles ?_"',
+      '"Lesquelles ?_Maladies"',
       8,
       0,
       null,
@@ -1491,7 +1491,7 @@ const checklist_arrays = [
       null,
       '{"yes":[],"no":[],"num":[]}',
       '["signature"]',
-      '[0,1]',
+      '[0]',
       null,
       0
     ],
@@ -1535,26 +1535,26 @@ const checklist_arrays = [
       0
     ],
     [
-      18,
+      8,
       '"Tout OK ?"',
       -1,
       5,
       null,
       '"Débriefing"',
-      '{"yes":[0],"no":[],"num":[]}',
+      '{"yes":[],"no":[],"num":[]}',
       '["yes","no"]',
       '[0,1]',
       null,
       0
     ],
     [
-      19,
+      9,
       '"Quels problèmes rencontrés ? "',
-      18,
+      8,
       0,
       null,
       null,
-      '{"yes":[],"no":[18],"num":[]}',
+      '{"yes":[],"no":[8],"num":[]}',
       '["list_problems"]',
       '[0]',
       null,
@@ -1773,26 +1773,26 @@ const paths = {
     patient_id: 1,
     date : "01/01/2022",
     checklists: [
-      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: false, counter:false},
-      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
-      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false , counter:false},
-      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
-      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: false,  type:2},
+      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false,  type:2 },
+      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false ,  type:1},
+      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, type:0 },
+      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false,  type:1 },
     ]},
   2: {
     path_id: 2,
     patient_id:2,
     date : "01/01/2022",
     checklists: [
-      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
-      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: true, counter:false },
-      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
-      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
-      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true,  type:2 },
+      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: true,  type:2 },
+      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false,  type:1 },
+      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, type:0 },
+      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false,  type:1 },
 
     ]},
   3: {
@@ -1800,52 +1800,52 @@ const paths = {
     patient_id:3,
     date : "01/01/2022",
     checklists: [
-      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
-      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
-      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
-      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
-      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true,  type:2 },
+      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false,  type:2 },
+      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false,  type:1 },
+      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, type:0 },
+      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false,  type:1 },
     ]},
   4: {
     path_id: 4,
     patient_id:4,
     date : "01/01/2022",
     checklists: [
-      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
-      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
-      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
-      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
-      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true,  type:2 },
+      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false,  type:2 },
+      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false,  type:1 },
+      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, type:0 },
+      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false,  type:1 },
     ]},
   5: {
     path_id: 5,
     patient_id:5,
     date : "01/01/2022",
     checklists: [
-      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
-      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
-      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
-      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
-      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true,  type:2 },
+      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false,  type:2 },
+      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false,  type:1 },
+      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, type:0 },
+      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false,  type:1 },
     ]},
   6: {
     path_id: 6,
     patient_id:6,
     date : "01/01/2022",
     checklists: [
-      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true, counter:false },
-      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false, counter:false },
-      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false, counter:false },
-      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:true },
-      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, counter:false },
-      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false, counter:false },
+      {id: 1, title: "Unité de soins", person: "Inf. de l'US qui prépare le patient ", fill: true,  type:2 },
+      {id: 2, title: "Accueil Patient BO", person: "Inf. BO qui accueille le patient", fill: false,  type:2 },
+      {id: 3, title: "Avant Induction Anésthésique", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anést.", fill: false,  type:1 },
+      {id: 4, title: "Avant Incision chirurgicale", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 5, title: "Compte des compresses", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false, type:0 },
+      {id: 6, title: "Avant la sortie de la salle d'opération", person: "Chirurgien/Inf. \n Circul./Instrumentiste/Anest.", fill: false,  type:1 },
+      {id: 7, title: "Signatures", person: "Chirurgiens/Anésthésistes/Infirmières", fill: false,  type:1 },
     ]}
 }
 
@@ -1855,8 +1855,15 @@ const user_list = [
 ]
 
 const users = {
-  1: {"id":1, user_code:"1234567", lastname: "Jonas", firstname: "Michel", role: "Assistant Anést."},
-  2: {"id":2, user_code:"7654321", lastname: "Van Acker", firstname: "Denise", role: "Infirmière US"}
+  1: {"id":1, user_code:"1234567", lastname: "Jonas", firstname: "Michel", role_name: "Assistant Anést.", role_id: 1},
+  2: {"id":2, user_code:"7654321", lastname: "Van Acker", firstname: "Denise", role_name: "Infirmière US", role_id: 2}
+}
+
+// Roles (de users) : 1 (rôle étendu), 2 (rôle plus limité)
+// Types (de checklist) : 0 (Comptage), 1 (Classique), 2 (étendue)
+const role_cross_type = {
+  1 : [0,1,2],
+  2 : [0,1]
 }
 
 const patient_list = [
@@ -1887,7 +1894,7 @@ const patients = {
     "type":"minor", "intervention_name":"Varices"},
   6: {"id": 6, "patient_code":"78451236", "lastname": "Van den Broucke", "firstname": "Kevin", "gender": "M", "dateofbirth": "01/01/1970",
     optional_data: {"diabetic":"faux", "difficult_intubation":"faux", "insulin":"faux", "xarelto":"faux"}, photo: "photos/photo6.jpg", "consent_pdf":"photos/pdf1.jpg",
-    "type":"minor", "intervention_name":"Varice"},
+    "type":"minor", "intervention_name":"Varices"},
 }
 
 const lists = {
@@ -1911,4 +1918,4 @@ const lists_trad = {"meds":"Médicaments", "diseases":"Maladies", "patient-state
 const alerts = [
 ]
 
-export {checklist_arrays, path_list, paths, patient_list, patients, user_list, users, lists, lists_trad, alerts}
+export {checklist_arrays, path_list, paths, patient_list, patients, user_list, users, role_cross_type, lists, lists_trad, alerts}

@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal'
 import * as temp_data from "../utils/temporary_data";
 import {Button} from "react-bootstrap";
 import axios from "axios";
+import * as calls from "../calls";
 
 /* Component of the upper navbar of the webpage
 * -setCreationMode: bool indicating if we are in creation mode set function
@@ -15,7 +16,7 @@ import axios from "axios";
 * */
 function AppNavbar ({props}) {
 
-  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError, setCurrentUser,setUserValidated} = props;
+  let {creationMode, setCreationMode, creditMode, setCreditMode, setCommentMode, commentMode, setDebugMode, debugMode, trimmedCanvasUrl, checklistList, swapchecklist, reset, forceUpdate, import_csv_result, result, setCurrentQuestion, checklist, homeMode, setHomeMode, setChecklistList, setScanValue, setCurrentPatient, setUserCode, setScanValueError, setCurrentUser,setUserValidated, is_local, currentPatient, setPathId} = props;
 
   /*Function triggered when we want to download the signature as .png file if there is a canvas url data*/
   const image_download = () => {
@@ -75,6 +76,9 @@ function AppNavbar ({props}) {
       setCurrentPatient(null)
       setUserCode(null)
       setCurrentUser(null)
+    }
+    else{
+      calls.getjourney(is_local, currentPatient, setCurrentPatient, setPathId,setChecklistList)
     }
   }
 

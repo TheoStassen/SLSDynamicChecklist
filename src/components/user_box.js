@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import * as utils from "../utils/utils";
 import * as temp_data from "../utils/temporary_data";
 import axios from "axios";
@@ -13,12 +13,14 @@ function UserBox ({props}) {
 
   let {userList, onNewScanResult, switchUser, currentUser, is_local, setUserList} = props
 
+  let [errorCode, setErrorCode] = useState(null)
+
   function debug_allow_user() {
     onNewScanResult(temp_data.users[currentUser.id].user_code)
   }
 
   useEffect(() =>{
-    calls.getusers(is_local, setUserList)
+    calls.getusers(is_local, setUserList, setErrorCode)
   }, [])
 
 
@@ -41,7 +43,10 @@ function UserBox ({props}) {
                   <li key={index}><label className="dropdown-item " onClick={() => switchUser(i.id)}>
                     {i.firstname}&nbsp;{i.lastname}</label>
                   </li>
-                )) : null}
+                ))
+                  :
+                  <li><label className="dropdown-item "> Pas d'utilisateurs</label></li>
+                }
                 <li><label className="dropdown-item text-center m-0 " id="dropdownMenuButton1" data-toggle="dropdown">
                   <div data-icon="W" className="icon"/></label>
                 </li>
@@ -52,6 +57,11 @@ function UserBox ({props}) {
           <button className="btn btn-warning btn-round mt-2" type="button" onClick={function (){calls.getusers(is_local, setUserList)}}>
             <div data-icon="Z" className="icon pt-1"></div>
           </button>
+          {errorCode ?
+            <div className={"iq-card mx-auto text-center p-2 shadow-sm border justify-content-center mt-2"}>
+              <h6 className="card-text text-danger m-0 p-0"> <div data-icon="&#xe063;" className="icon text-danger"> Aucun utilisateur n'est trouvé, problème de connexion ("{errorCode}") </div></h6>
+            </div>
+          : null}
           {currentUser ? <h4 className="card-title text-secondary mt-4 mb-0">Scannez le QR code correspondant</h4> : null }
           {currentUser ? <h4 className="card-title text-secondary"><div data-icon="k" className="icon"></div></h4> : null }
 

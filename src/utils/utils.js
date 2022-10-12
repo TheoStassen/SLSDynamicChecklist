@@ -28,9 +28,9 @@ const trad_num_var = (num_var) => {
 
 
 function date_to_age (date){
-  let result = date.split("/")
+  let result = date.split("-")
   let current_year = new Date()
-  return current_year.getFullYear() - result[2]
+  return current_year.getFullYear() - result[0] //TODO : is_local
 }
 
 /*Function that make the operation of type "is val1 op val2 ?' with op the operator in string input*/

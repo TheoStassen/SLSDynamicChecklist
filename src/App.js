@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer, useState} from "react";
-import axios from "axios";
+import axios from "./axios";
 import "./styles/App.css";
 import * as temp_data from "./utils/temporary_data.js";
 import * as utils from "./utils/utils.js";
@@ -17,6 +17,7 @@ import * as calls from "./calls";
 import {CountingTable} from "./components/couting_table";
 import QrcodeScanner from "./components/qrcodescanner";
 import {UserBox} from "./components/user_box";
+import {Review} from "./components/review";
 
 /*Main Function
 * -Declare all the variables needed in different component
@@ -49,12 +50,12 @@ export default function App() {
   * -isPreCheckDone : array containing the id's of the questions for which the precheck as been made
   * -warningId : id of the first question of the current checklist not filled after validation button has been pushed
   * */
-  let [loginInfo, setLoginInfo] = useState({username : "samimetoui@gmail.com", password : "Test123."})
+  let [loginInfo, setLoginInfo] = useState({username : "theo.stassen@hepl.be", password : "Test123."})
   let [isLogin, setIsLogin] = useState(false)
-  let [userList, setUserList ] = useState(null)
+  let [userList, setUserList ] = useState([])
   let [userCode, setUserCode] = useState(null)
   let [currentUser, setCurrentUser] = useState(null)
-  let [patientList, setPatientList ] = useState(null)
+  let [patientList, setPatientList ] = useState([])
   let [currentPatient, setCurrentPatient] = useState(null)
   let [checklistId, setChecklistId] = useState(-1)
   let [pathId, setPathId] = useState(-1)
@@ -86,6 +87,7 @@ export default function App() {
   let [forceValidationMode, setForceValidationMode] = useState(false)
   let [precheckMode, setPrecheckMode] = useState(true)
   let [userValidated, setUserValidated] = useState(false)
+  let [reviewMode, setReviewMode] = useState(false)
 
   /* Signature component variables
   * -trimmedCanvasUrl : variable containing the canvas url data of the signature
@@ -126,17 +128,24 @@ export default function App() {
       }
     }
     numDict["age"] = utils.date_to_age(numDict["dateofbirth"])
+    console.log("numdict", numDict)
   }
 
 
   /* Initialization function, activated only when the App component is created, at site opening,
   * -> Get the different lists needed at start (users, patients)
   * */
+  let [loginErrorCode, setLoginErrorCode] = useState(null)
   useEffect(() => {
     onNewScanResult = onNewScanResult.bind(this);
 
-    calls.postconnection(is_local,loginInfo,setLoginInfo, setIsLogin)
+    if (!is_local) calls.postconnection(is_local,loginInfo,setLoginInfo, setIsLogin, setLoginErrorCode)
+    else setIsLogin(true)
+
+    console.log(navigator)
   }, [])
+
+
 
 
   /******* Main functions declaration ********/
@@ -156,9 +165,10 @@ export default function App() {
   /* Function that swap the current checklist to the checklist with checklist_id and resets
   * state variables that depends of the current checklist
   * */
+  let [currentEvals, setCurrentEvals] = useState(null)
+  let [checklistErrorCode, setChecklistErrorCode] = useState(null)
   const swapchecklist = (checklist_id) => {
-
-    calls.getchecklist(is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset )
+    calls.getchecklist(is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset, pathId, currentEvals, setCurrentEvals, setChecklistErrorCode)
     return checklist
   }
 
@@ -172,13 +182,22 @@ export default function App() {
     }
     let result_table = []
     for (const [key, value] of Object.entries(result)){
-      result_table.push({item_id:key, name:value.name, answer:JSON.stringify(value.answer), is_pb: !!pbresult[key]})
+      result_table.push({item_id:key, name:value.name, importance:value.importance, answer:JSON.stringify(value.answer), is_pb: !!pbresult[key]})
     }
-    let final_result = {checklist_id: checklistId, journey_id:pathId, user_id:currentUser.id, patient_id:currentPatient.id, answers : result_table}
+    let is_blocking = result_table.some(item => {return item.importance === 1 && item.is_pb === true})
+
+    let final_result = {
+      checklist_id: checklistId,
+      journey_id:pathId,
+      user_id:currentUser.id,
+      patient_id:currentPatient.id,
+      answers : result_table,
+      is_blocking : is_blocking}
+    console.log(result, final_result)
 
     calls.postevaluation(is_local,final_result)
-    let csvGenerator = new utils.CsvGenerator(result_table_csv, 'my_csv.csv');
-    csvGenerator.download(true);
+    // let csvGenerator = new utils.CsvGenerator(result_table_csv, 'my_csv.csv');
+    // csvGenerator.download(true);
 
   }
 
@@ -196,8 +215,10 @@ export default function App() {
 
   /* Function triggered after the scan of a user/patient code
   * */
+  let [journeyErrorCode, setJourneyErrorCode] = useState(null)
   function onNewScanResult(decodedText) {
     console.log(decodedText, scanValue)
+    window.scrollTo(0, 0);
     if (!userValidated){
       if (currentUser.user_code === decodedText){
         setUserValidated(true)
@@ -207,7 +228,7 @@ export default function App() {
     }
     else{
       if (currentPatient.patient_code === decodedText) {
-        calls.getjourney(is_local, currentPatient, setPathId,setChecklistList)
+        calls.getjourney(is_local, currentPatient, setCurrentPatient, setPathId,setChecklistList, setJourneyErrorCode)
       } else {
         setChecklistList([{}])
         setScanValueError(decodedText)
@@ -236,8 +257,8 @@ export default function App() {
 
   /******* Main return call ********/
 
-  console.log(currentUser)
-  console.log(numDict)
+  console.log("current user", currentUser)
+  console.log(checklistErrorCode)
 
   /* Return the different components.
   * We define also the background and a hidden bottom navbar to avoid problems with the background vertical limits
@@ -262,7 +283,7 @@ export default function App() {
   *     ~ Validation section (if not create mode)
   */
   return (
-    <div>{isLogin ? (<div>
+    <div>
       <div className="min-vh-100 content-page bg-color-custom">
         <div>
           {<AppNavbar props = {{
@@ -291,145 +312,168 @@ export default function App() {
             setUserCode,
             setScanValueError,
             setCurrentUser,
-            setUserValidated
+            setUserValidated,
+            is_local,
+            currentPatient,
+            setPathId
           }}/>}
-          {creditMode ?
-            <Credits props={null}/>
-            :
+          {isLogin ?
             <div>
-              {creationMode ?
-                <CreateBox props={{
-                  checklist,
-                  setChecklist,
-                  checklistList,
-                  setChecklistList,
-                  checklistId,
-                  setChecklistId,
-                  forceUpdate,
-                  currentQuestion,
-                  setCurrentQuestion,
-                  reset,
-                  is_local
-                }} />
-                : null}
-              <div>{homeMode ?
-                <div>{!(checklistList && checklistList.length)  ?
-                  <div>{!userValidated ?
-                      <div>
-                        <UserBox props={{
-                          userList,
-                          onNewScanResult,
-                          switchUser,
-                          currentUser,
-                          is_local,
-                          setUserList
-                        }} />
-                        {currentUser ?
-                          <div key={currentUser.id} className={"container p-2"}>
-                            <QrcodeScanner fps={10}
-                                           qrbox={250}
-                                           disableFlip={false}
-                                           qrCodeSuccessCallback={onNewScanResult}
-                                           scanValueError={scanValueError}
-                                           scanValue={null}
-                                           is_home={true}/>
-                          </div> : null}
-                      </div>
-                      :
-                      <div>
-                        <PatientBox props={{
-                          currentPatient,
-                          setCurrentPatient,
-                          setIsDict,
-                          setResult,
-                          setIsPreCheckDone,
-                          forceUpdate,
-                          patientList,
-                          switchPatient: switchPatient,
-                          setChecklistList,
-                          setPathId,
-                          onNewScanResult,
-                          is_local,
-                          numDict,
-                          setPatientList
-                        }} />
-                        {currentPatient ?
-                          <div key={currentPatient.id} className={"container p-2"}>
-                            <QrcodeScanner fps={10}
-                                           qrbox={250}
-                                           disableFlip={false}
-                                           qrCodeSuccessCallback={onNewScanResult}
-                                           scanValueError={scanValueError}
-                                           scanValue={null}
-                                           is_home={true}/>
-                          </div> : null}
-                      </div>
-                  }</div>
-                  :
-                  <Home checklistList={checklistList}
-                        swapchecklist={swapchecklist}
-                        scanValue={scanValue}
-                        currentPatient={currentPatient}
-                        is_local={is_local}/>
-                }</div>
+              {creditMode ?
+                <Credits props={null}/>
                 :
-                <div id={"title"}>
-                  {!creationMode ? <Title checklistList={checklistList}
-                                          checklistId={checklistId}
-                                          numDict={numDict}
-                                          currentPatient={currentPatient}
-                                          forceValidationMode={forceValidationMode}
-                                          setForceValidationMode={setForceValidationMode}
-                                          is_local={is_local}/> : null}
-                  {!creationMode ? <div>
-                      {alertList && Object.values(alertList).length ? <AlertsBox alertList={alertList}/> : null}
-                  </div> : null}
-
-                  {checklist ? <div>
-                    {false === false ?
-                      <div className={"container p-0 border-bottom border shadow-sm rounded "}>
-                        {values ? values.map((i, index) => (
+                <div>
+                      {creationMode ?
+                        <CreateBox props={{
+                        checklist,
+                        setChecklist,
+                        checklistList,
+                        setChecklistList,
+                        checklistId,
+                        setChecklistId,
+                        forceUpdate,
+                        currentQuestion,
+                        setCurrentQuestion,
+                        reset,
+                        is_local
+                      }} />
+                      : null}
+                      <div>{homeMode ?
+                        <div>{!(checklistList && checklistList.length || journeyErrorCode)  ?
+                          <div>{!userValidated ?
                             <div>
-                              {i.section_title ? <SectionTitle section_title={i.section_title} index={index}/> :
-                                <div className={"bg-primary " + (index ? " border-top" : "")}/>}
-                              <div
-                                className=
-                                  {"pb-3 px-3 pt-3 " +
-                                  (index === values.length - 1 ? "rounded rounded-0-top " : null) +
-                                  (index || i.section_title ? "" : " rounded rounded-0-bottom ") +
-                                  (i.importance ? " iq-bg-danger" : " bg-color-custom")}>
-                                <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i}
-                                               dicts={dicts}
-                                               forceUpdate={forceUpdate} values_filter_cond={values_filter_cond}
-                                               creationMode={creationMode}
-                                               currentId={currentQuestion ? currentQuestion.id : null}
-                                               warningId={warningId} precheckMode={precheckMode}
-                                               is_root={true} alertList={alertList}
-                                               scan_bookmark={next_scan_item_id === i.id}
-                                               checklist_name = {checklist.name}
-                                               is_local = {is_local}
-                                />
-                              </div>
-                            </div>))
+                              <UserBox props={{
+                                userList,
+                                onNewScanResult,
+                                switchUser,
+                                currentUser,
+                                is_local,
+                                setUserList
+                              }} />
+                              {currentUser ?
+                                <div key={currentUser.id} className={"container p-2"}>
+                                  <QrcodeScanner fps={10}
+                                                 qrbox={250}
+                                                 disableFlip={false}
+                                                 qrCodeSuccessCallback={onNewScanResult}
+                                                 scanValueError={scanValueError}
+                                                 scanValue={null}
+                                                 is_home={true}/>
+                                </div> : null}
+                            </div>
+                            :
+                            <div>
+                              <PatientBox props={{
+                                currentPatient,
+                                setCurrentPatient,
+                                setIsDict,
+                                setResult,
+                                setIsPreCheckDone,
+                                forceUpdate,
+                                patientList,
+                                switchPatient: switchPatient,
+                                setChecklistList,
+                                setPathId,
+                                onNewScanResult,
+                                is_local,
+                                numDict,
+                                setPatientList
+                              }} />
+                              {currentPatient ?
+                                <div key={currentPatient.id} className={"container p-2"}>
+                                  <QrcodeScanner fps={10}
+                                                 qrbox={250}
+                                                 disableFlip={false}
+                                                 qrCodeSuccessCallback={onNewScanResult}
+                                                 scanValueError={scanValueError}
+                                                 scanValue={null}
+                                                 is_home={true}/>
+                                </div> : null}
+                            </div>
+                          }</div>
                           :
-                          null}
-                      </div>
-                      :
-                      <CountingTable result={result} setResult={setResult}/>
-                    }</div> : null }
+                          <Home checklistList={checklistList}
+                                swapchecklist={swapchecklist}
+                                scanValue={scanValue}
+                                currentPatient={currentPatient}
+                                is_local={is_local}
+                                currentUser={currentUser}
+                                pathId={pathId}
+                                numDict={numDict}
+                                journeyErrorCode={journeyErrorCode}/>
+                        }</div>
+                        :
+                        <div id={"title"}>
+                          {!creationMode ? <Title checklistList={checklistList}
+                                                  checklistId={checklistId}
+                                                  numDict={numDict}
+                                                  currentPatient={currentPatient}
+                                                  forceValidationMode={forceValidationMode}
+                                                  setForceValidationMode={setForceValidationMode}
+                                                  is_local={is_local}/> : null}
+                          {!creationMode ? <div>
+                            {alertList && Object.values(alertList).length ? <AlertsBox alertList={alertList}/> : null}
+                          </div> : null}
 
-                  {!creationMode ? <ValidationButton visibleList={visibleList}
-                                                     result={result}
-                                                     import_result={import_result}
-                                                     checklist={checklist}
-                                                     setWarningId={setWarningId}
-                                                     checklistList={checklistList}
-                                                     setChecklistList={setChecklistList}
-                                                     checklistId={checklistId}
-                                                     forceValidationMode={forceValidationMode}/>   : null }
-                </div>
-              }</div>
+                          {checklistErrorCode === null && checklist ? <div>
+                            {checklist.type !== 0 ? // checklist.type !== 0
+                              <div className={"container p-0 border-bottom border shadow-sm rounded "}>
+                                {values ? values.map((i, index) => (
+                                    <div>
+                                      {i.section_title ? <SectionTitle section_title={i.section_title} index={index}/> :
+                                        <div className={"bg-primary " + (index ? " border-top" : "")}/>}
+                                      <div className=
+                                          {"pb-3 px-3 pt-3 " +
+                                            (index === values.length - 1 ? "rounded rounded-0-top " : null) +
+                                            (index || i.section_title ? "" : " rounded rounded-0-bottom ") +
+                                            (i.importance ? " iq-bg-danger" : " bg-color-custom")}>
+                                        <ChecklistItem key={JSON.stringify(checklistId) + i.id} init_items={checklist} item={i}
+                                                       dicts={dicts}
+                                                       forceUpdate={forceUpdate} values_filter_cond={values_filter_cond}
+                                                       creationMode={creationMode}
+                                                       currentId={currentQuestion ? currentQuestion.id : null}
+                                                       warningId={warningId} precheckMode={precheckMode}
+                                                       is_root={true} alertList={alertList}
+                                                       scan_bookmark={next_scan_item_id === i.id}
+                                                       checklist_name = {checklist.name}
+                                                       is_local = {is_local}
+                                        />
+                                      </div>
+                                    </div>))
+                                  :
+                                  null}
+                              </div>
+                              :
+                              <CountingTable result={result} setResult={setResult}/>
+                            }</div>
+                          :
+                          <div className={"container iq-card bg-white mx-auto mb-0 mt-2 p-2 text-center shadow-sm border justify-content-center "}>
+                            <div className={"card-body iq-card mx-auto my-3 text-center p-2 shadow-sm border justify-content-center"}>
+                              <h6 className="card-text text-danger m-0 p-0"> <div data-icon="&#xe063;" className="icon text-danger"> La checklist est introuvable, problème de connexion ("{checklistErrorCode}") </div></h6>
+                            </div>
+                          </div>
+                          }
+
+                          {!creationMode && checklistErrorCode === null && checklist ? <ValidationButton visibleList={visibleList}
+                                                             result={result}
+                                                             import_result={import_result}
+                                                             checklist={checklist}
+                                                             setWarningId={setWarningId}
+                                                             checklistList={checklistList}
+                                                             setChecklistList={setChecklistList}
+                                                             checklistId={checklistId}
+                                                             forceValidationMode={forceValidationMode}/>   : null }
+                        </div>
+                      }</div>
+                    </div>
+              }
             </div>
+            :
+            <div>{loginErrorCode? <div className={"container iq-card bg-white mx-auto mb-0 mt-2 p-2 text-center shadow-sm border justify-content-center "}>
+              <div className={"card-body iq-card mx-auto my-3 text-center p-2 shadow-sm border justify-content-center"}>
+                <h6 className="card-text text-danger m-0 p-0"> <div data-icon="&#xe063;" className="icon text-danger"> Impossible de se connecter ("{loginErrorCode}") </div></h6>
+              </div>
+            </div> : null}</div>
           }
         </div>
 
@@ -439,7 +483,7 @@ export default function App() {
           </nav>
         </div>
       </div>
-    </div>) : null} </div>
+    </div>
   );
 }
 

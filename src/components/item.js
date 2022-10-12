@@ -56,7 +56,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     // If is_check = true, it means that the state of the answer uncheck -> check,
     // so we add in result and clean questions that depends of this item being with another answer (as it is not the case anymore)
     if (is_check){
-      result[item.id]={name:item.name,answer:answer}
+      result[item.id]={name:item.name, importance:item.importance, answer:answer}
       delete pbresult[item.id]
       if (item.color[item.check.indexOf(answer)] === 1)
         pbresult[item.id] = {name:item.name,answer:answer,checklist_name:checklist_name}
@@ -80,7 +80,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /*Function triggered where the user enter a text in a text question. We update the result*/
   const handleOnChangeText = (event) => {
     const input_text = event.target.value;
-    result[item.id]={name:item.name,answer:input_text,checklist_name:checklist_name}
+    result[item.id]={name:item.name, importance:item.importance, answer:input_text,checklist_name:checklist_name}
     setResult(result)
     if (item.color[0] === 1){
       pbresult[item.id] = {name:item.name,answer:input_text}
@@ -91,7 +91,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   /*Function triggered where the user enter a text in a text question. We update the result*/
   const handleOnChangedDefaultText = (event) => {
     const input_text = event;
-    result[item.id]={name:item.name,answer:input_text,checklist_name:checklist_name}
+    result[item.id]={name:item.name, importance:item.importance, answer:input_text,checklist_name:checklist_name}
     setResult(result)
     if (item.color[0] === 1){
       pbresult[item.id] = {name:item.name,answer:input_text}
@@ -103,7 +103,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   const handleOnChangeCurrentDate = () => {
     let current_date = new Date()
     let current_date_str = current_date.toISOString().split("T")[0]
-    result[item.id]={name:item.name, answer:current_date_str,checklist_name:checklist_name}
+    result[item.id]={name:item.name, importance:item.importance,  answer:current_date_str,checklist_name:checklist_name}
     setResult(result)
     console.log(current_date_str)
     return current_date_str
@@ -112,7 +112,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
   const handleOnChangeCurrentTime = () => {
     let current_date = new Date()
     let current_time_str = current_date.toTimeString().split(" ")[0].substring(0,5)
-    result[item.id]={name:item.name, answer:current_time_str,checklist_name:checklist_name}
+    result[item.id]={name:item.name, importance:item.importance,  answer:current_time_str,checklist_name:checklist_name}
     setResult(result)
     console.log(current_time_str)
     return current_time_str
@@ -126,7 +126,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     else{
       setIsOther(false)
     }
-    result[item.id]={name:item.name,answer:input_answer}
+    result[item.id]={name:item.name, importance:item.importance, answer:input_answer}
     setResult(result)
     if (item.color[0] === 1 && !(selectedOptions.selectedKey.includes("Aucune") || selectedOptions.selectedKey.includes("Aucun") )){
       pbresult[item.id] = {name:item.name,answer:input_answer,checklist_name:checklist_name}
@@ -144,7 +144,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     let input_answer = result[item.id].answer
     if (isOther) input_answer.pop() // With the first letter typed, remove the "other" field, when you continue to type, remove the previous word and add the new
     input_answer.push(input_text)
-    result[item.id]={name:item.name,answer:input_answer}
+    result[item.id]={name:item.name, importance:item.importance, answer:input_answer}
     setResult(result)
   };
 

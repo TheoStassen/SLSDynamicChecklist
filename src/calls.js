@@ -1,8 +1,10 @@
 import ApiService from "./axios";
 import * as temp_data from "./utils/temporary_data";
 import * as utils from "./utils/utils";
+import axios from "axios";
+import {useState} from "react";
 
-const postconnection = (is_local, loginInfo, setLoginInfo, setIsLogin) => {
+const postconnection = (is_local, loginInfo, setLoginInfo, setIsLogin, setLoginErrorCode) => {
   if (!is_local){
     const current_token = window.localStorage.getItem("token")
     if (current_token === null){
@@ -12,29 +14,30 @@ const postconnection = (is_local, loginInfo, setLoginInfo, setIsLogin) => {
         .then(function(response){
           console.log(" login" , response)
           // window.localStorage.setItem("token", response.data.token)
-          window.localStorage.setItem("token", "12345678910")
+          window.localStorage.setItem("token", response.data.token)
           setIsLogin(true)
-        })
+        }).catch(error => {console.error(error); setLoginErrorCode(error.message)})
     }
     else{
       new ApiService().get( process.env.REACT_APP_BASE_URL + '/' + "session")
       // new ApiService().post( "#")
         .then(function (response){
-          console.log(" session", response)
-          // window.localStorage.setItem("token", response.data.token)
-          window.localStorage.setItem("token", "10987654321")
-          // setLoginInfo({username:  response.data.user.username, password: response.data.password})
-          // setLoginInfo({username:  "user1", password: "125"})
+          console.log(" session connection succeed", response)
+          window.localStorage.setItem("token", response.data.token)
           setIsLogin(true)
-        })
+        }).catch(function(error){
+          console.log("Session connection failed", error)
+          window.localStorage.removeItem("token")
+          postconnection(is_local, loginInfo, setLoginInfo, setIsLogin)
+      })
     }
   }
 }
 
-const getusers = (is_local, setUserList) => {
+const getusers = (is_local, setUserList, setErrorCode) => {
   /*Get user list from database*/
   // axios.get('http://checklists.metoui.be/api/users')
-  new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + "users")
+  new ApiService().get(true ? '#' : process.env.REACT_APP_BASE_URL + '/' + "users")
     .then(function(response){
 
       //Must handle incoming data
@@ -43,12 +46,15 @@ const getusers = (is_local, setUserList) => {
       const user_list = temp_data.user_list// temporary
       setUserList(user_list);
       console.log("initial get user list call and set finished")
+    }).catch((error) => {
+      console.error(error.message)
+      setErrorCode(error.message)
     });
   return true
 }
 
 const getuser = (is_local, id, setCurrentUser, setScanValueError) => {
-  new ApiService().get(is_local ? '#': process.env.REACT_APP_BASE_URL + '/' + 'users/'+id)
+  new ApiService().get(true ? '#': process.env.REACT_APP_BASE_URL + '/' + 'users/'+id)
     .then(function(response) {
       console.log("get user at id response", response.data)
       console.log("get user at id temp", temp_data.users[id])
@@ -88,8 +94,37 @@ const getpatient = (is_local, id, setCurrentPatient, setScanValueError) => {
     })
 }
 
-const getchecklist = (is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset ) => {
+const getwaitingpatients = (is_local, setPatientList, setErrorCode) => {
+  new ApiService().get(is_local ? '#': process.env.REACT_APP_BASE_URL + '/' + 'journey')
+    .then(function(response) {
+      //Must handle incoming data
+      console.log("patient call response ", response.data)
+      console.log("patient call temp", temp_data.patient_list)
+
+      // const patient_list = temp_data.patient_list // temporary
+      let patient_list = []
+      if (is_local){
+        patient_list = temp_data.patient_list
+      }
+      else{
+        response.data.data.forEach(function (journey){
+          const current_date = new Date().setHours(0)
+          if (journey.scheduledDateTime === null || new Date(journey.scheduledDateTime) > current_date )
+            patient_list.push(journey.patient)
+        })
+      }
+      if (patient_list.length === 0) setErrorCode("empty")
+      setPatientList(patient_list);
+      console.log("initial get patient list call and set finished")
+    }).catch((error) =>{
+      console.error(error)
+      setErrorCode(error.message)
+    })
+}
+
+const getchecklist = (is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset, pathId, currentEvals, setCurrentEvals, setChecklistErrorCode ) => {
   // Get the checklist from database
+
   new ApiService().get(is_local ? "#" : process.env.REACT_APP_BASE_URL + '/' + "checklist/"+ checklist_id)
     .then(function(response){
 
@@ -106,67 +141,17 @@ const getchecklist = (is_local, checklist_id, creationMode, checklist, setCheckl
 
       console.log("checklist", checklist)
       let checklist_info = checklistList.filter(elm => elm.id === checklist_id)[0]
-      checklist.name = checklist_info.name
+      checklist.name = checklist_info.title
       checklist.person = checklist_info.person
       checklist.counter = checklist_info.counter
+      checklist.type = checklist_info.type
+
       setChecklist(checklist)
 
       /**** Alert gestion section, will be replaced by a get call when the db will handle alert gestion*/
 
-        // Filter alert list to keep only alerts of checklist that precede the current checklist
-      let alert_list =  Object.keys(alertList).reduce(function (filtered, key ) {
-          if (alertList[key].checklist_id < checklist_id) filtered[key] = alertList[key]
-          return filtered
-        }, {});
-
-      // Update the gravity of the alerts (if there was an problematic response on a certain question and not anymore)
-      Object.keys(alert_list).forEach((key, index) => {
-        const corresponding_questions = checklist_array.filter(elm => elm[1].includes(key))
-        alert_list[key].question_id = corresponding_questions.length ? corresponding_questions[0][0] : -1
-        if (!Object.values(pbresult).filter(elm => elm.name === key).length && Object.values(result).filter(elm => elm.name === key).length){
-          alert_list[key].gravity = 1
-        }
-      })
-
-      //  Add new alerts corresponding ti the checklist we are about to left
-      if (checklist_id >= checklistId) Object.keys(pbresult).forEach((key, index) => {
-        const name = pbresult[key].name
-        const corresponding_questions = checklist_array.filter(elm => elm[1].includes(name))
-        console.log(checklist)
-        alert_list[name] =
-          {
-            "id": index, "question_id": corresponding_questions.length ? corresponding_questions[0][0] : -1,
-            "checklist_id" : checklistId, "checklist_name" : pbresult[key].checklist_name, "name": name,
-            "answer" : (utils.list_possible_answer_trad[pbresult[key].answer] ? utils.list_possible_answer_trad[pbresult[key].answer] : pbresult[key].answer),
-            "gravity": 0
-          }
-      })
-      setAlertList(alert_list)
-
-
-      // const alert_list = []
-      // new ApiService().get('http://checklists.metoui.be/api/alerts/'+pathId) //Random url, just to simulate the fact that we need to make get call before set checklistList
-      //   .then(function(response){
-      //
-      //     console.log("get alerts response", response)
-      //
-      //     const alert_checklists = response.checklists
-      //     alert_checklists.forEach(checklist =>
-      //       checklist.items.forEach(item =>
-      //         alert_list.push({
-      //           "question_id": item.item_id,
-      //           "checklist_id" : checklist.checklist_id,
-      //           "checklist_name" : checklist.checklist_title,
-      //           "name": item.item_title,
-      //           "answer" : item.answer,
-      //           "gravity": item.gravity
-      //         })
-      //       )
-      //     )
-      //     setAlertList(alert_list)
-      //   })
-
-      // Now that checklist has been selected, we set variables related to checklist to default value
+      alertList = {}
+      getevaluation(setCurrentEvals, pathId, alertList, setAlertList, checklist_array)
 
       setCreationMode(false)
       setChecklistId(checklist_id);
@@ -176,7 +161,7 @@ const getchecklist = (is_local, checklist_id, creationMode, checklist, setCheckl
       reset()
 
       console.log("switch checklist get call and set finished")
-    })
+    }).catch(error => {setChecklistErrorCode(error.message); setHomeMode(false)})
 }
 
 const getchecklists = (is_local, checklist, setChecklist,
@@ -212,10 +197,10 @@ const getchecklist_creation_mode = (is_local, checklist_id, checklist, setCheckl
       checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
       let checklist_info = checklistList.filter(elm => elm.id === checklist_id)[0]
 
-      console.log( checklist, checklist_info)
-      checklist.name = checklist_info.name
+      checklist.name = checklist_info.title
       checklist.person = checklist_info.person
       checklist.counter = checklist_info.counter
+      checklist.type = checklist_info.type
       setChecklist(checklist)
       setChecklistId(checklist_id)
       setCurrentQuestion(checklist.values[0])
@@ -242,34 +227,77 @@ const putchecklist = (swapchecklist, checklistList, checklist_id, updated_checkl
     });
 }
 
-const getjourney = (is_local, currentPatient, setPathId,setChecklistList) => {
+const getjourney = (is_local, currentPatient, setCurrentPatient, setPathId,setChecklistList, setJourneyErrorCode) => {
   // First call to ask the journey id corrsesponding to the last journey of the current patient
   new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'journey?patient_id='+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
     .then(function (response) {
 
-      console.log("get journey id for the patient id respone", response.data.data ? response.data.data[0].id: null)
+      console.log("get journey id for the patient id response", response.data.data ? response.data.data[0].id: null)
       console.log("get journey id for the patient id temp", temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id)
       const path_id = is_local ? temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id : response.data.data[0].id
       setPathId(path_id)
       console.log(process.env.REACT_APP_BASE_URL + '/' + 'journeys/'+path_id)
+
       // Second call to get the different information, especially the list of checklist, corresponding to the journey
       new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'journey/'+path_id)
         .then(function (response) {
           console.log("get journey corresponding to journey id response", response.data.data ? response.data.data.checklists : null)
           console.log("get journey corresponding to journey id temp", temp_data.paths[path_id].checklists)
+          if (!is_local) setCurrentPatient({...currentPatient, intervention_name : response.data.data.surgery.denomination} )
           let checklist_list = is_local ? temp_data.paths[path_id].checklists : response.data.data.checklists
           if (checklist_list && checklist_list.length) {
-            setChecklistList(checklist_list)
+
+            new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + "evaluation?journey_id="+path_id) // Will add /path_id when the call will handle get evaluation of a certain journey
+              .then(function (response){
+                console.log("get evaluation", response)
+                if(response.data && response.data.data && response.data.data.length){
+                  for( const evaluation of response.data.data){
+                    checklist_list.find(checklist => checklist.id === evaluation.checklist.id).fill = true
+                  }
+                }
+                setChecklistList(checklist_list)
+              }).catch(error => setJourneyErrorCode(error.message))
+
           }
-        })
-    })
+        }).catch(error => setJourneyErrorCode(error.message))
+    }).catch(error => setJourneyErrorCode(error.message))
 }
 
 const postevaluation = (is_local, final_result) => {
   new ApiService().post(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'evaluation', final_result  )
     .then(function (response){
-      console.log("evalutiaon post response", response)
+      console.log("evaluation post response", response)
     })
 }
 
-export {postconnection, getusers, getuser, getpatients, getpatient, getchecklist, getchecklists, getchecklist_creation_mode, putchecklist, getjourney, postevaluation}
+const getevaluation = (setCurrentEvals, path_id, alertList=null, setAlertList=null, current_checklist_array = null ) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'evaluation?journey_id='+path_id )
+    .then(function (response){
+      console.log("evaluation get response", response)
+      setCurrentEvals(response.data.data)
+      console.log(current_checklist_array)
+
+      if (alertList !== null){
+        let index = 0
+        for(const evaluation of response.data.data){
+          for(const answer of evaluation.answers){
+            const corresp_question_prev = evaluation.checklist.items.filter(item => item.itemId === answer.item_id)[0]
+            const corresp_question_current = current_checklist_array.filter(item => corresp_question_prev.name.includes(item.name))
+            if(answer.is_pb === 1){
+              if(!alertList[corresp_question_prev.name])
+                alertList[corresp_question_prev.name] = {id: index++, question_id: corresp_question_current.length ? corresp_question_current[0].itemId : -1,
+                  checklist_id: evaluation.checklist.id, checklist_name: evaluation.checklist.title, name : corresp_question_prev.name,
+                  answer: utils.trad_answer(JSON.parse(answer.answer)) ? utils.trad_answer(JSON.parse(answer.answer)) : JSON.parse(answer.answer), gravity:0}
+            }
+            else{
+              if(alertList[corresp_question_prev.name])
+                alertList[corresp_question_prev.name] = {...alertList[corresp_question_prev.name], gravity:1,}
+            }
+          }
+        }
+        setAlertList(alertList)
+      }
+    })
+}
+
+export {postconnection, getusers, getuser, getpatients, getpatient, getwaitingpatients, getchecklist, getchecklists, getchecklist_creation_mode, putchecklist, getjourney, postevaluation, getevaluation}
