@@ -1,56 +1,42 @@
-import * as utils from "../utils/utils";
-import  * as temp_data from "../utils/temporary_data.js";
-import React, {useState, useReducer, useEffect} from "react";
+import * as utils from "../../utils/utils";
+import  * as temp_data from "../../utils/temporary_data.js";
+import React, {useState, useEffect} from "react";
 import BootstrapSelect from "react-bootstrap-select-dropdown";
-import QrcodeScanner from "./qrcodescanner";
+import QrcodeScanner from "../qrcodescanner";
 import axios from "axios";
 import {AppSignature} from "./signature";
 
-/* Component representing a checklist item (a question).
-- init_items : the parent node of the checklist, used when we need to clean the questions after a answer modification
-- item : the current item
-- dicts : the different state dicts
-- forceUpdate : function that force the reload of component if necessary
-- values_filter_cond : function that filter the values by keeping only the values that validates all conditions
+/* Component containing a checklist item (a question), which contains recursively it child items.
 * */
-function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark, checklist_name, is_local}) {
-
-  // console.log("enter item", item)
-
-
-
+function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond , creationMode, currentId, warningId, precheckMode, is_root, alertList, scan_bookmark, checklist_name}) {
+  /*Get all the dictionaries used by the checklist item from dicts variable*/
   let [isDict, setIsDict, numDict, result, pbresult, setResult, setPbResult, isPreCheckDone, setIsPreCheckDone, visibleList, setVisibleList, debugMode, commentMode] = dicts
 
-  // console.log(item)
-  // console.log("isDict", isDict)
-  // console.log("result", result)
-  // console.log("isprecheck", isPreCheckDone)
-  // console.log("numdict", numDict)
-
+  /* State variables used in checklist item component only
+  * -isOther : indicates if the user has choose the 'other' choice in a list
+  * -trimmedCanvasUrl : canvas used by the signature component
+  * -sigpad : sigpad variable used by the signature component
+  * -scanValue : current value scanned by the scan answer
+  * */
   let [isOther, setIsOther] = useState(false)
-
   let [trimmedCanvasUrl, setTrimmedCanvasUrl] = useState(null)
   let sigpad = {}
-
   let [scanValue, setScanValue] = useState(null)
-  let [scanValueError, setScanValueError] = useState(null)
 
-
+  /*Function triggered every time a state variable change */
   useEffect(() => {
+    /*If we have a scan answer, check if scan value, and update the result*/
     if (item.check.includes("scan") && scan_bookmark && scanValue && !result[item.id]){
-      console.log(result)
       const current_result = result
       current_result[item.id] = {name: item.name, answer: scanValue}
       setResult(current_result)
     }
   })
 
-  /* Function triggered when the user click on one answer, we update the isDict and results and clean (remove from isDict and results) questions
-  * that must not be visible anymore, because of there cond's */
+  /* Function triggered when the user click on one answer, we update the isDict and results
+    and clean (i.e.remove from isDict and results) questions that must not be visible anymore, because of there cond's */
   const handleOnChangeIs = (answer) => {
-    console.log("handle change", item)
     const is_check = !isDict[answer][item.id]
-    console.log(is_check)
     const list_other_answer = utils.list_possible_answer.filter(elm => elm !== answer)
 
     // If is_check = true, it means that the state of the answer uncheck -> check,
@@ -72,8 +58,8 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     }
     setResult(result)
     setPbResult(pbresult)
-    isDict[answer][item.id] = is_check
-    list_other_answer.forEach(function(elm){isDict[elm][item.id]= false})
+    isDict[answer][item.id] = is_check //Add true in isDict for the selected answer if is check true
+    list_other_answer.forEach(function(elm){isDict[elm][item.id]= false}) // Remove anyway the non selected answers)
     setIsDict(isDict)
   }
 
@@ -88,7 +74,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     }
   };
 
-  /*Function triggered where the user enter a text in a text question. We update the result*/
+  /*Function triggered where the user enter the text (per default) in a text question. We update the result*/
   const handleOnChangedDefaultText = (event) => {
     const input_text = event;
     result[item.id]={name:item.name, importance:item.importance, answer:input_text,checklist_name:checklist_name}
@@ -100,34 +86,35 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     return input_text
   };
 
+  /*Function triggered when the answer must be the current date. We update the result*/
   const handleOnChangeCurrentDate = () => {
     let current_date = new Date()
     let current_date_str = current_date.toISOString().split("T")[0]
     result[item.id]={name:item.name, importance:item.importance,  answer:current_date_str,checklist_name:checklist_name}
     setResult(result)
-    console.log(current_date_str)
     return current_date_str
   }
 
+  /*Function triggered where the user enter a time answer. We update the result*/
   const handleOnChangeCurrentTime = () => {
     let current_date = new Date()
     let current_time_str = current_date.toTimeString().split(" ")[0].substring(0,5)
     result[item.id]={name:item.name, importance:item.importance,  answer:current_time_str,checklist_name:checklist_name}
     setResult(result)
-    console.log(current_time_str)
     return current_time_str
   }
 
+  /*Function triggered where the user enter a list options answer. We update the result*/
   const handleOnChangeList = (selectedOptions) => {
     const input_answer = JSON.parse(JSON.stringify(selectedOptions.selectedValue));
     if (selectedOptions.selectedKey.includes("other")) {
       setIsOther(true)
-    }
-    else{
+    } else{
       setIsOther(false)
     }
     result[item.id]={name:item.name, importance:item.importance, answer:input_answer}
     setResult(result)
+    /*If color of item is red, add by default the answer in pb results */
     if (item.color[0] === 1 && !(selectedOptions.selectedKey.includes("Aucune") || selectedOptions.selectedKey.includes("Aucun") )){
       pbresult[item.id] = {name:item.name,answer:input_answer,checklist_name:checklist_name}
       setPbResult(pbresult)
@@ -138,16 +125,17 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     }
   };
 
-  /*Function triggered where the user enter a text in a text question. We update the result*/
+  /*Function triggered where the user enter a text answer when we are in other mode. We update the result*/
   const handleOnChangeListOther = (event) => {
     const input_text = event.target.value;
     let input_answer = result[item.id].answer
-    if (isOther) input_answer.pop() // With the first letter typed, remove the "other" field, when you continue to type, remove the previous word and add the new
+    if (isOther) input_answer.pop() // With the first letter typed, remove the "other" field / when you continue to type, remove the previous word and add the new
     input_answer.push(input_text)
     result[item.id]={name:item.name, importance:item.importance, answer:input_answer}
     setResult(result)
   };
 
+  /*Construct in the good format the list of possible answers*/
   const create_possible_list_answers = (name) => {
     const list_answers = temp_data.lists[name]
     const list_possible_answers = []
@@ -157,19 +145,12 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         "value": answer,
       })
     })
-    // list_possible_answers.push({
-    //   "labelKey" : "supp",
-    //   "value": "Fermer",
-    // })
     list_possible_answers.push({"labelKey": "other", "value": "Autre"})
     return list_possible_answers
   }
 
   /* If the item as pre check conditions and his precheck as not already been made,
-  * we check the condition in 'pre_check.if' and if it passes, we do as if the 'pre_check.then' answer was clicked
-  */
-  // console.log(item.id, item.pre_check)
-
+  * we check the condition in 'pre_check.if' and if it passes, we do as if the 'pre_check.then' answer was clicked */
   if(precheckMode && item.pre_check && !isPreCheckDone.includes(item.id)){
     // console.log("enter precheck", item, isDict)
     if (item.pre_check.if.every(function (elms){
@@ -192,13 +173,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     values.forEach(value => !visibleList.includes(value.id) && value.check.length ? visibleList.push(value.id) : null)
   }
 
-  // let show_scan = false
-  // if (scan_bookmark && item.check.includes("scan")){
-  //   show_scan = true
-  //   scan_bookmark = false
-  // }
-
-  /*We create the children components of the current item*/
+  /*We create the children elements of the current item*/
   if (values && values.length) {
     children = (
       <ul className="mb-0">
@@ -209,37 +184,16 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
     );
   }
 
+  /*Function triggered when the scanner return a decoded text*/
   function onNewScanResult(decodedText, decodedResult) {
-    axios.get('#') //Random url, just to simulate the fact that we need to make get call before set checklistList
-      .then(function (response) {
-        if(decodedText) {
-          setScanValue(decodedText)
-          console.log("write decoded scan", decodedText, result)
-        }
-      })
-    console.log("scan result", decodedText, scanValue)
+    if(decodedText) {
+      setScanValue(decodedText)
+    }
   }
 
-
-
-  // console.log(item.id, scan_bookmark, scanValue)
-  // console.log("Item return", item)
-  // console.log("isDict", isDict)
-  // console.log("result", result)
-  // console.log(result)
-  // console.log(visibleList)
-  // console.log(numDict)
-  //
-  // console.log(warningId)
-  // console.log(currentId)
-  //
-  // console.log("item", item)
-
-  /*We return the different elements of the current item, and also his children*/
   return (
     <div className={"container p-0 mx-auto " + (is_root ? "":"mt-3") }>
-      {/*Current Item*/}
-
+      {/*Inform that the user tried to validate the checklist but this question was not answered*/}
       {warningId === item.id ? (
         <div className=" alert text-white bg-warning rounded" role="alert">
           <div className="iq-alert-icon">
@@ -251,8 +205,9 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
       <div id={"question"+item.id} className={"row align-items-center m-0 p-0" + (creationMode && currentId === item.id ? " border border-danger " : " " )}>
 
-        {/*Item Id*/}
         <div className="col list-group list-group-horizontal m-0 p-0 w-auto">
+
+          {/*Item Id*/}
           <div className={"list-group-item m-0 p-0 text-center shadow-sm my-auto " + (item.importance || alertList && Object.values(alertList).some(elm => elm.name === item.name) ? "bg-danger" : "bg-primary")} >
             <h5 className="card-body p-auto text-white">
               {item.id}
@@ -261,40 +216,41 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 
           {/*Item name*/}
           <div className="list-group-item m-0 p-0 w-100 shadow-sm h-auto text-dark bg- "  >
-              {item.comment && commentMode && (item.comment.split("_").length === 1 || item.comment.split("_").length > 1 && numDict[item.comment.split("_")[1]]) ? (
-                <div className="row alert iq-bg-secondary px-0 m-0 mt-0 border-0 text-primary my-auto text-center align-content-center" role="alert">
-                  {item.comment.split("_").length > 1 ?
-                    <p className={"w-100 m-0"}>{item.comment.split("_")[0] + numDict[item.comment.split("_")[1]]}</p>
-                    :
-                    <p className={"w-100 m-0"}>{item.comment}</p>
-                  }
-                  {item.comment.includes("Consentement") ?
-                    <div className={"text-center mx-auto"}>
-                      <button className="btn m-0 p-0 mx-auto " type="button" data-toggle="collapse" data-target="#collapseconsentpdf"
-                              aria-expanded="false" aria-controls="collapseExample">
-                        <div data-icon="T" className="icon"></div>
-                      </button>
-                      <div className="collapse m-0 p-0" id="collapseconsentpdf">
-                        <p className={"col-sm-12 mx-0 px-0 mb-0"}> <img src={is_local ? numDict.consent_pdf : "http://checklists.metoui.be/storage/" + numDict.consent_pdf} width={"280"}/> </p>
-                      </div>
+            {/*item comment show (depends of the comment containing and if need to includ consent file*/}
+            {item.comment && commentMode && (item.comment.split("_").length === 1 || item.comment.split("_").length > 1 && numDict[item.comment.split("_")[1]]) ? (
+              <div className="row alert iq-bg-secondary px-0 m-0 mt-0 border-0 text-primary my-auto text-center align-content-center" role="alert">
+                {item.comment.split("_").length > 1 ?
+                  <p className={"w-100 m-0"}>{item.comment.split("_")[0] + numDict[item.comment.split("_")[1]]}</p>
+                  :
+                  <p className={"w-100 m-0"}>{item.comment}</p>
+                }
+                {item.comment.includes("Consentement") ?
+                  <div className={"text-center mx-auto"}>
+                    <button className="btn m-0 p-0 mx-auto " type="button" data-toggle="collapse" data-target="#collapseconsentpdf"
+                            aria-expanded="false" aria-controls="collapseExample">
+                      <div data-icon="T" className="icon"></div>
+                    </button>
+                    <div className="collapse m-0 p-0" id="collapseconsentpdf">
+                      <p className={"col-sm-12 mx-0 px-0 mb-0"}> <img src={"http://checklists.metoui.be/storage/" + numDict.consent_pdf} width={"280"}/> </p> {/*//TODO : put the good url*/}
                     </div>
-                    : null}
-                </div>
-              ) : null}
+                  </div>
+                  : null}
+              </div>
+            ) : null}
+            {/*Item name*/}
             <div className="card-body my-auto">
               {item.name.split("_")[0]}
             </div>
-            {/*Item comment (above the item name)*/}
           </div>
-
         </div>
 
-        {/*Item answers (if any, if not empty col)*/}
+        {/*Item answers (if any, if not : empty col)*/}
         {item.check.length ? (
         <div className="col-sm-auto p-0 pl-3">
           <div className={"row px-3"}>
+            {/*three first checkbox item (splitted from other to ease the small screen visibility*/}
             <div className="list-group list-group-horizontal ">
-              {/*For each possible answer, if in item.check, we put a checkbox*/}
+              {/*Put a checkbox for each check answer*/}
               {item.check.map((answer, index) =>
                 index < 3 && !["text","list", "date", "hour", "scan", "signature", "number"].includes(answer.split("_")[0]) ?
                   <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
@@ -308,9 +264,9 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
                 : null
               )}
             </div>
-
+            {/*all the next checkbox item*/}
             <div className="list-group list-group-horizontal ">
-              {/*For each possible answer, if in item.check, we put a checkbox*/}
+              {/*Put a checkbox for each check answer*/}
               {item.check.map((answer, index) =>
                 index >= 3 && !["text","list", "date", "hour", "scan", "signature", "number"].includes(answer.split("_")[0]) ?
                   <label key={index} className={"list-group-item list-group-item-custom btn m-0" + (item.color && item.color[index] === 0 ? " btn-outline-success" : (item.color && item.color[index] === 1 ? " btn-outline-danger" : " btn-outline-secondary"))} >
@@ -325,27 +281,28 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
               )}
             </div>
           </div>
-          {/*If item answers must contain text, put a text input*/}
+
+          {/*If item answers contain text, put a text input*/}
           {item.check.includes("text") ? (
             <input className="form-control w-100 mb-0 bg-white" type = "text " aria-label="text input" placeholder="Insérez ici" onChange={handleOnChangeText}/>
           ) : null }
 
-          {/*If item answers must contain date, put a text input*/}
+          {/*If item answers contain date, put a date input*/}
           {item.check.includes("date") ? (
             <input className="form-control w-100 mb-0 bg-white" type = "date" aria-label="text input" defaultValue={handleOnChangeCurrentDate()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
           ) : null }
 
-          {/*If item answers must contain date, put a text input*/}
+          {/*If item answers contain hour, put a time input*/}
           {item.check.includes("hour") ? (
             <input className="form-control w-100 mb-0 bg-white" type = "time" aria-label="text input" defaultValue={handleOnChangeCurrentTime()} placeholder="Insérez ici" onChange={handleOnChangeText}/>
           ) : null }
 
-          {/*If item answers must contain date, put a text input*/}
+          {/*If item answers contain number, put a number input*/}
           {item.check.includes("number") ? (
             <input className="form-control w-100 mb-0 bg-white" type = "number" aria-label="text input" defaultValue={handleOnChangedDefaultText("0")} placeholder="Insérez ici" onChange={handleOnChangeText}/>
           ) : null }
 
-          {/*If item answers must contain list, put a list dropdown input*/}
+          {/*If item answers contain list, put a list dropdown input*/}
           {item.check[0].split("_").includes("list") ? (
             <BootstrapSelect key={item.check[0].split("_")[1]} className=" my-auto "
                              selectStyle ="py-2  btn btn-outline-dark bg-white text-dark "
@@ -353,7 +310,7 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
                              isMultiSelect={true} placeholder="-" onChange={handleOnChangeList} menuSize={10}/>
           ) : null }
 
-          {/*If item answers is list and the answer is Other, put a text*/}
+          {/*If item answers is list and the answer is Other, put a text input in addition*/}
           {isOther || item.check.includes("list_problems") ? (
             <input className="form-control w-100 mb-0 bg-white" type = "text " aria-label="text input" placeholder={isOther ? "Insérez ici" : "Décrivez"} onChange={handleOnChangeListOther}/>
           ) : null }
@@ -362,13 +319,24 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
         ) : <div className="col-sm-6"> {null} </div>}
       </div>
 
-      {/*If item answers must contain date, put a text input*/}
-      {item.check.includes("scan") && scan_bookmark && !scanValue ? (
+      {/*If item answers contain scan, put a scan component*/}
+      {item.check.includes("scan") ? (
+
         <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center col-sm-6 mx-auto"}>
-          <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValueError={scanValueError} scanValue={scanValue} scan_bookmark={scan_bookmark} is_home={false}/>
+          {scan_bookmark && !scanValue ?
+            <QrcodeScanner key={item.id} item_id={item.id} fps={10} qrbox={250} disableFlip={false} qrCodeSuccessCallback={onNewScanResult} scanValue={scanValue} scan_bookmark={scan_bookmark} is_home={false}/>
+            : null}
+          {scanValue !== null ?
+            <div className={"container custom-scanner card rounded bg-white border-success mx-auto text-center mt-2 p-2 border  justify-content-center "}>
+              <div className="card-body m-0 p-0">
+                <h5 className="card-title text-dark m-0">Code "{scanValue}" enregistré</h5>
+              </div>
+            </div>
+            : null}
         </div>
       ) : null }
 
+      {/*If item answers contain signature, put a signature component*/}
       {item.check.includes("signature") ? (
         <div className={"row m-0 p-0 mt-2 align-items-center justify-content-center mx-auto"}>
           <AppSignature sigpad={sigpad} setTrimmedCanvasUrl={setTrimmedCanvasUrl} is_end_sign={false} setResult={setResult} result={result} item={item} forceUpdate={forceUpdate}/>
@@ -384,10 +352,10 @@ function ChecklistItem({init_items, item, dicts, forceUpdate, values_filter_cond
 /*Function that clean (remove from isDict and results) questions
   * that must not be visible anymore, because of there cond's.
   * -We check the current item, remove if necessary from result and isDict
-  * (id indicating what question has been removed, and answers indicating all the answers possibly removed,
+  * (id indicating what question has been removed, and answers indicating all the answers that are not checked now (so possibly removed),
   * so we need to check if the current item was dependent of one of these answers,
-  * -We call the function recursively on each child of the current item
-  * - If the current item as been removed, we call recursively, s
+  * -We call the function recursively on each child of the current item, for the same "target" id
+  * - If the current item as been removed, we call recursively, but considering the current item id as the new "target"
   * */
 function clean_children_rec(init_item, item, id, isDict, setIsDict, result, pbresult, answers) {
   let is_remove = false

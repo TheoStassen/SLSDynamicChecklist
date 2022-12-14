@@ -241,7 +241,7 @@ button::-moz-focus-inner {
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
     background: #000; }
 
-/* Main image in popup */
+/* App_ image in popup */
 img.mfp-img {
   width: auto;
   max-width: 100%;

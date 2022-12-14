@@ -2,13 +2,12 @@ import SignaturePad from "react-signature-canvas";
 import React, {useEffect} from "react";
 
 /*Component for the signature pad
-* -sigpad: object representing the signature pad, fill in by the SignaturePad component
-* -props.setTrimmedCanvasUrl: the canvas url data of the signature set function
 * */
 function AppSignature (props) {
 
   let sigpad = props.sigpad
 
+  /*Function triggered only when the component is mount */
   useEffect(() => {
     reinit_canvas()
   }, [])
@@ -27,7 +26,7 @@ function AppSignature (props) {
   const trim_canvas = () => {
     let dataUrl = sigpad.getTrimmedCanvas().toDataURL();
     props.setTrimmedCanvasUrl(dataUrl);
-    props.result[props.item.id] = {name:props.item.name, answer:dataUrl}
+    props.result[props.item.id] = {name:props.item.name, answer:"signature"} //TODO
     props.setResult(props.result)
     props.forceUpdate()
   }

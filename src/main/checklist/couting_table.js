@@ -3,9 +3,11 @@ import _ from 'lodash';
 import * as mathjs from 'mathjs';
 import ReactDataSheet from 'react-datasheet';
 // Be sure to include styles at some point, probably during your bootstrapping
-import '../styles/react-datasheet.css';
+import '../../styles/react-datasheet.css';
 import {result} from "lodash/object";
 
+/*Counting table component, code mostly taken form ReactDataSheet (see documentation). The only thing modified are the content of state, grid
+* and some little functions and elements at the end of this page code */
 export class CountingTable extends React.Component {
   constructor(props) {
     super(props)
@@ -378,6 +380,7 @@ export class CountingTable extends React.Component {
 
   }
 
+  /*Switch between a mode where we can modify values and a mode where we cannot*/
   switchMode () {
     const state = _.assign({}, this.state)
     const numb_array = [1,2,3,5,6,10,11,14,15,18,19]
@@ -401,6 +404,7 @@ export class CountingTable extends React.Component {
     this.setState(state)
   }
 
+  /*Add additional row in the state*/
   addAdditional () {
     const state = _.assign({}, this.state)
     state.number_additional += 1
@@ -413,6 +417,7 @@ export class CountingTable extends React.Component {
 
     return (
       <div>
+        {/*Component containing the reactdatasheets, parametrised correctly, add custom buttons that add rows, change the mode, etc*/}
         <div className={"sheet-container"}>
           <ReactDataSheet
             data={this.generateGrid()}

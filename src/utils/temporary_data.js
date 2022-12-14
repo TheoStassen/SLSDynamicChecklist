@@ -1,4 +1,4 @@
-/* Data that will be obtain by call to backend
+/* Data that in final/ideal version must come from backend. Many of the data of this file is unused now, but kept for info
 * */
 
 const checklist_arrays = [

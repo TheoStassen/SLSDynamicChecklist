@@ -3,6 +3,8 @@ import React, {useEffect, useLayoutEffect, useState} from 'react';
 
 const qrcodeRegionId = "html5qr-code-full-region";
 
+/*Component containing the scanner (from html5-qrcode) with the add of a text input that can be used to enter by typing the code.
+* In the two cases we send a qrCodeSuccessCallback when code validated*/
 function QrcodeScanner (props){
 
 
@@ -53,15 +55,14 @@ function QrcodeScanner (props){
     });}
   },[]);
 
+  /*Variable and function for input text */
   let [codeValue, setCodeValue] = useState("")
-
   function handleChange (event) {
-    console.log(event)
     setCodeValue(event.target.value)
   }
 
   return(
-    <div className={"col-sm-12 mx-auto p-0"}>-
+    <div className={"col-sm-12 mx-auto p-0"}>
 
       {props.scanValue === null ?
         <div className={" container custom-scanner pt-4 rounded rounded-0-bottom bg-white mx-auto w-100 border border-left border-right border-top " + (props.scanValueError || props.scanValue ? " rounded-0-bottom": null)} id={qrcodeRegionId} />
@@ -73,26 +74,6 @@ function QrcodeScanner (props){
              value={codeValue}
              onChange={handleChange}
              onKeyPress={event => {if(event.key === 'Enter') props.qrCodeSuccessCallback(codeValue) }}/>
-
-
-
-
-      {props.scanValue !== null ?
-        <div className={"container custom-scanner card rounded bg-success mx-auto text-center p-2 border shadow-sm justify-content-center "}>
-          <div className="card-body m-0 p-0">
-            <h5 className="card-title text-dark m-0">Code "{props.scanValue}" enregistré</h5>
-          </div>
-        </div>
-        : null}
-
-      {props.scanValueError !== null ?
-        <div className={"container custom-scanner card rounded rounded-0-top bg-warning mx-auto text-center p-2  border shadow-sm justify-content-center "}>
-          <div className="card-body m-0 p-0">
-            <h5 className="card-title text-dark m-0">Erreur : le code "{props.scanValueError}" ne correspond pas </h5>
-          </div>
-        </div>
-        : null}
-
     </div>
   )
 }

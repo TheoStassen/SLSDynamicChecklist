@@ -1,145 +1,125 @@
 import ApiService from "./axios";
 import * as temp_data from "./utils/temporary_data";
 import * as utils from "./utils/utils";
-import axios from "axios";
-import {useState} from "react";
 
-const postconnection = (is_local, loginInfo, setLoginInfo, setIsLogin, setLoginErrorCode) => {
-  if (!is_local){
-    const current_token = window.localStorage.getItem("token")
-    if (current_token === null){
+/*This file contains all the functions that calls the backend using the axios api service
+and make different operations when the response is obtained*/
 
-      let login_info = {email:loginInfo.username, password:loginInfo.password}
-      new ApiService().post( process.env.REACT_APP_BASE_URL + '/' + "login", login_info )
-        .then(function(response){
-          console.log(" login" , response)
-          // window.localStorage.setItem("token", response.data.token)
+/*Post login or session (if token already set). Login is tried only if login info already set*/
+const postconnection = ( loginInfo, setLoginInfo, setIsLogin, setLoginErrorCode, setCurrentUser) => {
+
+  const current_token = window.localStorage.getItem("token")
+  if (current_token === null){
+    if(loginInfo) {
+      let login_info = {email: loginInfo.username, password: loginInfo.password}
+      new ApiService().post(process.env.REACT_APP_BASE_URL + '/' + "login", login_info)
+        .then(function (response) {
           window.localStorage.setItem("token", response.data.token)
           setIsLogin(true)
-        }).catch(error => {console.error(error); setLoginErrorCode(error.message)})
-    }
-    else{
-      new ApiService().get( process.env.REACT_APP_BASE_URL + '/' + "session")
-      // new ApiService().post( "#")
-        .then(function (response){
-          console.log(" session connection succeed", response)
-          window.localStorage.setItem("token", response.data.token)
-          setIsLogin(true)
-        }).catch(function(error){
-          console.log("Session connection failed", error)
-          window.localStorage.removeItem("token")
-          postconnection(is_local, loginInfo, setLoginInfo, setIsLogin)
+          setCurrentUser({...response.data.user, role_id:1})
+        }).catch(error => {
+        console.error(error);
+        setLoginErrorCode(error.message)
       })
     }
   }
-}
-
-const getusers = (is_local, setUserList, setErrorCode) => {
-  /*Get user list from database*/
-  // axios.get('http://checklists.metoui.be/api/users')
-  new ApiService().get(true ? '#' : process.env.REACT_APP_BASE_URL + '/' + "users")
-    .then(function(response){
-
-      //Must handle incoming data
-      console.log("user list call response", response)
-      console.log("user list call temp", temp_data.user_list)
-      const user_list = temp_data.user_list// temporary
-      setUserList(user_list);
-      console.log("initial get user list call and set finished")
-    }).catch((error) => {
-      console.error(error.message)
-      setErrorCode(error.message)
-    });
-  return true
-}
-
-const getuser = (is_local, id, setCurrentUser, setScanValueError) => {
-  new ApiService().get(true ? '#': process.env.REACT_APP_BASE_URL + '/' + 'users/'+id)
-    .then(function(response) {
-      console.log("get user at id response", response.data)
-      console.log("get user at id temp", temp_data.users[id])
-      let corresp_users = true ? temp_data.users[id] : response.data // temporary
-      // let corresp_patients = response.data
-      setCurrentUser(corresp_users ? corresp_users : null)
-      setScanValueError(null)
+  else{
+    new ApiService().get( process.env.REACT_APP_BASE_URL + '/' + "session")
+      .then(function (response){
+        window.localStorage.setItem("token", response.data.token)
+        setIsLogin(true)
+        setCurrentUser({...response.data.user, role_id:1})
+      }).catch(function(error){
+        console.error(error);
+        window.localStorage.removeItem("token")
     })
+  }
 }
 
-const getpatients = (is_local, setPatientList) => {
-  /*Get patient list from database*/
-  new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'patient')
+/*Post logout to disconnect, delete variable values and get back to root route*/
+const postdisconnection = (  setLoginInfo, setIsLogin, setCurrentUser, navigate) => {
+  new ApiService().post(process.env.REACT_APP_BASE_URL + '/' + "logout")
+    .then(function (response) {
+      setLoginInfo(null)
+      setIsLogin(false)
+      setCurrentUser(null)
+      window.localStorage.removeItem("token")
+      navigate("/")
+    }).catch(error => {
+    console.error(error);
+  })
+}
+
+/*Get all patient from database, not used in current version*/
+const getpatients = ( setPatientList) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'patient')
     .then(function(response){
-
-      //Must handle incoming data
-      console.log("patient call response ", response.data)
-      console.log("patient call temp", temp_data.patient_list)
-
-      // const patient_list = temp_data.patient_list // temporary
-      const patient_list = is_local ? temp_data.patient_list : response.data
-
+      const patient_list = response.data
       setPatientList(patient_list);
-      console.log("initial get patient list call and set finished")
     });
 }
 
-const getpatient = (is_local, id, setCurrentPatient, setScanValueError) => {
-  new ApiService().get(is_local ? '#': process.env.REACT_APP_BASE_URL + '/' + 'patient/'+id)
+/*Get patient with id and construct numdict from it*/
+const getpatient = ( id, setCurrentPatient, patientList,setNumDict) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'patient/'+id)
     .then(function(response) {
-      console.log("get patient at id response", response.data)
-      console.log("get patient at id temp", temp_data.patients[id])
-      let corresp_patients = is_local ? temp_data.patients[id] : response.data // temporary
-      // let corresp_patients = response.data
+      let corresp_patients = response.data
+      corresp_patients.intervention_name = patientList.filter(elm => elm.id === id)[0].intervention_name
       setCurrentPatient(corresp_patients ? corresp_patients : null)
-      setScanValueError(null)
+
+      let num_dict = {}
+      if (corresp_patients){
+        for (const [key, value] of Object.entries(corresp_patients)) {
+          if (typeof value === "object"){
+            for (const [key_, value_] of Object.entries(value)){
+              num_dict[key_] = value_
+            }
+          }
+          else{
+            num_dict[key] = value
+          }
+        }
+        num_dict["age"] = utils.date_to_age(num_dict["dateofbirth"])
+        setNumDict(num_dict)
+      }
+
     })
 }
 
-const getwaitingpatients = (is_local, setPatientList, setErrorCode) => {
-  new ApiService().get(is_local ? '#': process.env.REACT_APP_BASE_URL + '/' + 'journey')
+/*Get all the patients that have a journey in progress*/
+const getwaitingpatients = ( setPatientList, setErrorCode, setIsWaitingList) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'journey')
     .then(function(response) {
-      //Must handle incoming data
-      console.log("patient call response ", response.data)
-      console.log("patient call temp", temp_data.patient_list)
-
-      // const patient_list = temp_data.patient_list // temporary
       let patient_list = []
-      if (is_local){
-        patient_list = temp_data.patient_list
-      }
-      else{
-        response.data.data.forEach(function (journey){
-          const current_date = new Date().setHours(0)
-          if (journey.scheduledDateTime === null || new Date(journey.scheduledDateTime) > current_date )
-            patient_list.push(journey.patient)
-        })
-      }
+
+      /*For each journey, check if current date -> journey in progress, if yes we put patient in patient list*/
+      response.data.data.forEach(function (journey){
+        const current_date = new Date().setHours(0)
+
+        if (true ) { //TODO : make the verification, for now all the journey are considered good
+          patient_list.push(journey.patient)
+          patient_list[patient_list.length - 1].intervention_name = journey.surgery.denomination
+        }
+      })
       if (patient_list.length === 0) setErrorCode("empty")
       setPatientList(patient_list);
-      console.log("initial get patient list call and set finished")
+      setIsWaitingList(false)
     }).catch((error) =>{
       console.error(error)
       setErrorCode(error.message)
+      setIsWaitingList(false)
     })
 }
 
-const getchecklist = (is_local, checklist_id, creationMode, checklist, setChecklist, checklistList, alertList, setAlertList, pbresult, result, checklistId, setCreationMode, setChecklistId, setCurrentQuestion, setHomeMode, reset, pathId, currentEvals, setCurrentEvals, setChecklistErrorCode ) => {
-  // Get the checklist from database
-
-  new ApiService().get(is_local ? "#" : process.env.REACT_APP_BASE_URL + '/' + "checklist/"+ checklist_id)
+/*Get checklist (in array form) with checklist id, construct checklist object in good form*/
+const getchecklist = ( checklist_id, checklist, setChecklist, checklistList, alertList, setAlertList, pathId, setChecklistErrorCode,setChecklistId, navigate ) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + "checklist/"+ checklist_id)
     .then(function(response){
 
-      console.log("checklist swap call response", response)
-
-      const current_creation_mode = creationMode // we use this variable to reset the creation mode after switching
-      let checklist_array = is_local ? temp_data.checklist_arrays[checklist_id-1] : response.data.data.items
-      // let checklist_array = response.data.data.items
-
-      console.log("checklist_array", checklist_array)
-
+      let checklist_array = response.data.data.items
       // Transform the checklist array to checklist tree and add info from checklist list
       checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
 
-      console.log("checklist", checklist)
       let checklist_info = checklistList.filter(elm => elm.id === checklist_id)[0]
       checklist.name = checklist_info.title
       checklist.person = checklist_info.person
@@ -148,156 +128,169 @@ const getchecklist = (is_local, checklist_id, creationMode, checklist, setCheckl
 
       setChecklist(checklist)
 
-      /**** Alert gestion section, will be replaced by a get call when the db will handle alert gestion*/
-
+      /* Make get evaluation call to check and set the alert list*/
       alertList = {}
-      getevaluation(setCurrentEvals, pathId, alertList, setAlertList, checklist_array)
+      getevaluation(pathId, null, alertList, setAlertList, checklist_array)
 
-      setCreationMode(false)
       setChecklistId(checklist_id);
-      setCurrentQuestion(checklist && checklist.values.length ? checklist.values[0] : null)
-      setCreationMode(current_creation_mode)
-      setHomeMode(false)
-      reset()
+      /*Go to main/checklist, as checklist has been set*/
+      navigate("/main/checklist")
 
-      console.log("switch checklist get call and set finished")
-    }).catch(error => {setChecklistErrorCode(error.message); setHomeMode(false)})
+    }).catch(error => {setChecklistErrorCode(error.message)})
 }
 
-const getchecklists = (is_local, checklist, setChecklist,
+/*Get the exhaustive checklist list for checklist list, and set checklist with one of the checklists*/
+const getchecklists = ( checklist, setChecklist,
                        setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
-                       setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck, setChecklistList ) => {
-  new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + "checklist") //Random url, just to simulate the fact that we need to make get call before set checklistList
+                       setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck, setChecklistList, setIsWaitingList, chosen_checklist_id) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + "checklist")
     .then(function(response) {
-      console.log(response)
-      let checklist_list = is_local ? temp_data.paths[1].checklists : response.data
-      let checklist_id = checklist_list[0].id
-
+      let checklist_list = response.data
+      /*Id of the checklist we want in the list*/
+      let new_checklist_id = chosen_checklist_id > 0 ? chosen_checklist_id : checklist_list[0].id
 
       if (checklist_list && checklist_list.length) {
         setChecklistList(checklist_list, checklist_list)
-        getchecklist_creation_mode(is_local, checklist_id, checklist, setChecklist, checklist_list,
+        getchecklist_creation_mode( new_checklist_id, checklist, setChecklist, checklist_list,
           setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
-          setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck)
+          setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck, setIsWaitingList)
       }
     })
 }
 
-const getchecklist_creation_mode = (is_local, checklist_id, checklist, setChecklist, checklistList,
+/*Get a checklist with checklist id, in the creation mode context (so with more variable to set)*/
+const getchecklist_creation_mode = ( checklist_id, checklist, setChecklist, checklistList,
                                     setChecklistId, setCurrentQuestion, reset, setCurrentParentQuestion,
-                                    setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck ) => {
-  // Get the checklist from database
-  new ApiService().get(is_local ? "#" : process.env.REACT_APP_BASE_URL + '/' + "checklist/"+ checklist_id)
+                                    setCurrentName, setCurrentComment, setCurrentSectionTitle, setTempPreCheck, setIsWaitingList ) => {
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + "checklist/"+ checklist_id)
     .then(function(response){
 
-      let checklist_array = is_local ? temp_data.checklist_arrays[checklist_id-1] : response.data.data.items
-      console.log("get checklist creation mode", checklist_array)
-
+      let checklist_array = response.data.data.items
       // Transform the checklist array to checklist tree and add info from checklist list
       checklist = utils.checklist_flat_to_tree(checklist_array,checklist_id)
-      let checklist_info = checklistList.filter(elm => elm.id === checklist_id)[0]
 
-      checklist.name = checklist_info.title
-      checklist.person = checklist_info.person
-      checklist.counter = checklist_info.counter
-      checklist.type = checklist_info.type
+      checklist.title = response.data.data.title
+      checklist.description = response.data.data.description
+      checklist.type = response.data.data.type
       setChecklist(checklist)
       setChecklistId(checklist_id)
-      setCurrentQuestion(checklist.values[0])
+      /*Set of all creation mode variables*/
+      let current_question = checklist.values && checklist.values.length ? checklist.values[0] : null
+      setCurrentQuestion(current_question)
       reset()
       setCurrentParentQuestion(checklist)
-      setCurrentName(checklist.values[0].name)
-      setCurrentComment(checklist.values[0].comment)
-      setCurrentSectionTitle(checklist.values[0].section_title ? checklist.values[0].section_title : null)
-      setTempPreCheck({type:"and", then: checklist.values[0].pre_check && checklist.values[0].pre_check.then ? checklist.values[0].pre_check.then : null})
+      setCurrentName(current_question ? current_question.name : null)
+      setCurrentComment(current_question ? current_question.comment : null)
+      setCurrentSectionTitle(current_question && current_question.section_title ? current_question.section_title : null)
+      setTempPreCheck({type:"and", then: current_question && current_question.pre_check && current_question.pre_check.then ? current_question.pre_check.then : null})
+      setIsWaitingList(false)
 
-      console.log("switch checklist get call and set finished")
     })
 }
 
+/*Put (modify in backend) an updated checklist and swap to this checklist*/
 const putchecklist = (swapchecklist, checklistList, checklist_id, updated_checklist) => {
-  // Inform that we want to add a new checklist and receive in response the new checklist list
-  new ApiService().put('http://checklists.metoui.be/api/checklists/'+checklist_id, updated_checklist) //Random url, just to simulate the fact that we need to make get call to add checklist
+  new ApiService().put(process.env.REACT_APP_BASE_URL + '/' + 'checklist/'+checklist_id, updated_checklist)
     .then(function(response){
-
-      console.log("put checklist")
-      //Must handle incoming data
-      swapchecklist(checklistList, checklist_id) // Pour l'instant n'a pas de sens puisqu'on ne rajoute rien
-      console.log("add checklist get call and set finished")
+      swapchecklist(checklistList, checklist_id)
+      /*TODO : maybe get the checklist list updated*/
     });
 }
 
-const getjourney = (is_local, currentPatient, setCurrentPatient, setPathId,setChecklistList, setJourneyErrorCode) => {
-  // First call to ask the journey id corrsesponding to the last journey of the current patient
-  new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'journey?patient_id='+currentPatient.id) //Random url, just to simulate the fact that we need to make get call before set checklistList
+/*Post (add a new) checklist and get the new checklist list (with the new checklist id for set current checklist)*/
+const addchecklist = (getchecklist_list, new_checklist) => {
+  new ApiService().post(process.env.REACT_APP_BASE_URL + '/' + 'checklist', new_checklist)
+    .then(function(response){
+      getchecklist_list(response.data.id)
+    });
+}
+
+/*Delete a checklist and get the new checklist list (and set current checklist to default)*/
+const removechecklist = (getchecklist_list, checklist_id) => {
+  new ApiService().delete(process.env.REACT_APP_BASE_URL + '/' + 'checklist/'+checklist_id)
+    .then(function(response){
+        getchecklist_list(-1)
+      });
+}
+
+/*Get the last journey/path of the current patient*/
+const getjourney = ( currentPatient, setCurrentPatient, setPathId,setChecklistList, setJourneyErrorCode, navigate) => {
+  // First call to ask the journey id corresponding to the last journey of the current patient
+  new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'journey?patient_id='+currentPatient.id)
     .then(function (response) {
-
-      console.log("get journey id for the patient id response", response.data.data ? response.data.data[0].id: null)
-      console.log("get journey id for the patient id temp", temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id)
-      const path_id = is_local ? temp_data.path_list.filter(elm => elm.patient_id === currentPatient.id)[0].path_id : response.data.data[0].id
+      const path_id = response.data.data[0].id
       setPathId(path_id)
-      console.log(process.env.REACT_APP_BASE_URL + '/' + 'journeys/'+path_id)
 
-      // Second call to get the different information, especially the list of checklist, corresponding to the journey
-      new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'journey/'+path_id)
+      // Second call to get the journey with path id
+      new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'journey/'+path_id)
         .then(function (response) {
-          console.log("get journey corresponding to journey id response", response.data.data ? response.data.data.checklists : null)
-          console.log("get journey corresponding to journey id temp", temp_data.paths[path_id].checklists)
-          if (!is_local) setCurrentPatient({...currentPatient, intervention_name : response.data.data.surgery.denomination} )
-          let checklist_list = is_local ? temp_data.paths[path_id].checklists : response.data.data.checklists
+          let checklist_list = response.data.data.checklists
           if (checklist_list && checklist_list.length) {
 
-            new ApiService().get(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + "evaluation?journey_id="+path_id) // Will add /path_id when the call will handle get evaluation of a certain journey
+            // Get evaluations of the current journey to check what checklist has already been filled
+            new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + "evaluation?journey_id="+path_id)
               .then(function (response){
-                console.log("get evaluation", response)
                 if(response.data && response.data.data && response.data.data.length){
                   for( const evaluation of response.data.data){
                     checklist_list.find(checklist => checklist.id === evaluation.checklist.id).fill = true
                   }
                 }
                 setChecklistList(checklist_list)
+                // Now that all calls are finished, go to menu
+                navigate("/main/menu")
               }).catch(error => setJourneyErrorCode(error.message))
-
           }
         }).catch(error => setJourneyErrorCode(error.message))
     }).catch(error => setJourneyErrorCode(error.message))
 }
 
-const postevaluation = (is_local, final_result) => {
-  new ApiService().post(is_local ? '#' : process.env.REACT_APP_BASE_URL + '/' + 'evaluation', final_result  )
+/*Post evaluation with the current result*/
+const postevaluation = ( final_result) => {
+  new ApiService().post(process.env.REACT_APP_BASE_URL + '/' + 'evaluation', final_result  )
     .then(function (response){
-      console.log("evaluation post response", response)
     })
 }
 
-const getevaluation = (setCurrentEvals, path_id, alertList=null, setAlertList=null, current_checklist_array = null ) => {
+/*Get evaluations of the current path, if we have alertList we construct the new alert list from evals, if not we set currentEvals*/
+const getevaluation = ( path_id, setIsWaitingReview , alertList=null, setAlertList=null, current_checklist_array = null, setCurrentEvals = null) => {
   new ApiService().get(process.env.REACT_APP_BASE_URL + '/' + 'evaluation?journey_id='+path_id )
     .then(function (response){
-      console.log("evaluation get response", response)
-      setCurrentEvals(response.data.data)
-      console.log(current_checklist_array)
 
       if (alertList !== null){
+        /*For each evaluation, for each answer, we check the question in the checklist filled (prev)
+        and search if the question exist in the new current checklist (current). We create the alert using these info
+        (if we find a correp question current we indicates in the alert the corresp id, if not we put -1)*/
         let index = 0
         for(const evaluation of response.data.data){
-          for(const answer of evaluation.answers){
-            const corresp_question_prev = evaluation.checklist.items.filter(item => item.itemId === answer.item_id)[0]
-            const corresp_question_current = current_checklist_array.filter(item => corresp_question_prev.name.includes(item.name))
-            if(answer.is_pb === 1){
-              if(!alertList[corresp_question_prev.name])
-                alertList[corresp_question_prev.name] = {id: index++, question_id: corresp_question_current.length ? corresp_question_current[0].itemId : -1,
-                  checklist_id: evaluation.checklist.id, checklist_name: evaluation.checklist.title, name : corresp_question_prev.name,
-                  answer: utils.trad_answer(JSON.parse(answer.answer)) ? utils.trad_answer(JSON.parse(answer.answer)) : JSON.parse(answer.answer), gravity:0}
-            }
-            else{
-              if(alertList[corresp_question_prev.name])
-                alertList[corresp_question_prev.name] = {...alertList[corresp_question_prev.name], gravity:1,}
+          if (evaluation.checklist.items.length) {
+            for (const answer of evaluation.answers) {
+              const corresp_question_prev = evaluation.checklist.items.filter(item => item.itemId === answer.item_id)[0]
+              const corresp_question_current = current_checklist_array.filter(item => corresp_question_prev.name.includes(item.name))
+              if (answer.is_pb === 1) {
+                if (!alertList[corresp_question_prev.name])
+                  alertList[corresp_question_prev.name] = {
+                    id: index++,
+                    question_id: corresp_question_current.length ? corresp_question_current[0].itemId : -1,
+                    checklist_id: evaluation.checklist.id,
+                    checklist_name: evaluation.checklist.title,
+                    name: corresp_question_prev.name,
+                    answer: utils.trad_answer(JSON.parse(answer.answer)) ? utils.trad_answer(JSON.parse(answer.answer)) : JSON.parse(answer.answer),
+                    gravity: 0
+                  }
+              } else {
+                if (alertList[corresp_question_prev.name])
+                  alertList[corresp_question_prev.name] = {...alertList[corresp_question_prev.name], gravity: 1,}
+              }
             }
           }
         }
         setAlertList(alertList)
       }
+      else{
+        setCurrentEvals(response.data.data)
+      }
+      if (setIsWaitingReview) setIsWaitingReview(false)
     })
 }
 
-export {postconnection, getusers, getuser, getpatients, getpatient, getwaitingpatients, getchecklist, getchecklists, getchecklist_creation_mode, putchecklist, getjourney, postevaluation, getevaluation}
+export {postconnection, postdisconnection, getpatients, getpatient, getwaitingpatients, getchecklist, getchecklists, getchecklist_creation_mode, putchecklist, addchecklist, removechecklist, getjourney, postevaluation, getevaluation}

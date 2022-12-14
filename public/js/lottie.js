@@ -7171,7 +7171,7 @@ RenderableElement.prototype = {
         this.hidden = false;
         // If layer's transparency equals 0, it can be hidden
         this.isTransparent = false;
-        //list of animated components
+        //list of animated common
         this.renderableComponents = [];
     },
     addRenderableComponent: function(component) {
@@ -8527,7 +8527,7 @@ function SVGShapeElement(data,globalData,comp){
     this.itemsData = [];
     //List of items in previous shape tree
     this.processedElements = [];
-    // List of animated components
+    // List of animated common
     this.animatedContents = [];
     this.initElement(data,globalData,comp);
     //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
@@ -10446,7 +10446,7 @@ function HShapeElement(data,globalData,comp){
     this.itemsData = [];
     //List of items in previous shape tree
     this.processedElements = [];
-    // List of animated components
+    // List of animated common
     this.animatedContents = [];
     this.shapesContainer = createNS('g');
     this.initElement(data,globalData,comp);

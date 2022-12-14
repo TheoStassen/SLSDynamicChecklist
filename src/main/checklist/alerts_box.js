@@ -1,19 +1,11 @@
 import React from "react";
-import * as utils from "../utils/utils";
-import * as temp_data from "../utils/temporary_data";
 
-/*Component for the selection of the current patient
-* -patientList : list of all patients
-* -currentPatient : current patient state variable
-* -setCurrentPatient: current patient set function
+/*Component that shows the current alerts
 * */
 function AlertsBox ({alertList}) {
 
-  console.log("enter alert box", alertList)
-
+  /*Split the alerts in two parts, for more compact visual*/
   let list_alert = Object.values(alertList)
-
-  console.log(list_alert)
   const half = list_alert ? Math.ceil(list_alert.length/2) : 0
 
   const first_half_list = list_alert ? list_alert.slice(0, half) : []

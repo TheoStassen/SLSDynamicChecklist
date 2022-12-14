@@ -1,20 +1,12 @@
 import React from "react";
-import * as utils from "../utils/utils";
-import {bindReporter} from "web-vitals/dist/modules/lib/bindReporter";
 import {Button} from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import {useState} from "react";
 
-function check_all_question_answered (visibleList, result){
-  return visibleList.every(
-    function (elm){ return result[elm]}
-  )
-}
+/*Component containing the button to send the checklist filled to backend, with some content verification*/
+function ValidationButton ({visibleList, result, import_result, setWarningId, forceValidationMode}) {
 
-
-
-function ValidationButton ({visibleList, result, import_result, checklist, setWarningId, checklistList, setChecklistList, checklistId, forceValidationMode}) {
-
+  /*Check if all the visible question has been answered, if not, set warning id and return the question for href call*/
   function search_question_not_answered (visibleList, result, is_set){
     if (forceValidationMode)
       return ""
@@ -29,25 +21,22 @@ function ValidationButton ({visibleList, result, import_result, checklist, setWa
     return ""
   }
 
+  /*Modal variables to control the show and close*/
   const [show, setShow] = useState(false);
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
+  /*If validation ok, import result and show succeed modal*/
   function handlevalidation (){
-
     import_result()
-    // checklistList.filter(elm => elm.id === checklistId)[0].fill = true
-    // setChecklistList(checklistList)
     handleShow()
-    console.log("handle validation end")
   }
 
 
 
   return (
     <div className="container custom-container iq-card  mt-5 text-center p-2 mx-auto shadow-sm border ">
+      {/*On click, check, if not correct redirect to the first not answered question*/}
       <a onClick={() => search_question_not_answered(visibleList, result, true) === "" ? handlevalidation(): null }
          href={"#" + search_question_not_answered(visibleList, result, false)}
          className=""
@@ -73,8 +62,6 @@ function ValidationButton ({visibleList, result, import_result, checklist, setWa
       </>
     </div>
   )
-
-  // href={"#" + !check_all_question_answered(visibleList, result) ? search_question_not_answered(visibleList, result) : ""}
 
 }
 
