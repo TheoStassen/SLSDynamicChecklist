@@ -1,4 +1,4 @@
-# SLS Dynamic Checklist Project
+# Dynalist (SLS - Dynamic Clinical Checklists)
 
 # Information
 
@@ -22,12 +22,9 @@ If there is an error when running the application : <br />
 * If react-bootstrap-select-dropdown is missing : `npm i -S react-signature-canvas` <br />
 * If react-signature-canvas is missing : `npm i react-bootstrap-select-dropdown --save`
 
-
-# Available Scripts
-
 In the project directory, you can run:
 
-## `yarn start`
+* `yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -35,18 +32,13 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-## `yarn test`
+# Project Overview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-## `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The Dynalist application is composed of different elements/routes, linked together :
+-LoginApp (/login) : identification of the user
+-Main (/main)
+  -PatientApp (/patient) : patient selection
+  -MenuApp (/menu) : patient's journey checklist list show and selection
+  -ChecklistApp (/checklist) : (dynamic) checklist show and filling
+  -Credits (/credits) : Application credits
 
