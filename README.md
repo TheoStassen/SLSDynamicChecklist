@@ -35,10 +35,10 @@ You will also see any lint errors in the console.
 # Project Overview
 
 The Dynalist application is composed of different elements/routes, linked together :
--LoginApp (/login) : identification of the user
--Main (/main)
-  -PatientApp (/patient) : patient selection
-  -MenuApp (/menu) : patient's journey checklist list show and selection
-  -ChecklistApp (/checklist) : (dynamic) checklist show and filling
-  -Credits (/credits) : Application credits
+*LoginApp (/login) : identification of the user
+*Main (/main)
+  *PatientApp (/patient) : patient selection
+  *MenuApp (/menu) : patient's journey checklist list show and selection
+  *ChecklistApp (/checklist) : (dynamic) checklist show and filling
+  *Credits (/credits) : Application credits
 
